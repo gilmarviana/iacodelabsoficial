@@ -32,6 +32,9 @@ const LandingPage = () => {
   const [config, setConfig] = useState({});
   const [sections, setSections] = useState([]);
   const [services, setServices] = useState([]);
+  const [miscItems, setMiscItems] = useState([]);
+  const [servicesTitle, setServicesTitle] = useState('Serviços');
+  const [miscTitle, setMiscTitle] = useState('Diversos');
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -79,6 +82,18 @@ const LandingPage = () => {
       window.removeEventListener('storage', loadConfigAndData);
     };
   }, [loadConfigAndData]);
+
+  useEffect(() => {
+    const savedMisc = JSON.parse(localStorage.getItem('landingPageMisc') || '[]');
+    setMiscItems(savedMisc);
+  }, []);
+
+  useEffect(() => {
+    const savedServicesTitle = localStorage.getItem('landingPageServicesTitle');
+    if (savedServicesTitle) setServicesTitle(savedServicesTitle);
+    const savedMiscTitle = localStorage.getItem('landingPageMiscTitle');
+    if (savedMiscTitle) setMiscTitle(savedMiscTitle);
+  }, []);
 
   const testimonials = [
     { name: 'Maria Silva', company: 'Tech Solutions', text: 'Excelente trabalho! O projeto foi entregue no prazo e superou nossas expectativas.', rating: 5 },
@@ -168,7 +183,7 @@ const LandingPage = () => {
             <section id={section.id} className="py-20 px-6 bg-background" style={sectionStyle}>
                 <div className="container mx-auto">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{section.title}</h2>
+                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{servicesTitle}</h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
                     </motion.div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -176,7 +191,13 @@ const LandingPage = () => {
                             const Icon = serviceIcons[service.icon] || Wrench;
                             return (
                                 <motion.div key={index} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
-                                    <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4"><Icon className="w-8 h-8" /></div>
+                                    <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+                                        {service.customIcon
+                                            ? <img src={service.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
+                                            : service.fontAwesomeIcon
+                                                ? <i className={`w-8 h-8 text-2xl ${service.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                                                : <Icon className="w-8 h-8" />}
+                                    </div>
                                     <h3 className="text-xl font-bold mb-2">{service.title}</h3>
                                     <p className="text-muted-foreground">{service.description}</p>
                                 </motion.div>
@@ -253,6 +274,15 @@ const LandingPage = () => {
     }
   };
 
+  // Definir alinhamento do menu
+  const menuAlignClass = config.menuPosition === 'left' ? 'justify-start' : config.menuPosition === 'right' ? 'justify-end' : 'justify-center';
+  const menuBg = config.menuBgColor || 'rgba(255,255,255,0)';
+  const menuText = config.menuTextColor || '#222222';
+  const menuHover = config.menuHoverColor || '#3b82f6';
+  const menuPadding = config.menuPadding || 'px-4 py-2';
+  const menuMargin = config.menuMargin || 'mx-2 my-0';
+  const menuRadius = config.menuRadius || '8px';
+
   return (
     <>
       <Helmet>
@@ -263,42 +293,162 @@ const LandingPage = () => {
       <SchedulingModal isOpen={isSchedulingModalOpen} onClose={() => setIsSchedulingModalOpen(false)} />
 
       <div className="bg-background text-foreground transition-colors duration-300">
-        <header className="fixed top-0 w-full bg-transparent text-white z-50 transition-all duration-300" id="main-header">
+        {/* HEADER customizável */}
+        {config.isVisible !== false && (
+          <header
+            className="fixed top-0 w-full z-50 transition-all duration-300"
+            id="main-header"
+            style={{ background: config.bgColor || 'rgba(0,0,0,0.7)' }}
+          >
           <nav className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between">
-              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold">
-                {config.logoUrl?.startsWith('http') ? <img src={config.logoUrl} alt="Logo" className="h-8" /> : config.logoUrl}
+              <div className="flex items-center justify-between w-full">
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold flex items-center gap-2">
+                  {config.logoUrl ? (
+                    <img src={config.logoUrl} alt="Logo" className="h-8" />
+                  ) : (
+                    <span>{config.logoText || 'IA Code Labs'}</span>
+                  )}
               </motion.div>
-
-              <div className="hidden md:flex items-center space-x-6">
-                {sections.filter(s => s.isVisible).map(s => <a key={s.id} href={`#${s.id}`} className="hover:text-primary transition-colors">{s.name}</a>)}
-                <Button onClick={() => navigate('/login')} variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-primary">Login</Button>
+                <div className="flex-1 flex">
+                  {config.menuPosition === 'center' ? (
+                    <div className="w-full flex items-center justify-center">
+                      <div className={`hidden md:flex items-center space-x-6 justify-center`} style={{ background: menuBg, color: menuText }}>
+                        {/* menu items */}
+                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
+                          item.label && item.href ? (
+                            item.children && item.children.length > 0 ? (
+                              <div key={idx} className={`relative group ${menuMargin}`}>
+                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
+                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
+                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
+                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
+                            )
+                          ) : (
+                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ) : config.menuPosition === 'right' ? (
+                    <div className="flex flex-1 items-center justify-end">
+                      <div className={`hidden md:flex items-center space-x-6`} style={{ background: menuBg, color: menuText }}>
+                        {/* menu items */}
+                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
+                          item.label && item.href ? (
+                            item.children && item.children.length > 0 ? (
+                              <div key={idx} className={`relative group ${menuMargin}`}>
+                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
+                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
+                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
+                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
+                            )
+                          ) : (
+                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <div className={`hidden md:flex items-center space-x-6`} style={{ background: menuBg, color: menuText }}>
+                        {/* menu items */}
+                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
+                          item.label && item.href ? (
+                            item.children && item.children.length > 0 ? (
+                              <div key={idx} className={`relative group ${menuMargin}`}>
+                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
+                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
+                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
+                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
+                            )
+                          ) : (
+                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 ml-4">
+                  <Button onClick={() => navigate('/login')} variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
+                    {config.loginButtonText || 'Login'}
+                  </Button>
                 <ThemeToggle />
               </div>
-
-              <div className="md:hidden flex items-center gap-2">
-                <ThemeToggle />
-                <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                  {isMenuOpen ? <X /> : <Menu />}
-                </button>
               </div>
-            </div>
-            
             {isMenuOpen && (
               <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="md:hidden mt-4 bg-card/90 rounded-lg p-4">
                 <div className="flex flex-col space-y-4 items-center text-card-foreground">
-                  {sections.filter(s => s.isVisible).map(s => <a key={s.id} href={`#${s.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-primary transition-colors w-full text-center py-2">{s.name}</a>)}
-                  <Button onClick={() => {navigate('/login'); setIsMenuOpen(false);}} className="w-full">Login</Button>
+                    {(config.menu || sections.filter(s => s.isVisible)).map((item, idx) =>
+                      item.label && item.href ? (
+                        item.children && item.children.length > 0 ? (
+                          <div key={idx} className="relative group">
+                            <a href={item.href} className="hover:text-primary transition-colors cursor-pointer" style={{ color: menuText }}>{item.label}</a>
+                            <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
+                              {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
+                                <a key={cidx} href={child.href} className="block px-4 py-2 hover:bg-primary/10 text-sm" style={{ color: menuText }}>{child.label}</a>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <a key={idx} href={item.href} onClick={() => setIsMenuOpen(false)} className="hover:text-primary transition-colors w-full text-center py-2" style={{ color: menuText }}>{item.label}</a>
+                        )
+                      ) : (
+                        <a key={item.id || idx} href={`#${item.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-primary transition-colors w-full text-center py-2" style={{ color: menuText }}>{item.name}</a>
+                      )
+                    )}
+                    <Button onClick={() => {navigate('/login'); setIsMenuOpen(false);}} className="w-full" style={{ color: menuText }}>{config.loginButtonText || 'Login'}</Button>
                 </div>
               </motion.div>
             )}
           </nav>
         </header>
+        )}
 
         <main>
-            {sections.filter(s => s.isVisible).map(section => (
+            {sections.filter(s => s.isVisible).map((section, idx) => (
                 <React.Fragment key={section.id}>
                     {renderSection(section)}
+                    {section.type === 'services' && (
+                        <section id="misc" className="py-20 px-6 bg-background">
+                            <div className="container mx-auto">
+                                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+                                    <h2 className="text-4xl font-bold mb-4">{miscTitle}</h2>
+                                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Outros serviços e recursos oferecidos.</p>
+                                </motion.div>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {miscItems.map((item, index) => (
+                                        <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
+                                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+                                                {item.customIcon
+                                                    ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain" />
+                                                    : item.fontAwesomeIcon
+                                                        ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                                                        : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10' })}
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                                            <p className="text-muted-foreground">{item.description}</p>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                    )}
                 </React.Fragment>
             ))}
         </main>

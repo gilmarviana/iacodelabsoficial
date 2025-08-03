@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useDrag, useDrop } from 'react-dnd';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ColorPicker from '@/components/ColorPicker';
 
 const ItemTypes = {
   ELEMENT: 'element',
@@ -66,6 +68,8 @@ const SlideModal = ({ isOpen, onOpenChange, onSave, slide }) => {
     title: '',
     description: '',
     image: '',
+    bgColor: '#3b82f6', // cor padrão
+    slideType: 'padrao', // Added slideType
     positions: {
       title: { top: 180, left: 50 },
       description: { top: 240, left: 50 },
@@ -79,6 +83,8 @@ const SlideModal = ({ isOpen, onOpenChange, onSave, slide }) => {
         title: slide.title || '',
         description: slide.description || '',
         image: slide.image || '',
+        bgColor: slide.bgColor || '#3b82f6',
+        slideType: slide.slideType || 'padrao', // Set slideType from slide data
         positions: slide.positions || {
           title: { top: 180, left: 50 },
           description: { top: 240, left: 50 },
@@ -90,6 +96,8 @@ const SlideModal = ({ isOpen, onOpenChange, onSave, slide }) => {
         title: '', 
         description: '', 
         image: '',
+        bgColor: '#3b82f6',
+        slideType: 'padrao', // Default slideType
         positions: {
           title: { top: 180, left: 50 },
           description: { top: 240, left: 50 },
@@ -132,12 +140,30 @@ const SlideModal = ({ isOpen, onOpenChange, onSave, slide }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{slide ? 'Editar Slide' : 'Novo Slide'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-8 pt-4">
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="slideType">Tipo de Slide</Label>
+              <Select
+                value={formData.slideType || 'padrao'}
+                onValueChange={value => setFormData({ ...formData, slideType: value })}
+              >
+                <SelectTrigger id="slideType" name="slideType">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="padrao">Padrão</SelectItem>
+                  <SelectItem value="imagem-direita">Com Imagem à Direita</SelectItem>
+                  <SelectItem value="imagem-esquerda">Com Imagem à Esquerda</SelectItem>
+                  <SelectItem value="full-bg">Full Background</SelectItem>
+                  <SelectItem value="minimalista">Minimalista</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label htmlFor="title">Título</Label>
               <Input
@@ -161,41 +187,110 @@ const SlideModal = ({ isOpen, onOpenChange, onSave, slide }) => {
               />
             </div>
             <div>
+              <Label htmlFor="bgColor">Cor de Fundo</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <ColorPicker value={formData.bgColor} onChange={color => setFormData({ ...formData, bgColor: color })} />
+                <span className="text-xs text-muted-foreground">{formData.bgColor}</span>
+              </div>
+            </div>
+            <div>
               <Label htmlFor="image-upload">Imagem</Label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                      <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-                      <div className="flex text-sm text-muted-foreground">
-                          <label htmlFor="image-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none">
-                              <span>Carregar um arquivo</span>
-                              <input id="image-upload" name="image-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
-                          </label>
-                          <p className="pl-1">ou arraste e solte</p>
-                      </div>
-                      <p className="text-xs">PNG, JPG, GIF até 10MB</p>
+              <div className="mt-1 flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md">
+                {formData.image && (
+                  <img src={formData.image} alt="Preview" className="mb-2 w-full max-w-xs h-32 object-cover rounded-md border" />
+                )}
+                <div className="space-y-1 text-center">
+                  <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <div className="flex text-sm text-muted-foreground">
+                    <label htmlFor="image-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none">
+                      <span>Carregar um arquivo</span>
+                      <input id="image-upload" name="image-upload" type="file" className="sr-only" onChange={handleImageUpload} accept="image/*" />
+                    </label>
+                    <p className="pl-1">ou arraste e solte</p>
                   </div>
+                  <p className="text-xs">PNG, JPG, GIF até 10MB</p>
+                </div>
               </div>
             </div>
           </div>
           <div>
             <Label>Pré-visualização (Arraste os elementos)</Label>
-            <div className="mt-2 relative w-full h-96 bg-muted rounded-md overflow-hidden">
-                {formData.image && <img src={formData.image} alt="Fundo" className="absolute inset-0 w-full h-full object-cover"/>}
-                <div className="absolute inset-0 bg-black/30"></div>
-                <DroppableArea onDrop={handleElementMove}>
+            <div className="mt-2 relative w-full h-96 rounded-md overflow-hidden" style={{ background: formData.bgColor }}>
+              {(() => {
+                const type = formData.slideType || 'padrao';
+                if (type === 'imagem-direita') {
+                  return (
+                    <div className="flex h-full">
+                      <div className="flex-1 flex flex-col justify-center items-start px-6 z-20 text-white">
+                        <h2 className="text-xl font-bold mb-2 drop-shadow-lg">{formData.title || 'Título do Slide'}</h2>
+                        <p className="text-white/90 text-sm max-w-xs drop-shadow-md mb-4">{formData.description || 'Descrição do slide...'}</p>
+                        <div className="flex gap-2">
+                          <Button size="sm" type="button">Botão 1</Button>
+                          <Button size="sm" variant="outline" type="button">Botão 2</Button>
+                        </div>
+                      </div>
+                      <div className="flex-1 h-full flex items-center justify-center relative">
+                        {formData.image && <img src={formData.image} alt="Fundo" className="w-full h-full object-cover rounded-l-2xl absolute inset-0" style={{ zIndex: 1 }} />}
+                        <div className="absolute inset-0 bg-black/30 rounded-l-2xl" style={{ zIndex: 2 }} />
+                      </div>
+                    </div>
+                  );
+                }
+                if (type === 'imagem-esquerda') {
+                  return (
+                    <div className="flex h-full">
+                      <div className="flex-1 h-full flex items-center justify-center relative order-2">
+                        {formData.image && <img src={formData.image} alt="Fundo" className="w-full h-full object-cover rounded-r-2xl absolute inset-0" style={{ zIndex: 1 }} />}
+                        <div className="absolute inset-0 bg-black/30 rounded-r-2xl" style={{ zIndex: 2 }} />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center items-end px-6 z-20 text-white order-1">
+                        <h2 className="text-xl font-bold mb-2 drop-shadow-lg text-right">{formData.title || 'Título do Slide'}</h2>
+                        <p className="text-white/90 text-sm max-w-xs drop-shadow-md mb-4 text-right">{formData.description || 'Descrição do slide...'}</p>
+                        <div className="flex gap-2 justify-end">
+                          <Button size="sm" type="button">Botão 1</Button>
+                          <Button size="sm" variant="outline" type="button">Botão 2</Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+                if (type === 'full-bg') {
+                  return (
+                    <div className="relative w-full h-full">
+                      {formData.image && <img src={formData.image} alt="Fundo" className="absolute inset-0 w-full h-full object-cover" style={{ zIndex: 1 }} />}
+                      <div className="absolute inset-0 bg-black/60 z-10" />
+                      <div className="relative z-20 flex flex-col justify-center items-center h-full text-white">
+                        <h2 className="text-2xl md:text-4xl font-extrabold mb-4 drop-shadow-2xl">{formData.title || 'Título do Slide'}</h2>
+                        <p className="text-lg md:text-xl text-white/90 mb-6 max-w-2xl mx-auto drop-shadow-xl">{formData.description || 'Descrição do slide...'}</p>
+                      </div>
+                    </div>
+                  );
+                }
+                if (type === 'minimalista') {
+                  return (
+                    <div className="flex items-center justify-center h-full bg-background">
+                      <h2 className="text-2xl md:text-4xl font-bold text-primary drop-shadow-none">{formData.title || 'Título do Slide'}</h2>
+                    </div>
+                  );
+                }
+                // padrao
+                return (
+                  <DroppableArea onDrop={handleElementMove}>
                     <DraggableElement id="title" left={formData.positions.title.left} top={formData.positions.title.top} onMove={handleElementMove}>
-                        <h2 className="text-xl font-bold text-white drop-shadow-lg">{formData.title || 'Título do Slide'}</h2>
+                      <h2 className="text-xl font-bold text-white drop-shadow-lg">{formData.title || 'Título do Slide'}</h2>
                     </DraggableElement>
                     <DraggableElement id="description" left={formData.positions.description.left} top={formData.positions.description.top} onMove={handleElementMove}>
-                        <p className="text-white/90 text-sm max-w-xs drop-shadow-md">{formData.description || 'Descrição do slide...'}</p>
+                      <p className="text-white/90 text-sm max-w-xs drop-shadow-md">{formData.description || 'Descrição do slide...'}</p>
                     </DraggableElement>
                     <DraggableElement id="buttons" left={formData.positions.buttons.left} top={formData.positions.buttons.top} onMove={handleElementMove}>
-                         <div className="flex gap-2">
-                             <Button size="sm" type="button">Botão 1</Button>
-                             <Button size="sm" variant="outline" type="button">Botão 2</Button>
-                         </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" type="button">Botão 1</Button>
+                        <Button size="sm" variant="outline" type="button">Botão 2</Button>
+                      </div>
                     </DraggableElement>
-                </DroppableArea>
+                  </DroppableArea>
+                );
+              })()}
             </div>
           </div>
           <DialogFooter className="pt-4 md:col-span-2">
@@ -227,6 +322,7 @@ const SliderSettingsContent = () => {
           imagePrompt: 'Futuristic digital solutions and abstract code background',
           title: 'Transformamos Ideias em Soluções Digitais',
           description: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.',
+          slideType: 'padrao', // Added slideType
           positions: { title: { top: 150, left: 50 }, description: { top: 210, left: 50 }, buttons: { top: 290, left: 50 } },
         },
         {
@@ -235,6 +331,7 @@ const SliderSettingsContent = () => {
           imagePrompt: 'Team of developers collaborating on a project in a modern office',
           title: 'Sua Visão, Nossa Expertise Técnica',
           description: 'Criamos produtos digitais robustos e escaláveis para o seu negócio.',
+          slideType: 'padrao', // Added slideType
           positions: { title: { top: 150, left: 50 }, description: { top: 210, left: 50 }, buttons: { top: 290, left: 50 } },
         },
         {
@@ -243,6 +340,7 @@ const SliderSettingsContent = () => {
           imagePrompt: 'Stunning user interface design on multiple devices',
           title: 'Design Inovador, Experiência Superior',
           description: 'Focados na usabilidade e em interfaces que encantam os usuários.',
+          slideType: 'padrao', // Added slideType
           positions: { title: { top: 150, left: 50 }, description: { top: 210, left: 50 }, buttons: { top: 290, left: 50 } },
         },
       ];
