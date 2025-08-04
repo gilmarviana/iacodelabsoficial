@@ -13,10 +13,22 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
     const [newColor, setNewColor] = useState('#3b82f6');
 
     const handleSelect = (currentValue) => {
-        const selectedOption = options.find(option => option.value === currentValue);
-        onChange(selectedOption);
-        setInputValue("");
-        setOpen(false);
+        // currentValue pode vir como string (cmdk) ou objeto (criação)
+        console.log('handleSelect disparado:', currentValue);
+        let selectedOption = null;
+        if (typeof currentValue === 'string') {
+            selectedOption = options.find(option => option.value === currentValue);
+        } else if (typeof currentValue === 'object' && currentValue !== null) {
+            selectedOption = currentValue;
+        }
+        if (selectedOption) {
+            console.log('selectedOption:', selectedOption);
+            onChange(selectedOption);
+            setInputValue("");
+            setOpen(false);
+        } else {
+            console.log('Nenhuma opção selecionada');
+        }
     };
     
     const handleCreate = () => {
@@ -39,7 +51,6 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
     };
     
     const selectedOption = value ? (typeof value === 'string' ? options.find(o => o.value === value) : value) : null;
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -48,6 +59,7 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
                     role="combobox"
                     aria-expanded={open}
                     className="w-full justify-between"
+                    type="button"
                 >
                     <div className="flex items-center gap-2 truncate">
                         {selectedOption?.color && <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: selectedOption.color }} />}
@@ -67,7 +79,7 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
                         <CommandEmpty>
                              {canCreate ? (
                                 <div className="flex items-center justify-between p-2">
-                                    <Button variant="ghost" className="flex-grow justify-start" onMouseDown={handleCreate}>
+                                    <Button variant="ghost" className="flex-grow justify-start" onClick={handleCreate} type="button">
                                         <PlusCircle className="mr-2 h-4 w-4" />
                                         Criar "{inputValue}"
                                     </Button>
@@ -81,15 +93,15 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
                             {options.map((option) => (
                                 <CommandItem
                                     key={option.value}
-                                    value={option.value}
+                                    value={String(option.value)}
                                     onSelect={handleSelect}
                                     className="flex justify-between items-center group"
+                                    style={{ pointerEvents: 'auto' }}
                                 >
                                     <div className="flex items-center gap-2">
                                         <Check
                                             className={cn(
-                                                "mr-2 h-4 w-4",
-                                                selectedOption?.value === option.value ? "opacity-100" : "opacity-0"
+                                                "mr-2 h-4 w-4"
                                             )}
                                         />
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: option.color }} />
@@ -100,7 +112,7 @@ const CreatableSelect = ({ options, value, onChange, placeholder, onUpdateOption
                                          value={option.color} 
                                          onChange={(color) => handleColorChange(option, color)}
                                          trigger={
-                                           <Button variant="ghost" size="icon" className="h-6 w-6 invisible group-hover:visible" onMouseDown={(e) => e.stopPropagation()}>
+                                           <Button variant="ghost" size="icon" className="h-6 w-6 invisible group-hover:visible" onMouseDown={(e) => e.stopPropagation()} type="button">
                                              <Palette className="h-4 w-4" />
                                            </Button>
                                          }

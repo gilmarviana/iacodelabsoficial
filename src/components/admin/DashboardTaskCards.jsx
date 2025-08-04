@@ -2,15 +2,18 @@ import React, { useMemo, useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { ClipboardList, CheckCircle, ListChecks } from 'lucide-react';
 import { motion } from 'framer-motion';
-
+import useKanban from '@/hooks/useKanban';
 
 const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
+  // Pega as colunas do Kanban para saber quais têm status 'Concluído'
+  const { columns } = useKanban();
   // Filtros de período, cliente e projeto
   const [period, setPeriod] = useState({ from: '', to: '' });
   const [client, setClient] = useState('all');
   const [project, setProject] = useState('all');
   // Estado para controlar quais cards estão visíveis
   const [visibleCards, setVisibleCards] = useState(['Tarefas', 'Tarefas Concluídas', 'Tarefas Pendentes']);
+  const [uniqueTypes, setUniqueTypes] = useState([]);
 
   // Filtra tarefas por período, cliente e projeto
   const filteredTasks = useMemo(() => {
@@ -31,9 +34,20 @@ const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
   }, [tasks, period, client, project]);
 
   const total = filteredTasks.length;
-  const concluidas = filteredTasks.filter(t => {
-    return t.status === 'Concluído' || t.status === 'Finalizado' || t.status === 'Revisão' || t.status === 'review' || t.status === 'concluida';
-  }).length;
+  // Descobre os IDs das colunas cujo status é 'Concluído'
+  const concluidoColumnIds = columns.filter(col => col.status === 'Concluído').map(col => col.id);
+  // Conta tarefas que estão nessas colunas
+  const concluidas = Object.entries(tasks)
+    .filter(([colId]) => concluidoColumnIds.includes(colId))
+    .flatMap(([, tasksArr]) => tasksArr)
+    .filter(t => {
+      // Aplica os mesmos filtros de período, cliente e projeto
+      if (period.from && (!t.createdAt || t.createdAt < period.from)) return false;
+      if (period.to && (!t.createdAt || t.createdAt > period.to + 'T23:59:59')) return false;
+      if (client !== 'all' && !(t.projectClient === client || t.client === client || t.project === client)) return false;
+      if (project !== 'all' && t.project !== project) return false;
+      return true;
+    }).length;
 
   const cards = [
     {

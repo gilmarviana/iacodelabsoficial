@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -36,7 +35,10 @@ const AddTaskModal = ({ onSave, onDismiss, projects, clients, assignees, existin
     };
     
     const handleSelectChange = (name, value) => {
-        setTaskData(prev => ({ ...prev, [name]: value }));
+      if (name === 'type' && value && !uniqueTypes.find(t => t.value === value.value)) {
+        setUniqueTypes(prev => [...prev, value]);
+      }
+      setTaskData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleDateChange = (name, date) => {
@@ -101,7 +103,7 @@ const AddTaskModal = ({ onSave, onDismiss, projects, clients, assignees, existin
     };
 
     const allTasksFlat = Object.values(existingTaskData || {}).flat();
-    const uniqueTypes = [...new Map(allTasksFlat.filter(t => t.type).map(t => [t.type.value, t.type])).values()];
+    const [uniqueTypes, setUniqueTypes] = useState(() => [...new Map(allTasksFlat.filter(t => t.type).map(t => [t.type.value, t.type])).values()]);
     const uniqueTags = [...new Map(allTasksFlat.flatMap(t => t.tags || []).map(t => [t.value, t])).values()];
     const canCreateOptions = true;
     const canEditColorOptions = userRole === 'admin';
@@ -164,10 +166,20 @@ const AddTaskModal = ({ onSave, onDismiss, projects, clients, assignees, existin
                         <div className="col-span-3">
                              <CreatableSelect 
                                 options={uniqueTypes}
-                                value={taskData.type}
+                                value={uniqueTypes.find(t => t.value === taskData.type?.value) || taskData.type}
                                 onChange={(value) => handleSelectChange('type', value)}
                                 placeholder="Selecione ou crie um tipo"
-                                onUpdateOption={(option, oldValue) => handleUpdateOption('type', option, oldValue)}
+                                onUpdateOption={(option, oldValue) => {
+                                  setUniqueTypes(prev => {
+                                    const idx = prev.findIndex(t => t.value === (oldValue || option.value));
+                                    if (idx > -1) {
+                                      const updated = [...prev];
+                                      updated[idx] = option;
+                                      return updated;
+                                    }
+                                    return prev;
+                                  });
+                                }}
                                 canCreate={canCreateOptions}
                                 canEditColor={canEditColorOptions}
                             />

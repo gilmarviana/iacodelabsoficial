@@ -107,6 +107,7 @@ const TagInput = ({ value = [], onChange, existingTags = [], onUpdateTag, canCre
                                     value={option.value}
                                     onSelect={() => handleAddTag(option)}
                                     className="flex justify-between items-center group"
+                                    style={{ pointerEvents: 'auto' }}
                                 >
                                      <div className="flex items-center gap-2">
                                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: option.color }} />

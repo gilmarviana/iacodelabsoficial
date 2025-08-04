@@ -26,15 +26,40 @@ const projectActivityData = [
 ];
 
 const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = [] }) => {
-  const stats = [
-    { label: 'Total de Projetos', value: projects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-    { label: 'Projetos Ativos', value: projects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    { label: 'Projetos Concluídos', value: projects.filter(p => p.status === 'Concluído').length, icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
-    { label: 'Clientes Ativos', value: new Set(projects.map(p => p.client)).size, icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
-  ];
-
   // Filtro de datas
   const [dateFilter, setDateFilter] = useState({ from: '', to: '' });
+
+  // Função para filtrar projetos pelo intervalo de datas
+  const filterByDate = (project) => {
+    if (!dateFilter.from && !dateFilter.to) return true;
+    const start = project.startDate ? new Date(project.startDate) : null;
+    const end = project.endDate ? new Date(project.endDate) : null;
+    const from = dateFilter.from ? new Date(dateFilter.from) : null;
+    const to = dateFilter.to ? new Date(dateFilter.to) : null;
+    // Se só tem 'from'
+    if (from && !to) return start && start >= from;
+    // Se só tem 'to'
+    if (!from && to) return end && end <= to;
+    // Se tem ambos
+    if (from && to) {
+      // Projeto deve ter alguma interseção com o range
+      return (
+        (start && start >= from && start <= to) ||
+        (end && end >= from && end <= to) ||
+        (start && end && start <= from && end >= to)
+      );
+    }
+    return true;
+  };
+
+  const filteredProjects = projects.filter(filterByDate);
+
+  const stats = [
+    { label: 'Total de Projetos', value: filteredProjects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+    { label: 'Projetos Ativos', value: filteredProjects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Projetos Concluídos', value: filteredProjects.filter(p => p.status === 'Concluído').length, icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
+    { label: 'Clientes Ativos', value: new Set(filteredProjects.map(p => p.client)).size, icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
+  ];
 
   return (
     <div className="space-y-8">
@@ -139,7 +164,7 @@ const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = 
         >
           <h3 className="text-xl font-bold mb-4">Projetos Recentes</h3>
           <div className="space-y-4">
-            {projects.slice(0, 4).map((project) => (
+            {filteredProjects.slice(0, 4).map((project) => (
               <div key={project.id} className="flex items-center">
                 <div className="flex-1">
                   <h4 className="font-medium text-sm">{project.title}</h4>
