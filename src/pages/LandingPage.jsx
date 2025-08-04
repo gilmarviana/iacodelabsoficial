@@ -160,7 +160,15 @@ const LandingPage = () => {
                     </motion.div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {miscItems.map((item, index) => (
-                            <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
+                            <motion.div
+                              key={item.id}
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: index * 0.1 }}
+                              whileHover={{ scale: 1.04, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.10)' }}
+                              className="bg-card p-6 rounded-lg border text-center transition-transform duration-200 cursor-pointer"
+                            >
                                 <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
                                     {item.customIcon
                                         ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain" />
@@ -190,7 +198,15 @@ const LandingPage = () => {
                     </motion.div>
                     <div className="grid md:grid-cols-2 gap-8">
                         {projects.map((project, index) => (
-                            <motion.div key={project.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card rounded-lg overflow-hidden border">
+                            <motion.div
+                              key={project.id}
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: index * 0.1 }}
+                              whileHover={{ scale: 1.04, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.12)' }}
+                              className="bg-card rounded-lg overflow-hidden border transition-transform duration-200 cursor-pointer"
+                            >
                                 <div className="aspect-video bg-muted flex items-center justify-center">
                                     <img-replace alt={project.title} className="w-full h-full object-cover" />
                                 </div>
@@ -216,7 +232,15 @@ const LandingPage = () => {
                         {services.map((service, index) => {
                             const Icon = serviceIcons[service.icon] || Wrench;
                             return (
-                                <motion.div key={index} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
+                                <motion.div
+                                  key={index}
+                                  initial={{ opacity: 0, y: 30 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: index * 0.1 }}
+                                  whileHover={{ scale: 1.04, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.10)' }}
+                                  className="bg-card p-6 rounded-lg border text-center transition-transform duration-200 cursor-pointer"
+                                >
                                     <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
                                         {service.customIcon
                                             ? <img src={service.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
@@ -448,9 +472,16 @@ const LandingPage = () => {
 
         <main>
             {sections.filter(s => s.isVisible).map((section, idx) => (
-                <React.Fragment key={section.id}>
-                    {renderSection(section)}
-                </React.Fragment>
+                <motion.div
+                  key={section.id}
+                  initial={{ opacity: 0, y: 64 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.18 }}
+                  transition={{ duration: 0.9, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ width: '100%' }}
+                >
+                  {renderSection(section)}
+                </motion.div>
             ))}
         </main>
 

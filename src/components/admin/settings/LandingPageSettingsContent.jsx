@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SectionEditor from './SectionEditor';
 import ColorPicker from '@/components/ColorPicker';
+import { DraggableMenuItem } from './DraggableMenuItem';
 
 const ItemTypes = {
   SECTION: 'section',
@@ -445,13 +446,20 @@ const LandingPageSettingsContent = () => {
     { class: 'fa-brands fa-instagram', label: 'Instagram' },
   ];
 
+  const [footerCollapsed, setFooterCollapsed] = useState(true);
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
         {/* HEADER EDITOR */}
         {/* FOOTER EDITOR */}
         <div className="bg-card p-6 rounded-xl border space-y-4">
-          <h3 className="text-xl font-semibold mb-2">Footer da Landing Page</h3>
+          <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setFooterCollapsed(v => !v)}>
+            <h3 className="text-xl font-semibold mb-2">Footer da Landing Page</h3>
+            <Button variant="ghost" size="icon">{footerCollapsed ? '+' : '-'}</Button>
+          </div>
+          {!footerCollapsed && (
+            <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Bloco: Cor de fundo do footer */}
             <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
@@ -616,6 +624,8 @@ const LandingPageSettingsContent = () => {
           <div className="flex justify-end mt-4">
             <Button onClick={handleSaveAll} variant="primary"><Save className="mr-2 h-4 w-4" />Salvar Alterações do Footer</Button>
           </div>
+          </>
+          )}
         </div>
         <div className="bg-card p-6 rounded-xl border space-y-4">
           <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setHeaderCollapsed(v => !v)}>
@@ -673,31 +683,46 @@ const LandingPageSettingsContent = () => {
                   <Label>Radius do Menu (px)</Label>
                   <input type="text" className="input input-bordered w-full" value={headerConfig.menuRadius} onChange={handleMenuRadiusChange} placeholder="8px" />
                   {headerConfig.menu.map((item, idx) => (
-                    <div key={idx} className="flex flex-col gap-1 mb-2">
-                      <div className="flex gap-2 items-center">
-                        <input type="text" className="input input-bordered" placeholder="Texto" value={item.label} onChange={e => handleMenuChange(idx, 'label', e.target.value)} />
-                        <input type="text" className="input input-bordered" placeholder="Link" value={item.href} onChange={e => handleMenuChange(idx, 'href', e.target.value)} />
-                        <Button size="icon" variant="ghost" onClick={() => handleToggleMenuItemVisibility(idx)}>
-                          {item.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                        </Button>
-                        <Button size="icon" variant="ghost" onClick={() => handleRemoveMenuItem(idx)} disabled={headerConfig.menu.length <= 1}><Trash2 className="w-4 h-4" /></Button>
-                        <Button size="icon" variant="outline" onClick={() => handleAddSubMenuItem(idx)} title="Adicionar Submenu">+</Button>
-                      </div>
-                      {item.children && item.children.length > 0 && (
-                        <div className="ml-8 flex flex-col gap-1">
-                          {item.children.map((child, cidx) => (
-                            <div key={cidx} className="flex gap-2 items-center">
-                              <input type="text" className="input input-bordered" placeholder="Submenu texto" value={child.label} onChange={e => handleSubMenuChange(idx, cidx, 'label', e.target.value)} />
-                              <input type="text" className="input input-bordered" placeholder="Submenu link" value={child.href} onChange={e => handleSubMenuChange(idx, cidx, 'href', e.target.value)} />
-                              <Button size="icon" variant="ghost" onClick={() => handleToggleSubMenuItemVisibility(idx, cidx)}>
-                                {child.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                              </Button>
-                              <Button size="icon" variant="ghost" onClick={() => handleRemoveSubMenuItem(idx, cidx)}><Trash2 className="w-4 h-4" /></Button>
-                            </div>
-                          ))}
+                    <DraggableMenuItem
+                      key={item.label + idx}
+                      id={idx}
+                      index={idx}
+                      moveItem={(dragIndex, hoverIndex) => {
+                        setHeaderConfig(prev => {
+                          const menu = [...prev.menu];
+                          const [removed] = menu.splice(dragIndex, 1);
+                          menu.splice(hoverIndex, 0, removed);
+                          return { ...prev, menu };
+                        });
+                      }}
+                    >
+                      <div className="flex flex-col gap-1 mb-2">
+                        <div className="flex gap-2 items-center">
+                          <span className="cursor-move"><GripVertical className="w-4 h-4 text-muted-foreground" /></span>
+                          <input type="text" className="input input-bordered" placeholder="Texto" value={item.label} onChange={e => handleMenuChange(idx, 'label', e.target.value)} />
+                          <input type="text" className="input input-bordered" placeholder="Link" value={item.href} onChange={e => handleMenuChange(idx, 'href', e.target.value)} />
+                          <Button size="icon" variant="ghost" onClick={() => handleToggleMenuItemVisibility(idx)}>
+                            {item.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => handleRemoveMenuItem(idx)} disabled={headerConfig.menu.length <= 1}><Trash2 className="w-4 h-4" /></Button>
+                          <Button size="icon" variant="outline" onClick={() => handleAddSubMenuItem(idx)} title="Adicionar Submenu">+</Button>
                         </div>
-                      )}
-                    </div>
+                        {item.children && item.children.length > 0 && (
+                          <div className="ml-8 flex flex-col gap-1">
+                            {item.children.map((child, cidx) => (
+                              <div key={cidx} className="flex gap-2 items-center">
+                                <input type="text" className="input input-bordered" placeholder="Submenu texto" value={child.label} onChange={e => handleSubMenuChange(idx, cidx, 'label', e.target.value)} />
+                                <input type="text" className="input input-bordered" placeholder="Submenu link" value={child.href} onChange={e => handleSubMenuChange(idx, cidx, 'href', e.target.value)} />
+                                <Button size="icon" variant="ghost" onClick={() => handleToggleSubMenuItemVisibility(idx, cidx)}>
+                                  {child.isVisible !== false ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                                </Button>
+                                <Button size="icon" variant="ghost" onClick={() => handleRemoveSubMenuItem(idx, cidx)}><Trash2 className="w-4 h-4" /></Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </DraggableMenuItem>
                   ))}
                   <Button size="sm" variant="outline" onClick={handleAddMenuItem}><Plus className="w-4 h-4 mr-1" /> Adicionar Item</Button>
                 </div>
