@@ -86,9 +86,11 @@ const LandingPageSettingsContent = () => {
   const [services, setServices] = useState([]);
   const [editingService, setEditingService] = useState(null);
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [servicesCollapsed, setServicesCollapsed] = useState(true);
   const [miscItems, setMiscItems] = useState([]);
   const [editingMisc, setEditingMisc] = useState(null);
   const [isMiscModalOpen, setIsMiscModalOpen] = useState(false);
+  const [miscCollapsed, setMiscCollapsed] = useState(true);
   const [servicesTitle, setServicesTitle] = useState('Serviços');
   const [miscTitle, setMiscTitle] = useState('Diversos');
 
@@ -107,19 +109,42 @@ const LandingPageSettingsContent = () => {
   const serviceIcons = { Globe, Smartphone, Database, Code, Wrench, Star, Phone, Text, ImageIcon };
 
   useEffect(() => {
-    const savedSections = JSON.parse(localStorage.getItem('landingPageSections') || 'null');
-    if (savedSections) {
-      setSections(savedSections);
-    } else {
-      setSections([
-        { id: 'hero', name: 'Herói', type: 'hero', isVisible: true, isRemovable: false, title: 'Transformamos Ideias em Soluções Digitais', subtitle: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.' },
-        { id: 'projects', name: 'Projetos', type: 'projects', isVisible: true, isRemovable: false, title: 'Nossos Projetos', subtitle: 'Conheça alguns dos projetos que desenvolvemos.' },
-        { id: 'services', name: 'Serviços', type: 'services', isVisible: true, isRemovable: false, title: 'Nossos Serviços', subtitle: 'Soluções completas para suas necessidades digitais.' },
-        { id: 'testimonials', name: 'Depoimentos', type: 'testimonials', isVisible: true, isRemovable: false, title: 'O que nossos clientes dizem', subtitle: '' },
-        { id: 'contact', name: 'Contato', type: 'contact', isVisible: true, isRemovable: false, title: 'Entre em Contato', subtitle: 'Pronto para transformar sua ideia em realidade? Vamos conversar!' },
-      ]);
-    }
-  }, []);
+    // Só inicializa do localStorage se sections estiver vazio
+    setSections(prevSections => {
+      if (prevSections.length > 0) {
+        // Atualiza apenas os campos do misc, sem alterar a ordem
+        return prevSections.map(s =>
+          s.id === 'misc'
+            ? { ...s, isRemovable: false, name: localStorage.getItem('landingPageMiscTitle') || miscTitle, title: localStorage.getItem('landingPageMiscDesc') || '' }
+            : s
+        );
+      } else {
+        const savedSections = JSON.parse(localStorage.getItem('landingPageSections') || 'null');
+        const miscTitleStorage = localStorage.getItem('landingPageMiscTitle') || miscTitle;
+        const miscDescStorage = localStorage.getItem('landingPageMiscDesc') || '';
+        if (savedSections) {
+          const updatedSections = savedSections.map(s =>
+            s.id === 'misc'
+              ? { ...s, isRemovable: false, name: miscTitleStorage, title: miscDescStorage }
+              : s
+          );
+          if (!updatedSections.some(s => s.id === 'misc')) {
+            updatedSections.push({ id: 'misc', name: miscTitleStorage, type: 'misc', isVisible: true, isRemovable: false, title: miscDescStorage });
+          }
+          return updatedSections;
+        } else {
+          return [
+            { id: 'hero', name: 'Herói', type: 'hero', isVisible: true, isRemovable: false, title: 'Transformamos Ideias em Soluções Digitais', subtitle: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.' },
+            { id: 'projects', name: 'Projetos', type: 'projects', isVisible: true, isRemovable: false, title: 'Nossos Projetos', subtitle: 'Conheça alguns dos projetos que desenvolvemos.' },
+            { id: 'services', name: 'Serviços', type: 'services', isVisible: true, isRemovable: false, title: 'Nossos Serviços', subtitle: 'Soluções completas para suas necessidades digitais.' },
+            { id: 'testimonials', name: 'Depoimentos', type: 'testimonials', isVisible: true, isRemovable: false, title: 'O que nossos clientes dizem', subtitle: '' },
+            { id: 'contact', name: 'Contato', type: 'contact', isVisible: true, isRemovable: false, title: 'Entre em Contato', subtitle: 'Pronto para transformar sua ideia em realidade? Vamos conversar!' },
+            { id: 'misc', name: miscTitleStorage, type: 'misc', isVisible: true, isRemovable: false, title: miscDescStorage },
+          ];
+        }
+      }
+    });
+  }, [miscTitle]);
 
   useEffect(() => {
     const savedConfig = JSON.parse(localStorage.getItem('landingPageConfig') || 'null');
@@ -191,7 +216,21 @@ const LandingPageSettingsContent = () => {
   };
 
   const handleSaveSection = (updatedSection) => {
-    setSections(prev => prev.map(s => s.id === updatedSection.id ? updatedSection : s));
+    setSections(prev => prev.map(s => {
+      if (s.id === updatedSection.id) {
+        if (s.id === 'misc') {
+          if (updatedSection.name && updatedSection.name !== miscTitle) {
+            setMiscTitle(updatedSection.name);
+            localStorage.setItem('landingPageMiscTitle', updatedSection.name);
+          }
+          if (updatedSection.title) {
+            localStorage.setItem('landingPageMiscDesc', updatedSection.title);
+          }
+        }
+        return updatedSection;
+      }
+      return s;
+    }));
     setIsSectionEditorOpen(false);
     toast({ title: 'Seção salva!', description: 'As alterações na seção foram salvas.'});
   };
@@ -293,6 +332,7 @@ const LandingPageSettingsContent = () => {
   };
 
   const handleSaveAll = () => {
+    // Sempre salva a ordem atual do state sections
     localStorage.setItem('landingPageSections', JSON.stringify(sections));
     localStorage.setItem('landingPageConfig', JSON.stringify(headerConfig));
     toast({ title: 'Sucesso!', description: 'Configurações da Landing Page salvas.' });
@@ -550,7 +590,7 @@ const LandingPageSettingsContent = () => {
                                     <Edit className="h-4 w-4" />
                                 </Button>
                                 {section.isRemovable && (
-                                     <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" onClick={() => handleRemoveSection(section.id)}>
+                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" onClick={() => handleRemoveSection(section.id)}>
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 )}
@@ -563,278 +603,277 @@ const LandingPageSettingsContent = () => {
                             </div>
                         </DraggableItem>
                     ))}
-                    {/* Seção Diversos */}
-                    <motion.div layout className="flex items-center gap-2 bg-card p-3 rounded-lg border">
-                      <Star className="h-5 w-5 text-primary" />
-                      <input type="text" className="input input-bordered font-medium w-40" value={miscTitle} onChange={e => saveMiscTitle(e.target.value)} />
-                      <div className="flex items-center gap-2 ml-auto">
-                        <Button variant="ghost" size="icon" onClick={() => setIsMiscModalOpen(true)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </motion.div>
+                    // ...existing code...
                 </AnimatePresence>
             </div>
         </div>
 
         {/* PAINEL DE SERVIÇOS */}
         <div className="bg-card p-6 rounded-xl border space-y-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2 cursor-pointer select-none" onClick={() => setServicesCollapsed(v => !v)}>
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold">Serviços</h3>
               <input type="text" className="input input-bordered w-full max-w-xs" value={servicesTitle} onChange={e => saveServicesTitle(e.target.value)} placeholder="Título da Seção" />
             </div>
             <Button onClick={handleAddService} variant="outline"><Plus className="w-4 h-4 mr-1" />Adicionar Serviço</Button>
           </div>
-          <div className="space-y-2">
-            {services.map((service, idx) => (
-              <div key={service.id} className="flex items-center gap-2 bg-muted/40 border rounded-lg p-3">
-                <span className="cursor-move"><GripVertical className="w-4 h-4 text-muted-foreground" /></span>
-                <span className="w-8 h-8 flex items-center justify-center bg-muted rounded">
-                  {service.customIcon
-                    ? <img src={service.customIcon} alt="Custom Icon" className="w-6 h-6 object-contain" />
-                    : service.fontAwesomeIcon
-                      ? <i className={`w-6 h-6 text-xl ${service.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                      : React.createElement(serviceIcons[service.icon] || Globe, { className: 'w-6 h-6' })}
-                </span>
-                <div className="flex-1">
-                  <div className="font-bold">{service.title}</div>
-                  <div className="text-xs text-muted-foreground">{service.description}</div>
-                </div>
-                <Button size="icon" variant="ghost" onClick={() => handleEditService(service)}><Edit className="w-4 h-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4" /></Button>
+          {!servicesCollapsed && (
+            <>
+              <div className="space-y-2">
+                {services.map((service, idx) => (
+                  <div key={service.id} className="flex items-center gap-2 bg-muted/40 border rounded-lg p-3">
+                    <span className="cursor-move"><GripVertical className="w-4 h-4 text-muted-foreground" /></span>
+                    <span className="w-8 h-8 flex items-center justify-center bg-muted rounded">
+                      {service.customIcon
+                        ? <img src={service.customIcon} alt="Custom Icon" className="w-6 h-6 object-contain" />
+                        : service.fontAwesomeIcon
+                          ? <i className={`w-6 h-6 text-xl ${service.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                          : React.createElement(serviceIcons[service.icon] || Globe, { className: 'w-6 h-6' })}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-bold">{service.title}</div>
+                      <div className="text-xs text-muted-foreground">{service.description}</div>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => handleEditService(service)}><Edit className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => handleDeleteService(service.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {/* Modal de edição de serviço */}
-          <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingService && editingService.id ? 'Editar Serviço' : 'Novo Serviço'}</DialogTitle>
-              </DialogHeader>
-              {editingService && (
-                <form onSubmit={e => { e.preventDefault(); handleSaveService(editingService); }} className="space-y-4">
-                  <div>
-                    <Label>Ícone</Label>
-                    <div className="flex items-center gap-2">
-                      <Select value={editingService.icon} onValueChange={icon => setEditingService(prev => ({ ...prev, icon, customIcon: undefined }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Globe">Globe</SelectItem>
-                          <SelectItem value="Smartphone">Smartphone</SelectItem>
-                          <SelectItem value="Database">Database</SelectItem>
-                          <SelectItem value="Code">Code</SelectItem>
-                          <SelectItem value="Wrench">Wrench</SelectItem>
-                          <SelectItem value="Star">Star</SelectItem>
-                          <SelectItem value="Phone">Phone</SelectItem>
-                          <SelectItem value="Text">Text</SelectItem>
-                          <SelectItem value="ImageIcon">ImageIcon</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <span className="text-xs text-muted-foreground">ou</span>
-                      <input type="file" accept="image/*,.svg" style={{ maxWidth: 120 }} onChange={e => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => setEditingService(prev => ({ ...prev, customIcon: reader.result }));
-                          reader.readAsDataURL(file);
-                        }
-                      }} />
-                      {editingService.customIcon && (
-                        <>
-                          <img src={editingService.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
-                          <Button size="icon" variant="ghost" type="button" onClick={() => setEditingService(prev => ({ ...prev, customIcon: undefined }))}><Trash2 className="w-4 h-4" /></Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Título</Label>
-                    <input type="text" className="input input-bordered w-full" value={editingService.title} onChange={e => setEditingService(prev => ({ ...prev, title: e.target.value }))} />
-                  </div>
-                  <div>
-                    <Label>Descrição</Label>
-                    <textarea className="input input-bordered w-full" value={editingService.description} onChange={e => setEditingService(prev => ({ ...prev, description: e.target.value }))} />
-                  </div>
-                  <div>
-                    <Label>Ícone do Font Awesome (opcional)</Label>
-                    <input type="text" className="input input-bordered w-full" value={editingService.fontAwesomeIcon || ''} onChange={e => setEditingService(prev => ({ ...prev, fontAwesomeIcon: e.target.value }))} placeholder="fa-solid fa-star" />
-                    <span className="text-xs text-muted-foreground">Exemplo: fa-solid fa-star</span>
-                    {/* Aviso para Pro */}
-                    {editingService.fontAwesomeIcon && /(fa-light|fa-thin|fa-duotone|fa-sharp)/.test(editingService.fontAwesomeIcon) && (
-                      <div className="text-xs text-red-500 mt-1">Este ícone requer Font Awesome Pro. Só funcionará se o Font Awesome Pro estiver carregado no projeto.</div>
-                    )}
-                    {/* Grade visual de ícones */}
-                    <div className="grid grid-cols-8 gap-2 mt-2">
-                      {faFreeIcons.map(icon => (
-                        <button
-                          key={icon.class}
-                          type="button"
-                          className={`flex flex-col items-center justify-center p-1 border rounded hover:bg-primary/10 ${editingService.fontAwesomeIcon === icon.class ? 'border-primary' : 'border-muted'}`}
-                          onClick={() => setEditingService(prev => ({ ...prev, fontAwesomeIcon: icon.class }))}
-                          title={icon.label}
-                        >
-                          <i className={`${icon.class} text-xl`} style={{ display: 'inline-block' }}></i>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Pré-visualização</Label>
-                    <div className="flex items-center gap-4 bg-muted/40 border rounded-lg p-4 mt-2">
-                      <span className="w-12 h-12 flex items-center justify-center bg-muted rounded-full text-2xl">
-                        {editingService.customIcon
-                          ? <img src={editingService.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
-                          : editingService.fontAwesomeIcon
-                            ? <i className={`w-8 h-8 text-2xl ${editingService.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                            : React.createElement(serviceIcons[editingService.icon] || Globe, { className: 'w-8 h-8' })}
-                      </span>
+              {/* Modal de edição de serviço */}
+              <Dialog open={isServiceModalOpen} onOpenChange={setIsServiceModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{editingService && editingService.id ? 'Editar Serviço' : 'Novo Serviço'}</DialogTitle>
+                  </DialogHeader>
+                  {editingService && (
+                    <form onSubmit={e => { e.preventDefault(); handleSaveService(editingService); }} className="space-y-4">
                       <div>
-                        <div className="font-bold text-lg">{editingService.title || 'Título do Serviço'}</div>
-                        <div className="text-sm text-muted-foreground">{editingService.description || 'Descrição do serviço...'}</div>
-                        {editingService.fontAwesomeIcon && (
-                          <div className="text-xs text-muted-foreground mt-1">Se o ícone não aparecer, verifique se o Font Awesome está carregado no projeto.</div>
-                        )}
+                        <Label>Ícone</Label>
+                        <div className="flex items-center gap-2">
+                          <Select value={editingService.icon} onValueChange={icon => setEditingService(prev => ({ ...prev, icon, customIcon: undefined }))}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Globe">Globe</SelectItem>
+                              <SelectItem value="Smartphone">Smartphone</SelectItem>
+                              <SelectItem value="Database">Database</SelectItem>
+                              <SelectItem value="Code">Code</SelectItem>
+                              <SelectItem value="Wrench">Wrench</SelectItem>
+                              <SelectItem value="Star">Star</SelectItem>
+                              <SelectItem value="Phone">Phone</SelectItem>
+                              <SelectItem value="Text">Text</SelectItem>
+                              <SelectItem value="ImageIcon">ImageIcon</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <span className="text-xs text-muted-foreground">ou</span>
+                          <input type="file" accept="image/*,.svg" style={{ maxWidth: 120 }} onChange={e => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => setEditingService(prev => ({ ...prev, customIcon: reader.result }));
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                          {editingService.customIcon && (
+                            <>
+                              <img src={editingService.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
+                              <Button size="icon" variant="ghost" type="button" onClick={() => setEditingService(prev => ({ ...prev, customIcon: undefined }))}><Trash2 className="w-4 h-4" /></Button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button type="button" variant="ghost" onClick={() => setIsServiceModalOpen(false)}>Cancelar</Button>
-                    <Button type="submit">Salvar</Button>
-                  </DialogFooter>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
+                      <div>
+                        <Label>Título</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingService.title} onChange={e => setEditingService(prev => ({ ...prev, title: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Descrição</Label>
+                        <textarea className="input input-bordered w-full" value={editingService.description} onChange={e => setEditingService(prev => ({ ...prev, description: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Ícone do Font Awesome (opcional)</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingService.fontAwesomeIcon || ''} onChange={e => setEditingService(prev => ({ ...prev, fontAwesomeIcon: e.target.value }))} placeholder="fa-solid fa-star" />
+                        <span className="text-xs text-muted-foreground">Exemplo: fa-solid fa-star</span>
+                        {/* Aviso para Pro */}
+                        {editingService.fontAwesomeIcon && /(fa-light|fa-thin|fa-duotone|fa-sharp)/.test(editingService.fontAwesomeIcon) && (
+                          <div className="text-xs text-red-500 mt-1">Este ícone requer Font Awesome Pro. Só funcionará se o Font Awesome Pro estiver carregado no projeto.</div>
+                        )}
+                        {/* Grade visual de ícones */}
+                        <div className="grid grid-cols-8 gap-2 mt-2">
+                          {faFreeIcons.map(icon => (
+                            <button
+                              key={icon.class}
+                              type="button"
+                              className={`flex flex-col items-center justify-center p-1 border rounded hover:bg-primary/10 ${editingService.fontAwesomeIcon === icon.class ? 'border-primary' : 'border-muted'}`}
+                              onClick={() => setEditingService(prev => ({ ...prev, fontAwesomeIcon: icon.class }))}
+                              title={icon.label}
+                            >
+                              <i className={`${icon.class} text-xl`} style={{ display: 'inline-block' }}></i>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Pré-visualização</Label>
+                        <div className="flex items-center gap-4 bg-muted/40 border rounded-lg p-4 mt-2">
+                          <span className="w-12 h-12 flex items-center justify-center bg-muted rounded-full text-2xl">
+                            {editingService.customIcon
+                              ? <img src={editingService.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
+                              : editingService.fontAwesomeIcon
+                                ? <i className={`w-8 h-8 text-2xl ${editingService.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                                : React.createElement(serviceIcons[editingService.icon] || Globe, { className: 'w-8 h-8' })}
+                          </span>
+                          <div>
+                            <div className="font-bold text-lg">{editingService.title || 'Título do Serviço'}</div>
+                            <div className="text-sm text-muted-foreground">{editingService.description || 'Descrição do serviço...'}</div>
+                            {editingService.fontAwesomeIcon && (
+                              <div className="text-xs text-muted-foreground mt-1">Se o ícone não aparecer, verifique se o Font Awesome está carregado no projeto.</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={() => setIsServiceModalOpen(false)}>Cancelar</Button>
+                        <Button type="submit">Salvar</Button>
+                      </DialogFooter>
+                    </form>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
         </div>
 
         {/* PAINEL DE DIVERSOS */}
         <div className="bg-card p-6 rounded-xl border space-y-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-2 cursor-pointer select-none" onClick={() => setMiscCollapsed(v => !v)}>
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold">Diversos</h3>
               <input type="text" className="input input-bordered w-full max-w-xs" value={miscTitle} onChange={e => saveMiscTitle(e.target.value)} placeholder="Título da Seção" />
             </div>
             <Button onClick={handleAddMisc} variant="outline"><Plus className="w-4 h-4 mr-1" />Adicionar Item</Button>
           </div>
-          <div className="space-y-2">
-            {miscItems.map((item, idx) => (
-              <div key={item.id} className="flex items-center gap-2 bg-muted/40 border rounded-lg p-3">
-                <span className="cursor-move"><GripVertical className="w-4 h-4 text-muted-foreground" /></span>
-                <span className="w-8 h-8 flex items-center justify-center bg-muted rounded">
-                  {item.customIcon
-                    ? <img src={item.customIcon} alt="Custom Icon" className="w-6 h-6 object-contain" />
-                    : item.fontAwesomeIcon
-                      ? <i className={`w-6 h-6 text-xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                      : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-6 h-6' })}
-                </span>
-                <div className="flex-1">
-                  <div className="font-bold">{item.title}</div>
-                  <div className="text-xs text-muted-foreground">{item.description}</div>
-                </div>
-                <Button size="icon" variant="ghost" onClick={() => handleEditMisc(item)}><Edit className="w-4 h-4" /></Button>
-                <Button size="icon" variant="ghost" onClick={() => handleDeleteMisc(item.id)}><Trash2 className="w-4 h-4" /></Button>
+          {!miscCollapsed && (
+            <>
+              <div className="space-y-2">
+                {miscItems.map((item, idx) => (
+                  <div key={item.id} className="flex items-center gap-2 bg-muted/40 border rounded-lg p-3">
+                    <span className="cursor-move"><GripVertical className="w-4 h-4 text-muted-foreground" /></span>
+                    <span className="w-8 h-8 flex items-center justify-center bg-muted rounded">
+                      {item.customIcon
+                        ? <img src={item.customIcon} alt="Custom Icon" className="w-6 h-6 object-contain" />
+                        : item.fontAwesomeIcon
+                          ? <i className={`w-6 h-6 text-xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                          : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-6 h-6' })}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-bold">{item.title}</div>
+                      <div className="text-xs text-muted-foreground">{item.description}</div>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => handleEditMisc(item)}><Edit className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => handleDeleteMisc(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {/* Modal de edição de Diversos */}
-          <Dialog open={isMiscModalOpen} onOpenChange={setIsMiscModalOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{editingMisc && editingMisc.id ? 'Editar Item' : 'Novo Item'}</DialogTitle>
-              </DialogHeader>
-              {editingMisc && (
-                <form onSubmit={e => { e.preventDefault(); handleSaveMisc(editingMisc); }} className="space-y-4">
-                  <div>
-                    <Label>Ícone</Label>
-                    <div className="flex items-center gap-2">
-                      <Select value={editingMisc.icon} onValueChange={icon => setEditingMisc(prev => ({ ...prev, icon, customIcon: undefined }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Globe">Globe</SelectItem>
-                          <SelectItem value="Smartphone">Smartphone</SelectItem>
-                          <SelectItem value="Database">Database</SelectItem>
-                          <SelectItem value="Code">Code</SelectItem>
-                          <SelectItem value="Wrench">Wrench</SelectItem>
-                          <SelectItem value="Star">Star</SelectItem>
-                          <SelectItem value="Phone">Phone</SelectItem>
-                          <SelectItem value="Text">Text</SelectItem>
-                          <SelectItem value="ImageIcon">ImageIcon</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <span className="text-xs text-muted-foreground">ou</span>
-                      <input type="file" accept="image/*,.svg" style={{ maxWidth: 120 }} onChange={e => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => setEditingMisc(prev => ({ ...prev, customIcon: reader.result }));
-                          reader.readAsDataURL(file);
-                        }
-                      }} />
-                      {editingMisc.customIcon && (
-                        <>
-                          <img src={editingMisc.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
-                          <Button size="icon" variant="ghost" type="button" onClick={() => setEditingMisc(prev => ({ ...prev, customIcon: undefined }))}><Trash2 className="w-4 h-4" /></Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Ícone do Font Awesome (opcional)</Label>
-                    <input type="text" className="input input-bordered w-full" value={editingMisc.fontAwesomeIcon || ''} onChange={e => setEditingMisc(prev => ({ ...prev, fontAwesomeIcon: e.target.value }))} placeholder="fa-solid fa-star" />
-                    <span className="text-xs text-muted-foreground">Exemplo: fa-solid fa-star</span>
-                    {editingMisc.fontAwesomeIcon && /(fa-light|fa-thin|fa-duotone|fa-sharp)/.test(editingMisc.fontAwesomeIcon) && (
-                      <div className="text-xs text-red-500 mt-1">Este ícone requer Font Awesome Pro. Só funcionará se o Font Awesome Pro estiver carregado no projeto.</div>
-                    )}
-                    <div className="grid grid-cols-8 gap-2 mt-2">
-                      {faFreeIcons.map(icon => (
-                        <button
-                          key={icon.class}
-                          type="button"
-                          className={`flex flex-col items-center justify-center p-1 border rounded hover:bg-primary/10 ${editingMisc.fontAwesomeIcon === icon.class ? 'border-primary' : 'border-muted'}`}
-                          onClick={() => setEditingMisc(prev => ({ ...prev, fontAwesomeIcon: icon.class }))}
-                          title={icon.label}
-                        >
-                          <i className={`${icon.class} text-xl`} style={{ display: 'inline-block' }}></i>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <Label>Título</Label>
-                    <input type="text" className="input input-bordered w-full" value={editingMisc.title} onChange={e => setEditingMisc(prev => ({ ...prev, title: e.target.value }))} />
-                  </div>
-                  <div>
-                    <Label>Descrição</Label>
-                    <textarea className="input input-bordered w-full" value={editingMisc.description} onChange={e => setEditingMisc(prev => ({ ...prev, description: e.target.value }))} />
-                  </div>
-                  <div>
-                    <Label>Pré-visualização</Label>
-                    <div className="flex items-center gap-4 bg-muted/40 border rounded-lg p-4 mt-2">
-                      <span className="w-12 h-12 flex items-center justify-center bg-muted rounded-full text-2xl">
-                        {editingMisc.customIcon
-                          ? <img src={editingMisc.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
-                          : editingMisc.fontAwesomeIcon
-                            ? <i className={`w-8 h-8 text-2xl ${editingMisc.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                            : React.createElement(serviceIcons[editingMisc.icon] || Star, { className: 'w-8 h-8' })}
-                      </span>
+              {/* Modal de edição de Diversos */}
+              <Dialog open={isMiscModalOpen} onOpenChange={setIsMiscModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{editingMisc && editingMisc.id ? 'Editar Item' : 'Novo Item'}</DialogTitle>
+                  </DialogHeader>
+                  {editingMisc && (
+                    <form onSubmit={e => { e.preventDefault(); handleSaveMisc(editingMisc); }} className="space-y-4">
                       <div>
-                        <div className="font-bold text-lg">{editingMisc.title || 'Título do Item'}</div>
-                        <div className="text-sm text-muted-foreground">{editingMisc.description || 'Descrição do item...'}</div>
-                        {editingMisc.fontAwesomeIcon && (
-                          <div className="text-xs text-muted-foreground mt-1">Se o ícone não aparecer, verifique se o Font Awesome está carregado no projeto.</div>
-                        )}
+                        <Label>Ícone</Label>
+                        <div className="flex items-center gap-2">
+                          <Select value={editingMisc.icon} onValueChange={icon => setEditingMisc(prev => ({ ...prev, icon, customIcon: undefined }))}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Globe">Globe</SelectItem>
+                              <SelectItem value="Smartphone">Smartphone</SelectItem>
+                              <SelectItem value="Database">Database</SelectItem>
+                              <SelectItem value="Code">Code</SelectItem>
+                              <SelectItem value="Wrench">Wrench</SelectItem>
+                              <SelectItem value="Star">Star</SelectItem>
+                              <SelectItem value="Phone">Phone</SelectItem>
+                              <SelectItem value="Text">Text</SelectItem>
+                              <SelectItem value="ImageIcon">ImageIcon</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <span className="text-xs text-muted-foreground">ou</span>
+                          <input type="file" accept="image/*,.svg" style={{ maxWidth: 120 }} onChange={e => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => setEditingMisc(prev => ({ ...prev, customIcon: reader.result }));
+                              reader.readAsDataURL(file);
+                            }
+                          }} />
+                          {editingMisc.customIcon && (
+                            <>
+                              <img src={editingMisc.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
+                              <Button size="icon" variant="ghost" type="button" onClick={() => setEditingMisc(prev => ({ ...prev, customIcon: undefined }))}><Trash2 className="w-4 h-4" /></Button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button type="button" variant="ghost" onClick={() => setIsMiscModalOpen(false)}>Cancelar</Button>
-                    <Button type="submit">Salvar</Button>
-                  </DialogFooter>
-                </form>
-              )}
-            </DialogContent>
-          </Dialog>
+                      <div>
+                        <Label>Ícone do Font Awesome (opcional)</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingMisc.fontAwesomeIcon || ''} onChange={e => setEditingMisc(prev => ({ ...prev, fontAwesomeIcon: e.target.value }))} placeholder="fa-solid fa-star" />
+                        <span className="text-xs text-muted-foreground">Exemplo: fa-solid fa-star</span>
+                        {editingMisc.fontAwesomeIcon && /(fa-light|fa-thin|fa-duotone|fa-sharp)/.test(editingMisc.fontAwesomeIcon) && (
+                          <div className="text-xs text-red-500 mt-1">Este ícone requer Font Awesome Pro. Só funcionará se o Font Awesome Pro estiver carregado no projeto.</div>
+                        )}
+                        <div className="grid grid-cols-8 gap-2 mt-2">
+                          {faFreeIcons.map(icon => (
+                            <button
+                              key={icon.class}
+                              type="button"
+                              className={`flex flex-col items-center justify-center p-1 border rounded hover:bg-primary/10 ${editingMisc.fontAwesomeIcon === icon.class ? 'border-primary' : 'border-muted'}`}
+                              onClick={() => setEditingMisc(prev => ({ ...prev, fontAwesomeIcon: icon.class }))}
+                              title={icon.label}
+                            >
+                              <i className={`${icon.class} text-xl`} style={{ display: 'inline-block' }}></i>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Título</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingMisc.title} onChange={e => setEditingMisc(prev => ({ ...prev, title: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Descrição</Label>
+                        <textarea className="input input-bordered w-full" value={editingMisc.description} onChange={e => setEditingMisc(prev => ({ ...prev, description: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Pré-visualização</Label>
+                        <div className="flex items-center gap-4 bg-muted/40 border rounded-lg p-4 mt-2">
+                          <span className="w-12 h-12 flex items-center justify-center bg-muted rounded-full text-2xl">
+                            {editingMisc.customIcon
+                              ? <img src={editingMisc.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
+                              : editingMisc.fontAwesomeIcon
+                                ? <i className={`w-8 h-8 text-2xl ${editingMisc.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                                : React.createElement(serviceIcons[editingMisc.icon] || Star, { className: 'w-8 h-8' })}
+                          </span>
+                          <div>
+                            <div className="font-bold text-lg">{editingMisc.title || 'Título do Item'}</div>
+                            <div className="text-sm text-muted-foreground">{editingMisc.description || 'Descrição do item...'}</div>
+                            {editingMisc.fontAwesomeIcon && (
+                              <div className="text-xs text-muted-foreground mt-1">Se o ícone não aparecer, verifique se o Font Awesome está carregado no projeto.</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={() => setIsMiscModalOpen(false)}>Cancelar</Button>
+                        <Button type="submit">Salvar</Button>
+                      </DialogFooter>
+                    </form>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
         </div>
 
       </div>

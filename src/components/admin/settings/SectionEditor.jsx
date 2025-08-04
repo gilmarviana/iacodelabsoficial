@@ -91,6 +91,10 @@ const SectionEditor = ({ isOpen, onClose, onSave, section }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-grow overflow-hidden">
                     <div className="space-y-4 overflow-y-auto pr-4">
                         <div>
+                            <Label htmlFor="section-name">Nome da Seção</Label>
+                            <Input id="section-name" name="name" value={editedSection.name || ''} onChange={handleChange} />
+                        </div>
+                        <div>
                             <Label htmlFor="section-title">Título</Label>
                             <Input id="section-title" name="title" value={editedSection.title || ''} onChange={handleChange} />
                         </div>
