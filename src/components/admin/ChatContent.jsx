@@ -50,23 +50,34 @@ const ChatContent = () => {
   const [messages, setMessages] = useState({});
   
   useEffect(() => {
-    const savedConversations = JSON.parse(localStorage.getItem('chatConversations')) || initialConversations;
-    const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || initialMessages;
+    function loadFromStorage() {
+      const savedConversations = JSON.parse(localStorage.getItem('chatConversations')) || initialConversations;
+      const savedMessages = JSON.parse(localStorage.getItem('chatMessages')) || initialMessages;
 
-    // Ensure client has an admin conversation
-    if (!isAdmin) {
-      const adminConvo = savedConversations.find(c => c.type === 'admin');
-      if (!adminConvo) {
-        const newAdminConvo = { id: 6, name: 'Administrador', lastMessage: 'Olá! Como posso ajudar?', unread: 0, type: 'admin' };
-        savedConversations.unshift(newAdminConvo);
-        if (!savedMessages[6]) {
-            savedMessages[6] = [{ from: 'admin', text: 'Olá! Como posso ajudar?' }];
+      // Ensure client has an admin conversation
+      if (!isAdmin) {
+        const adminConvo = savedConversations.find(c => c.type === 'admin');
+        if (!adminConvo) {
+          const newAdminConvo = { id: 6, name: 'Administrador', lastMessage: 'Olá! Como posso ajudar?', unread: 0, type: 'admin' };
+          savedConversations.unshift(newAdminConvo);
+          if (!savedMessages[6]) {
+              savedMessages[6] = [{ from: 'admin', text: 'Olá! Como posso ajudar?' }];
+          }
         }
       }
+
+      setConversations(savedConversations);
+      setMessages(savedMessages);
     }
 
-    setConversations(savedConversations);
-    setMessages(savedMessages);
+    loadFromStorage();
+    function handleStorage(e) {
+      if (e.key === 'chatConversations' || e.key === 'chatMessages') {
+        loadFromStorage();
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, [isAdmin]);
 
   const saveChatData = (newConversations, newMessages) => {

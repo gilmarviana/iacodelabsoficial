@@ -24,6 +24,7 @@ import PlaceholderContent from '@/components/admin/PlaceholderContent';
 import { Settings } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import useKanban from '@/hooks/useKanban';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -34,6 +35,7 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { tasks } = useKanban();
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -91,7 +93,7 @@ const AdminDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} />;
       case 'projects':
         return <ProjectsContent projects={projects} onNewProject={handleNewProject} onEditProject={handleEditProject} onDeleteProject={handleDeleteProject} />;
       case 'tasks':
@@ -123,7 +125,7 @@ const AdminDashboard = () => {
       case 'settings':
         return <PlaceholderContent title="Configurações" description="Escolha uma opção no menu para começar." icon={Settings} />;
       default:
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} />;
     }
   };
 

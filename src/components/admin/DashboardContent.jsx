@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FolderOpen, TrendingUp, Star, Users, ArrowUpRight } from 'lucide-react';
+import { FolderOpen, TrendingUp, Star, Users, ArrowUpRight, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import DashboardTaskCards from './DashboardTaskCards';
 import {
   LineChart,
   Line,
@@ -24,7 +25,7 @@ const projectActivityData = [
   { name: 'Jun', tasks: 85, projects: 12 },
 ];
 
-const DashboardContent = ({ projects, onEditProject }) => {
+const DashboardContent = ({ projects = [], onEditProject, tasks = {} }) => {
   const stats = [
     { label: 'Total de Projetos', value: projects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
     { label: 'Projetos Ativos', value: projects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
@@ -32,12 +33,40 @@ const DashboardContent = ({ projects, onEditProject }) => {
     { label: 'Clientes Ativos', value: new Set(projects.map(p => p.client)).size, icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
   ];
 
+  // Filtro de datas
+  const [dateFilter, setDateFilter] = useState({ from: '', to: '' });
+
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Visão geral dos seus projetos e atividades.</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-muted-foreground">Visão geral dos seus projetos e atividades.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-card border rounded-lg px-3 py-2">
+            <Calendar className="w-4 h-4 text-muted-foreground mr-2" />
+            <input
+              type="date"
+              value={dateFilter.from}
+              onChange={e => setDateFilter(f => ({ ...f, from: e.target.value }))}
+              className="bg-transparent outline-none text-sm"
+              placeholder="De"
+            />
+            <span className="mx-1 text-muted-foreground">-</span>
+            <input
+              type="date"
+              value={dateFilter.to}
+              onChange={e => setDateFilter(f => ({ ...f, to: e.target.value }))}
+              className="bg-transparent outline-none text-sm"
+              placeholder="Até"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Cards de tarefas */}
+      <DashboardTaskCards tasks={tasks} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (

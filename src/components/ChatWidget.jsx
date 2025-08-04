@@ -18,6 +18,34 @@ const ChatWidget = () => {
   ]);
   const { toast } = useToast();
 
+  // Atualiza mensagens em tempo real ao receber evento do localStorage
+  React.useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === 'chatConversations' || e.key === 'chatMessages') {
+        // Busca a conversa live-chat mais recente
+        const savedConversations = JSON.parse(localStorage.getItem('chatConversations') || '[]');
+        const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '{}');
+        let liveChatConversation = savedConversations.find(c => c.type === 'live-chat' && c.name.startsWith('Visitante'));
+        if (liveChatConversation && savedMessages[liveChatConversation.id]) {
+          setMessages([
+            {
+              id: 1,
+              text: 'Olá! Como posso ajudá-lo hoje?',
+              sender: 'support',
+            },
+            ...savedMessages[liveChatConversation.id].map((msg, idx) => ({
+              id: idx + 2,
+              text: msg.text,
+              sender: msg.from === 'visitor' ? 'user' : 'support',
+            }))
+          ]);
+        }
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -102,7 +130,7 @@ const ChatWidget = () => {
                   <MessageCircle className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-sm">Suporte DevStudio</h3>
+                  <h3 className="font-medium text-sm">Suporte IA Code Labs</h3>
                   <p className="text-muted-foreground text-xs">Online</p>
                 </div>
               </div>
