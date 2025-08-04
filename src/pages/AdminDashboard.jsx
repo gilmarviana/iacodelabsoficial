@@ -35,7 +35,7 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { tasks } = useKanban();
+  const { tasks, clients } = useKanban();
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -59,7 +59,9 @@ const AdminDashboard = () => {
 
   const handleSaveProject = (projectData) => {
     let updatedProjects;
+    let oldProjectName = null;
     if (editingProject) {
+      oldProjectName = projects.find(p => p.id === editingProject.id)?.title;
       updatedProjects = projects.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, createdAt: editingProject.createdAt } : p);
       toast({ title: "Projeto atualizado!", description: "As alterações foram salvas." });
     } else {
@@ -69,6 +71,25 @@ const AdminDashboard = () => {
     }
     setProjects(updatedProjects);
     localStorage.setItem('projects', JSON.stringify(updatedProjects));
+
+    // Atualiza nome do projeto nas tarefas se necessário
+    if (editingProject && oldProjectName && oldProjectName !== projectData.title) {
+      const kanbanTasks = JSON.parse(localStorage.getItem('kanbanTasks') || '{}');
+      let changed = false;
+      Object.keys(kanbanTasks).forEach(col => {
+        kanbanTasks[col] = kanbanTasks[col].map(task => {
+          if (task.project === oldProjectName) {
+            changed = true;
+            return { ...task, project: projectData.title };
+          }
+          return task;
+        });
+      });
+      if (changed) {
+        localStorage.setItem('kanbanTasks', JSON.stringify(kanbanTasks));
+      }
+    }
+
     setIsProjectModalOpen(false);
     setEditingProject(null);
   };
@@ -93,7 +114,7 @@ const AdminDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} clients={clients} />;
       case 'projects':
         return <ProjectsContent projects={projects} onNewProject={handleNewProject} onEditProject={handleEditProject} onDeleteProject={handleDeleteProject} />;
       case 'tasks':
@@ -125,7 +146,7 @@ const AdminDashboard = () => {
       case 'settings':
         return <PlaceholderContent title="Configurações" description="Escolha uma opção no menu para começar." icon={Settings} />;
       default:
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} clients={clients} />;
     }
   };
 

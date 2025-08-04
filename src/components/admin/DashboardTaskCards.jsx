@@ -1,13 +1,37 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import { ClipboardList, CheckCircle, ListChecks } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const DashboardTaskCards = ({ tasks }) => {
-  // tasks: objeto { coluna: [tarefas] }
-  const allTasks = useMemo(() => Object.values(tasks || {}).flat(), [tasks]);
-  const total = allTasks.length;
-  const concluidas = allTasks.filter(t => {
-    // Considera concluída se estiver na coluna 'review' ou status 'Concluído'
+
+const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
+  // Filtros de período, cliente e projeto
+  const [period, setPeriod] = useState({ from: '', to: '' });
+  const [client, setClient] = useState('all');
+  const [project, setProject] = useState('all');
+  // Estado para controlar quais cards estão visíveis
+  const [visibleCards, setVisibleCards] = useState(['Tarefas', 'Tarefas Concluídas', 'Tarefas Pendentes']);
+
+  // Filtra tarefas por período, cliente e projeto
+  const filteredTasks = useMemo(() => {
+    let all = Object.values(tasks || {}).flat();
+    if (period.from) {
+      all = all.filter(t => t.createdAt && t.createdAt >= period.from);
+    }
+    if (period.to) {
+      all = all.filter(t => t.createdAt && t.createdAt <= period.to + 'T23:59:59');
+    }
+    if (client !== 'all') {
+      all = all.filter(t => t.projectClient === client || t.client === client || t.project === client);
+    }
+    if (project !== 'all') {
+      all = all.filter(t => t.project === project);
+    }
+    return all;
+  }, [tasks, period, client, project]);
+
+  const total = filteredTasks.length;
+  const concluidas = filteredTasks.filter(t => {
     return t.status === 'Concluído' || t.status === 'Finalizado' || t.status === 'Revisão' || t.status === 'review' || t.status === 'concluida';
   }).length;
 
@@ -35,24 +59,70 @@ const DashboardTaskCards = ({ tasks }) => {
     },
   ];
 
+  // Filtra os cards para exibir apenas os visíveis
+  const filteredCards = cards.filter(card => visibleCards.includes(card.label));
+
+  // Função para remover card
+  const handleRemoveCard = (label) => {
+    setVisibleCards(prev => prev.filter(l => l !== label));
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
-      {cards.map((card, idx) => (
-        <motion.div
-          key={card.label}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: idx * 0.1 }}
-          className="bg-card rounded-2xl p-6 border group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-        >
-          <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${card.bgColor}`}>
-            <card.icon className={`w-6 h-6 ${card.color}`} />
-          </div>
-          <p className="text-3xl font-bold">{card.value}</p>
-          <p className="text-muted-foreground text-sm">{card.label}</p>
-        </motion.div>
-      ))}
-    </div>
+    <>
+      <div className="flex flex-wrap gap-4 mb-4 items-end">
+        <div>
+          <label className="block text-xs font-semibold mb-1">Cliente</label>
+          <select value={client} onChange={e => setClient(e.target.value)} className="border rounded px-2 py-1 text-sm">
+            <option value="all">Todos</option>
+            {clients.map(c => (
+              <option key={c.id || c.name} value={c.name}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">Projeto</label>
+          <select value={project} onChange={e => setProject(e.target.value)} className="border rounded px-2 py-1 text-sm">
+            <option value="all">Todos</option>
+            {projects.map(p => (
+              <option key={p.id || p.title} value={p.title}>{p.title}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">De</label>
+          <input type="date" value={period.from} onChange={e => setPeriod(p => ({ ...p, from: e.target.value }))} className="border rounded px-2 py-1 text-sm" />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1">Até</label>
+          <input type="date" value={period.to} onChange={e => setPeriod(p => ({ ...p, to: e.target.value }))} className="border rounded px-2 py-1 text-sm" />
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+        {filteredCards.map((card, idx) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="bg-card rounded-2xl p-6 border group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative"
+          >
+            {/* Botão de excluir card */}
+            <button
+              onClick={() => handleRemoveCard(card.label)}
+              className="absolute top-3 right-3 p-1 rounded hover:bg-red-100 text-red-500 hover:text-red-700 transition"
+              title="Excluir card"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${card.bgColor}`}>
+              <card.icon className={`w-6 h-6 ${card.color}`} />
+            </div>
+            <p className="text-3xl font-bold">{card.value}</p>
+            <p className="text-muted-foreground text-sm">{card.label}</p>
+          </motion.div>
+        ))}
+      </div>
+    </>
   );
 };
 

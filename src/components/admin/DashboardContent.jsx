@@ -25,7 +25,7 @@ const projectActivityData = [
   { name: 'Jun', tasks: 85, projects: 12 },
 ];
 
-const DashboardContent = ({ projects = [], onEditProject, tasks = {} }) => {
+const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = [] }) => {
   const stats = [
     { label: 'Total de Projetos', value: projects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
     { label: 'Projetos Ativos', value: projects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
@@ -66,7 +66,7 @@ const DashboardContent = ({ projects = [], onEditProject, tasks = {} }) => {
       </div>
 
       {/* Cards de tarefas */}
-      <DashboardTaskCards tasks={tasks} />
+      <DashboardTaskCards tasks={tasks} clients={clients} projects={projects} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
