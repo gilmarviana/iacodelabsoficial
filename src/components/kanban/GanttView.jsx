@@ -79,6 +79,7 @@ const GanttView = ({ tasks, onTaskClick }) => {
                     viewMode={view}
                     onDoubleClick={onTaskClick}
                     listCellWidth={ganttTasks.some(t => t.progress) ? "155px" : ""}
+                    locale="pt-BR"
                     {...ganttThemeProps}
                 />
             </div>

@@ -16,18 +16,62 @@ import {
   Area,
 } from 'recharts';
 
-const projectActivityData = [
-  { name: 'Jan', tasks: 30, projects: 5 },
-  { name: 'Fev', tasks: 45, projects: 7 },
-  { name: 'Mar', tasks: 60, projects: 8 },
-  { name: 'Abr', tasks: 50, projects: 10 },
-  { name: 'Mai', tasks: 70, projects: 11 },
-  { name: 'Jun', tasks: 85, projects: 12 },
-];
+
+// Função utilitária para obter o nome do mês em pt-BR
+const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+function getMonthYear(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = [] }) => {
+
   // Filtro de datas
   const [dateFilter, setDateFilter] = useState({ from: '', to: '' });
+
+  // Gera dados dinâmicos para o gráfico de atividade dos projetos
+  const projectActivityData = React.useMemo(() => {
+    // Agrupa tarefas por mês/ano
+    const taskList = Object.values(tasks || {}).flat();
+    const taskByMonth = {};
+    taskList.forEach(t => {
+      const key = getMonthYear(t.createdAt);
+      if (key) {
+        taskByMonth[key] = (taskByMonth[key] || 0) + 1;
+      }
+    });
+
+    // Agrupa projetos por mês/ano (usando startDate)
+    const projectByMonth = {};
+    (projects || []).forEach(p => {
+      const key = getMonthYear(p.startDate);
+      if (key) {
+        projectByMonth[key] = (projectByMonth[key] || 0) + 1;
+      }
+    });
+
+    // Pega todos os meses únicos presentes em tarefas ou projetos
+    const allMonths = Array.from(new Set([
+      ...Object.keys(taskByMonth),
+      ...Object.keys(projectByMonth),
+    ])).sort((a, b) => {
+      // Ordena por ano e mês
+      const [ma, ya] = a.split(' ');
+      const [mb, yb] = b.split(' ');
+      if (ya !== yb) return Number(ya) - Number(yb);
+      return monthNames.indexOf(ma) - monthNames.indexOf(mb);
+    });
+
+    // Monta o array final para o gráfico
+    return allMonths.map(month => ({
+      name: month,
+      tasks: taskByMonth[month] || 0,
+      projects: projectByMonth[month] || 0,
+    }));
+  }, [tasks, projects]);
 
   // Função para filtrar projetos pelo intervalo de datas
   const filterByDate = (project) => {

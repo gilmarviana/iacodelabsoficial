@@ -11,8 +11,6 @@ const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
   const [period, setPeriod] = useState({ from: '', to: '' });
   const [client, setClient] = useState('all');
   const [project, setProject] = useState('all');
-  // Estado para controlar quais cards estão visíveis
-  const [visibleCards, setVisibleCards] = useState(['Tarefas', 'Tarefas Concluídas', 'Tarefas Pendentes']);
   const [uniqueTypes, setUniqueTypes] = useState([]);
 
   // Filtra tarefas por período, cliente e projeto
@@ -73,13 +71,8 @@ const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
     },
   ];
 
-  // Filtra os cards para exibir apenas os visíveis
-  const filteredCards = cards.filter(card => visibleCards.includes(card.label));
-
-  // Função para remover card
-  const handleRemoveCard = (label) => {
-    setVisibleCards(prev => prev.filter(l => l !== label));
-  };
+  // Todos os cards sempre visíveis
+  const filteredCards = cards;
 
   return (
     <>
@@ -120,14 +113,6 @@ const DashboardTaskCards = ({ tasks = {}, clients = [], projects = [] }) => {
             transition={{ delay: idx * 0.1 }}
             className="bg-card rounded-2xl p-6 border group hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 relative"
           >
-            {/* Botão de excluir card */}
-            <button
-              onClick={() => handleRemoveCard(card.label)}
-              className="absolute top-3 right-3 p-1 rounded hover:bg-red-100 text-red-500 hover:text-red-700 transition"
-              title="Excluir card"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
             <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${card.bgColor}`}>
               <card.icon className={`w-6 h-6 ${card.color}`} />
             </div>
