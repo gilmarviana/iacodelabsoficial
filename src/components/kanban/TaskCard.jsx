@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import AssigneeAvatar from '@/components/task-detail/AssigneeAvatar';
 
-const TaskCard = ({ task, onTaskClick }) => {
+const TaskCard = ({ task, onTaskClick, onRemoveTask }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
   const { toast } = useToast();
   const style = {
@@ -23,11 +23,12 @@ const TaskCard = ({ task, onTaskClick }) => {
     zIndex: isDragging ? 100 : 'auto',
   };
 
-  const showNotImplementedToast = () => {
-    toast({
-      title: "🚧 Funcionalidade não implementada!",
-      description: "Você pode solicitar isso no seu próximo prompt! 🚀",
-    });
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
+      onRemoveTask(task.id);
+    }
   };
 
   const priorityColors = {
@@ -73,8 +74,8 @@ const TaskCard = ({ task, onTaskClick }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuItem onClick={() => onTaskClick(task)}><Edit className="mr-2 h-4 w-4" /> Editar</DropdownMenuItem>
-                <DropdownMenuItem onClick={showNotImplementedToast}><Move className="mr-2 h-4 w-4" /> Mover</DropdownMenuItem>
-                <DropdownMenuItem onClick={showNotImplementedToast} className="text-red-500"><Trash2 className="mr-2 h-4 w-4" /> Excluir</DropdownMenuItem>
+                <DropdownMenuItem disabled><Move className="mr-2 h-4 w-4" /> Mover</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className="text-red-500"><Trash2 className="mr-2 h-4 w-4" /> Excluir</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
