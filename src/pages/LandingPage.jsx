@@ -44,6 +44,7 @@ const LandingPage = () => {
     { id: 'hero', name: 'Revolution Slide', type: 'hero', isVisible: true, isRemovable: false, title: 'Transformamos Ideias em Soluções Digitais', subtitle: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.' },
     { id: 'projects', name: 'Projetos', type: 'projects', isVisible: true, isRemovable: false, title: 'Nossos Projetos', subtitle: 'Conheça alguns dos projetos que desenvolvemos.' },
     { id: 'services', name: 'Serviços', type: 'services', isVisible: true, isRemovable: false, title: 'Nossos Serviços', subtitle: 'Soluções completas para suas necessidades digitais.' },
+    { id: 'misc', name: 'Diversos', type: 'misc', isVisible: true, isRemovable: false, title: 'Diversos', subtitle: 'Outros serviços e recursos oferecidos.' },
     { id: 'testimonials', name: 'Depoimentos', type: 'testimonials', isVisible: true, isRemovable: false, title: 'O que nossos clientes dizem', subtitle: '' },
     { id: 'contact', name: 'Contato', type: 'contact', isVisible: true, isRemovable: false, title: 'Entre em Contato', subtitle: 'Pronto para transformar sua ideia em realidade? Vamos conversar!' },
   ];
@@ -150,6 +151,31 @@ const LandingPage = () => {
     const subtitleStyle = { color: section.subtitleColor };
 
     switch (section.type) {
+        case 'misc': return (
+            <section id={section.id} className="py-20 px-6 bg-background" style={sectionStyle}>
+                <div className="container mx-auto">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{miscTitle}</h2>
+                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
+                    </motion.div>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {miscItems.map((item, index) => (
+                            <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
+                                <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+                                    {item.customIcon
+                                        ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain" />
+                                        : item.fontAwesomeIcon
+                                            ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
+                                            : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10' })}
+                                </div>
+                                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                                <p className="text-muted-foreground">{item.description}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
         case 'hero': return (
             <section id={section.id} className="bg-background">
                 <HeroSlider landingPageConfig={config} onScheduleClick={() => setIsSchedulingModalOpen(true)} />
@@ -424,38 +450,131 @@ const LandingPage = () => {
             {sections.filter(s => s.isVisible).map((section, idx) => (
                 <React.Fragment key={section.id}>
                     {renderSection(section)}
-                    {section.type === 'services' && (
-                        <section id="misc" className="py-20 px-6 bg-background">
-                            <div className="container mx-auto">
-                                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                                    <h2 className="text-4xl font-bold mb-4">{miscTitle}</h2>
-                                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Outros serviços e recursos oferecidos.</p>
-                                </motion.div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                    {miscItems.map((item, index) => (
-                                        <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
-                                            <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                                                {item.customIcon
-                                                    ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain" />
-                                                    : item.fontAwesomeIcon
-                                                        ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                                                        : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10' })}
-                                            </div>
-                                            <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                                            <p className="text-muted-foreground">{item.description}</p>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                    )}
                 </React.Fragment>
             ))}
         </main>
 
-        <footer className="py-12 px-6 border-t bg-secondary">
-          <div className="container mx-auto text-center text-muted-foreground">
-            <p>{config.footerText || '© 2025 IA Code Labs. Todos os direitos reservados.'}</p>
+
+
+        <footer
+          className="py-12 px-6 border-t"
+          style={{
+            background: config.footerBgColor || '#f9fafb',
+            color: config.footerTextColor || '#222222',
+          }}
+        >
+          <div className="container mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8">
+            {/* Logo e frase */}
+            <div className="flex-1 flex flex-col items-start mb-8 md:mb-0">
+              {config.footerLogoUrl ? (
+                <img src={config.footerLogoUrl} alt="Logo" className="h-12 mb-4 max-w-full object-contain" style={{ minWidth: 48 }} />
+              ) : (
+                <img src={config.logoUrl || '/logo.png'} alt="Logo" className="h-12 mb-4" style={{ minWidth: 48 }} />
+              )}
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                {(config.footerPhrase || 'Transformamos Ideias em Soluções Digitais.').split(/\n|<br\s*\/?\s*>/gi).map((line, i) => (
+                  <React.Fragment key={i}>
+                    {line}
+                    <br />
+                  </React.Fragment>
+                ))}
+              </h2>
+              {config.footerButtonText && (
+                <a
+                  href={config.footerButtonLink || '#contato'}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded bg-black text-white font-medium hover:bg-primary transition-colors mt-2"
+                >
+                  <span className="inline-block">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                  {config.footerButtonText}
+                </a>
+              )}
+            </div>
+            {/* Menus */}
+            <div className="flex-1 flex flex-col md:flex-row gap-8 justify-center">
+              {(config.footerMenus || [
+                { title: 'A Empresa', items: [ { label: 'Home', href: '#' }, { label: 'Projetos', href: '#projects' }, { label: 'Serviços', href: '#services' }, { label: 'Contato', href: '#contact' } ] },
+                { title: 'Serviços', items: [ { label: '' }, { label: '' }, { label: '' }, { label: '' }, { label: '' } ] },
+                { title: 'Dúvidas', items: [ { label: '', href: '#lgpd' }, { label: '', href: '#privacidade' }, { label: '', href: '#cookies' } ] }
+              ]).map((menu, idx) => (
+                <div key={idx}>
+                  <h4 className="font-bold mb-2">{menu.title}</h4>
+                  <ul className="space-y-1 text-muted-foreground">
+                    {menu.items && menu.items.map((item, iidx) => (
+                      <li key={iidx}>
+                        {item.href ? (
+                          <a href={item.href} className="hover:underline">{item.label}</a>
+                        ) : (
+                          item.label
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+            {/* QR Code e LinkedIn */}
+            <div className="flex-1 flex flex-col items-center md:items-end">
+              <div className="bg-white rounded-lg border p-4 flex flex-col items-center mb-4">
+                {config.footerQrCodeUrl ? (
+                  <img src={config.footerQrCodeUrl} alt="QR Code LinkedIn" className="w-24 h-24 mb-2 max-w-full object-contain" />
+                ) : (
+                  <img src="/qrcode-linkedin.png" alt="QR Code LinkedIn" className="w-24 h-24 mb-2" />
+                )}
+                <div className="text-center text-muted-foreground text-sm mb-1">
+                  {config.footerQrText || 'Siga-nos\nno Linkedin'}
+                </div>
+                <a
+                  href={config.footerLinkedin || 'https://www.linkedin.com/'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-primary hover:underline"
+                >
+                  Seguir Agora <span aria-hidden>↗</span>
+                </a>
+              </div>
+              <div className="flex gap-4 mt-2">
+                {(config.footerSocials || [
+                  { icon: 'fa-brands fa-linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/' },
+                  { icon: 'fa-brands fa-instagram', label: 'Instagram', url: 'https://www.instagram.com/' },
+                  { icon: 'fa-brands fa-facebook', label: 'Facebook', url: 'https://www.facebook.com/' }
+                ]).map((social, idx) => (
+                  <a
+                    key={idx}
+                    href={social.url || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                  >
+                    <i className={`${social.icon} text-2xl`}></i>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="container mx-auto flex flex-col md:flex-row justify-between items-center mt-8 border-t pt-6 text-muted-foreground text-sm">
+            <div className="flex gap-4 mb-2 md:mb-0">
+              {(config.footerSocials || [
+                { icon: 'fa-brands fa-linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/' },
+                { icon: 'fa-brands fa-instagram', label: 'Instagram', url: 'https://www.instagram.com/' },
+                { icon: 'fa-brands fa-facebook', label: 'Facebook', url: 'https://www.facebook.com/' }
+              ]).map((social, idx) => (
+                <a
+                  key={idx}
+                  href={social.url || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                >
+                  <i className={`${social.icon} text-xl`}></i>
+                </a>
+              ))}
+            </div>
+            <p className="mb-2 md:mb-0">{config.footerCopyright || '© 2025 IA Code Labs todos os direitos reservados.'}</p>
+            <a href="#top" className="flex items-center gap-2 hover:underline"><i className="fa-solid fa-chevron-up"></i> Voltar para o topo</a>
           </div>
         </footer>
 

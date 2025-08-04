@@ -449,6 +449,174 @@ const LandingPageSettingsContent = () => {
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
         {/* HEADER EDITOR */}
+        {/* FOOTER EDITOR */}
+        <div className="bg-card p-6 rounded-xl border space-y-4">
+          <h3 className="text-xl font-semibold mb-2">Footer da Landing Page</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Bloco: Cor de fundo do footer */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>Cor de Fundo do Footer</Label>
+              <ColorPicker value={headerConfig.footerBgColor || '#f9fafb'} onChange={color => setHeaderConfig(prev => ({ ...prev, footerBgColor: color }))} />
+            </div>
+            {/* Bloco: Cor do texto do footer */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>Cor do Texto do Footer</Label>
+              <ColorPicker value={headerConfig.footerTextColor || '#222222'} onChange={color => setHeaderConfig(prev => ({ ...prev, footerTextColor: color }))} />
+            </div>
+            {/* Logo e frase */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>Logo do Footer</Label>
+              {headerConfig.footerLogoUrl && <img src={headerConfig.footerLogoUrl} alt="Logo" className="h-12 mb-2 max-w-full object-contain" />}
+              <input type="file" accept="image/*" onChange={e => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => setHeaderConfig(prev => ({ ...prev, footerLogoUrl: reader.result }));
+                  reader.readAsDataURL(file);
+                }
+              }} />
+              <Label className="mt-2">Frase do Footer</Label>
+              <input type="text" className="input input-bordered w-full" value={headerConfig.footerPhrase || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerPhrase: e.target.value }))} placeholder="Transformamos Ideias em Soluções Digitais." />
+              <Label className="mt-2">Texto do Botão</Label>
+              <input type="text" className="input input-bordered w-full" value={headerConfig.footerButtonText || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerButtonText: e.target.value }))} placeholder="Converse com a gente" />
+              <Label className="mt-2">Link do Botão</Label>
+              <input type="text" className="input input-bordered w-full" value={headerConfig.footerButtonLink || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerButtonLink: e.target.value }))} placeholder="#contato" />
+            </div>
+            {/* QR Code e LinkedIn */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>QR Code do LinkedIn</Label>
+              {headerConfig.footerQrCodeUrl && <img src={headerConfig.footerQrCodeUrl} alt="QR Code" className="w-24 h-24 mb-2 max-w-full object-contain" />}
+              <input type="file" accept="image/*" onChange={e => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => setHeaderConfig(prev => ({ ...prev, footerQrCodeUrl: reader.result }));
+                  reader.readAsDataURL(file);
+                }
+              }} />
+              <Label className="mt-2">Texto QR/LinkedIn</Label>
+              <input type="text" className="input input-bordered w-full" value={headerConfig.footerQrText || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerQrText: e.target.value }))} placeholder="Siga-nos no LinkedIn" />
+              <Label className="mt-2">Link do LinkedIn</Label>
+              <input type="text" className="input input-bordered w-full" value={headerConfig.footerLinkedin || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerLinkedin: e.target.value }))} placeholder="https://www.linkedin.com/" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mt-4">
+            {/* Menus */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>Menus do Footer</Label>
+              <div className="space-y-2">
+                {(Array.isArray(headerConfig.footerMenus) && headerConfig.footerMenus.length > 0
+                  ? headerConfig.footerMenus
+                  : [
+                      { title: 'A Empresa', items: [ { label: 'Home', href: '#' }, { label: 'Projetos', href: '#projects' }, { label: 'Serviços', href: '#services' }, { label: 'Contato', href: '#contact' } ] },
+                      { title: 'Serviços', items: [ { label: 'Alocação de Desenvolvedores' }, { label: 'Fábrica de Software' }, { label: 'Sites' }, { label: 'Inteligência Artificial' }, { label: 'Sustentação de Sistemas' } ] },
+                      { title: 'Dúvidas', items: [ { label: 'LGPD', href: '#lgpd' }, { label: 'Privacidade', href: '#privacidade' }, { label: 'Cookies', href: '#cookies' } ] }
+                    ]
+                ).map((menu, idx) => {
+                  // Always work on a copy of the current state array, never mutate the fallback default
+                  const isEditingState = Array.isArray(headerConfig.footerMenus) && headerConfig.footerMenus.length > 0;
+                  return (
+                    <div key={idx} className="mb-2">
+                      <input type="text" className="input input-bordered mb-1 w-full" value={menu.title} onChange={e => {
+                        let menus = isEditingState ? [...headerConfig.footerMenus] : [
+                          { title: 'A Empresa', items: [ { label: 'Home', href: '#home' }, { label: 'Projetos', href: '#cases' }, { label: 'Serviços', href: '#cultura' }, { label: 'Contato', href: '#contato' } ] },
+                          { title: 'Serviços', items: [ { label: 'Alocação de Desenvolvedores' }, { label: 'Fábrica de Software' }, { label: 'Sites' }, { label: 'Inteligência Artificial' }, { label: 'Sustentação de Sistemas' } ] },
+                          { title: 'Dúvidas', items: [ { label: 'LGPD', href: '#lgpd' }, { label: 'Privacidade', href: '#privacidade' }, { label: 'Cookies', href: '#cookies' } ] }
+                        ];
+                        menus[idx] = { ...menus[idx], title: e.target.value };
+                        setHeaderConfig(prev => ({ ...prev, footerMenus: menus }));
+                      }} placeholder="Título do menu" />
+                      <div className="space-y-1 ml-2">
+                        {(menu.items || []).map((item, iidx) => (
+                          <div key={iidx} className="flex flex-col sm:flex-row gap-2 mb-1">
+                            <input type="text" className="input input-bordered flex-1" value={item.label} onChange={e => {
+                              let menus = isEditingState ? [...headerConfig.footerMenus] : [
+                                { title: 'A Empresa', items: [ { label: 'Home', href: '#home' }, { label: 'Projetos', href: '#cases' }, { label: 'Serviços', href: '#cultura' }, { label: 'Contato', href: '#contato' } ] },
+                                { title: 'Serviços', items: [ { label: 'Alocação de Desenvolvedores' }, { label: 'Fábrica de Software' }, { label: 'Sites' }, { label: 'Inteligência Artificial' }, { label: 'Sustentação de Sistemas' } ] },
+                                { title: 'Dúvidas', items: [ { label: 'LGPD', href: '#lgpd' }, { label: 'Privacidade', href: '#privacidade' }, { label: 'Cookies', href: '#cookies' } ] }
+                              ];
+                              menus[idx] = { ...menus[idx] };
+                              menus[idx].items = [...(menus[idx].items || [])];
+                              menus[idx].items[iidx] = { ...menus[idx].items[iidx], label: e.target.value };
+                              setHeaderConfig(prev => ({ ...prev, footerMenus: menus }));
+                            }} placeholder="Texto" />
+                            <input type="text" className="input input-bordered flex-1" value={item.href || ''} onChange={e => {
+                              let menus = isEditingState ? [...headerConfig.footerMenus] : [
+                                { title: 'A Empresa', items: [ { label: 'Home', href: '#home' }, { label: 'Projetos', href: '#cases' }, { label: 'Serviços', href: '#cultura' }, { label: 'Contato', href: '#contato' } ] },
+                                { title: 'Serviços', items: [ { label: 'Alocação de Desenvolvedores' }, { label: 'Fábrica de Software' }, { label: 'Sites' }, { label: 'Inteligência Artificial' }, { label: 'Sustentação de Sistemas' } ] },
+                                { title: 'Dúvidas', items: [ { label: 'LGPD', href: '#lgpd' }, { label: 'Privacidade', href: '#privacidade' }, { label: 'Cookies', href: '#cookies' } ] }
+                              ];
+                              menus[idx] = { ...menus[idx] };
+                              menus[idx].items = [...(menus[idx].items || [])];
+                              menus[idx].items[iidx] = { ...menus[idx].items[iidx], href: e.target.value };
+                              setHeaderConfig(prev => ({ ...prev, footerMenus: menus }));
+                            }} placeholder="Link (opcional)" />
+                          </div>
+                        ))}
+                        <Button size="sm" variant="outline" onClick={() => {
+                          let menus = isEditingState ? [...headerConfig.footerMenus] : [
+                            { title: 'A Empresa', items: [ { label: 'Home', href: '#home' }, { label: 'Projetos', href: '#cases' }, { label: 'Serviços', href: '#cultura' }, { label: 'Contato', href: '#contato' } ] },
+                            { title: 'Serviços', items: [ { label: 'Alocação de Desenvolvedores' }, { label: 'Fábrica de Software' }, { label: 'Sites' }, { label: 'Inteligência Artificial' }, { label: 'Sustentação de Sistemas' } ] },
+                            { title: 'Dúvidas', items: [ { label: 'LGPD', href: '#lgpd' }, { label: 'Privacidade', href: '#privacidade' }, { label: 'Cookies', href: '#cookies' } ] }
+                          ];
+                          menus[idx] = { ...menus[idx] };
+                          menus[idx].items = [...(menus[idx].items || []), { label: '', href: '' }];
+                          setHeaderConfig(prev => ({ ...prev, footerMenus: menus }));
+                        }}>+ Adicionar Item</Button>
+                      </div>
+                    </div>
+                  );
+                })}
+                <Button size="sm" variant="outline" onClick={() => {
+                  const menus = Array.isArray(headerConfig.footerMenus) ? [...headerConfig.footerMenus] : [];
+                  menus.push({ title: '', items: [] });
+                  setHeaderConfig(prev => ({ ...prev, footerMenus: menus }));
+                }}>+ Adicionar Menu</Button>
+              </div>
+            </div>
+            {/* Redes Sociais */}
+            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
+              <Label>Redes Sociais</Label>
+              <div className="space-y-2">
+                {(headerConfig.footerSocials || [
+                  { icon: 'fa-brands fa-linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/' },
+                  { icon: 'fa-brands fa-instagram', label: 'Instagram', url: 'https://www.instagram.com/' },
+                  { icon: 'fa-brands fa-facebook', label: 'Facebook', url: 'https://www.facebook.com/' }
+                ]).map((social, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row gap-2 items-center mb-1">
+                    <input type="text" className="input input-bordered flex-1" value={social.icon} onChange={e => {
+                      const socials = [...(headerConfig.footerSocials || [])];
+                      socials[idx].icon = e.target.value;
+                      setHeaderConfig(prev => ({ ...prev, footerSocials: socials }));
+                    }} placeholder="Classe do ícone" />
+                    <input type="text" className="input input-bordered flex-1" value={social.label} onChange={e => {
+                      const socials = [...(headerConfig.footerSocials || [])];
+                      socials[idx].label = e.target.value;
+                      setHeaderConfig(prev => ({ ...prev, footerSocials: socials }));
+                    }} placeholder="Nome" />
+                    <input type="text" className="input input-bordered flex-1" value={social.url} onChange={e => {
+                      const socials = [...(headerConfig.footerSocials || [])];
+                      socials[idx].url = e.target.value;
+                      setHeaderConfig(prev => ({ ...prev, footerSocials: socials }));
+                    }} placeholder="URL" />
+                  </div>
+                ))}
+                <Button size="sm" variant="outline" onClick={() => {
+                  const socials = [...(headerConfig.footerSocials || [])];
+                  socials.push({ icon: '', label: '', url: '' });
+                  setHeaderConfig(prev => ({ ...prev, footerSocials: socials }));
+                }}>+ Adicionar Rede Social</Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <Label>Texto de Copyright</Label>
+            <input type="text" className="input input-bordered w-full" value={headerConfig.footerCopyright || ''} onChange={e => setHeaderConfig(prev => ({ ...prev, footerCopyright: e.target.value }))} placeholder="© 2025 IA Code Labs todos os direitos reservados." />
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button onClick={handleSaveAll} variant="primary"><Save className="mr-2 h-4 w-4" />Salvar Alterações do Footer</Button>
+          </div>
+        </div>
         <div className="bg-card p-6 rounded-xl border space-y-4">
           <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setHeaderCollapsed(v => !v)}>
             <h3 className="text-xl font-semibold mb-2">Header da Landing Page</h3>
@@ -613,7 +781,6 @@ const LandingPageSettingsContent = () => {
           <div className="flex items-center justify-between mb-2 cursor-pointer select-none" onClick={() => setServicesCollapsed(v => !v)}>
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold">Serviços</h3>
-              <input type="text" className="input input-bordered w-full max-w-xs" value={servicesTitle} onChange={e => saveServicesTitle(e.target.value)} placeholder="Título da Seção" />
             </div>
             <Button onClick={handleAddService} variant="outline"><Plus className="w-4 h-4 mr-1" />Adicionar Serviço</Button>
           </div>
@@ -748,7 +915,6 @@ const LandingPageSettingsContent = () => {
           <div className="flex items-center justify-between mb-2 cursor-pointer select-none" onClick={() => setMiscCollapsed(v => !v)}>
             <div className="flex flex-col gap-1">
               <h3 className="text-xl font-semibold">Diversos</h3>
-              <input type="text" className="input input-bordered w-full max-w-xs" value={miscTitle} onChange={e => saveMiscTitle(e.target.value)} placeholder="Título da Seção" />
             </div>
             <Button onClick={handleAddMisc} variant="outline"><Plus className="w-4 h-4 mr-1" />Adicionar Item</Button>
           </div>
