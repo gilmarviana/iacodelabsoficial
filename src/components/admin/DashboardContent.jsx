@@ -16,94 +16,25 @@ import {
   Area,
 } from 'recharts';
 
-
-// Função utilitária para obter o nome do mês em pt-BR
-const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
-function getMonthYear(dateStr) {
-  if (!dateStr) return null;
-  const d = new Date(dateStr);
-  if (isNaN(d)) return null;
-  return `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-}
+const projectActivityData = [
+  { name: 'Jan', tasks: 30, projects: 5 },
+  { name: 'Fev', tasks: 45, projects: 7 },
+  { name: 'Mar', tasks: 60, projects: 8 },
+  { name: 'Abr', tasks: 50, projects: 10 },
+  { name: 'Mai', tasks: 70, projects: 11 },
+  { name: 'Jun', tasks: 85, projects: 12 },
+];
 
 const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = [] }) => {
+  const stats = [
+    { label: 'Total de Projetos', value: projects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+    { label: 'Projetos Ativos', value: projects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
+    { label: 'Projetos Concluídos', value: projects.filter(p => p.status === 'Concluído').length, icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
+    { label: 'Clientes Ativos', value: new Set(projects.map(p => p.client)).size, icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
+  ];
 
   // Filtro de datas
   const [dateFilter, setDateFilter] = useState({ from: '', to: '' });
-
-  // Gera dados dinâmicos para o gráfico de atividade dos projetos
-  const projectActivityData = React.useMemo(() => {
-    // Agrupa tarefas por mês/ano
-    const taskList = Object.values(tasks || {}).flat();
-    const taskByMonth = {};
-    taskList.forEach(t => {
-      const key = getMonthYear(t.createdAt);
-      if (key) {
-        taskByMonth[key] = (taskByMonth[key] || 0) + 1;
-      }
-    });
-
-    // Agrupa projetos por mês/ano (usando startDate)
-    const projectByMonth = {};
-    (projects || []).forEach(p => {
-      const key = getMonthYear(p.startDate);
-      if (key) {
-        projectByMonth[key] = (projectByMonth[key] || 0) + 1;
-      }
-    });
-
-    // Pega todos os meses únicos presentes em tarefas ou projetos
-    const allMonths = Array.from(new Set([
-      ...Object.keys(taskByMonth),
-      ...Object.keys(projectByMonth),
-    ])).sort((a, b) => {
-      // Ordena por ano e mês
-      const [ma, ya] = a.split(' ');
-      const [mb, yb] = b.split(' ');
-      if (ya !== yb) return Number(ya) - Number(yb);
-      return monthNames.indexOf(ma) - monthNames.indexOf(mb);
-    });
-
-    // Monta o array final para o gráfico
-    return allMonths.map(month => ({
-      name: month,
-      tasks: taskByMonth[month] || 0,
-      projects: projectByMonth[month] || 0,
-    }));
-  }, [tasks, projects]);
-
-  // Função para filtrar projetos pelo intervalo de datas
-  const filterByDate = (project) => {
-    if (!dateFilter.from && !dateFilter.to) return true;
-    const start = project.startDate ? new Date(project.startDate) : null;
-    const end = project.endDate ? new Date(project.endDate) : null;
-    const from = dateFilter.from ? new Date(dateFilter.from) : null;
-    const to = dateFilter.to ? new Date(dateFilter.to) : null;
-    // Se só tem 'from'
-    if (from && !to) return start && start >= from;
-    // Se só tem 'to'
-    if (!from && to) return end && end <= to;
-    // Se tem ambos
-    if (from && to) {
-      // Projeto deve ter alguma interseção com o range
-      return (
-        (start && start >= from && start <= to) ||
-        (end && end >= from && end <= to) ||
-        (start && end && start <= from && end >= to)
-      );
-    }
-    return true;
-  };
-
-  const filteredProjects = projects.filter(filterByDate);
-
-  const stats = [
-    { label: 'Total de Projetos', value: filteredProjects.length, icon: FolderOpen, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-    { label: 'Projetos Ativos', value: filteredProjects.filter(p => p.status === 'Em Desenvolvimento').length, icon: TrendingUp, color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    { label: 'Projetos Concluídos', value: filteredProjects.filter(p => p.status === 'Concluído').length, icon: Star, color: 'text-yellow-500', bgColor: 'bg-yellow-500/10' },
-    { label: 'Clientes Ativos', value: new Set(filteredProjects.map(p => p.client)).size, icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' }
-  ];
 
   return (
     <div className="space-y-8">
@@ -208,7 +139,7 @@ const DashboardContent = ({ projects = [], onEditProject, tasks = {}, clients = 
         >
           <h3 className="text-xl font-bold mb-4">Projetos Recentes</h3>
           <div className="space-y-4">
-            {filteredProjects.slice(0, 4).map((project) => (
+            {projects.slice(0, 4).map((project) => (
               <div key={project.id} className="flex items-center">
                 <div className="flex-1">
                   <h4 className="font-medium text-sm">{project.title}</h4>
