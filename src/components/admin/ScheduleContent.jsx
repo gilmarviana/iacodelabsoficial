@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Plus, Video, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { motion } from 'framer-motion';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import ScheduleCalendar from './ScheduleCalendar';
 
 const initialEvents = [
     { id: 1, title: 'Reunião de Kick-off: E-commerce', dateTime: '2025-08-05T10:00:00', participants: 'Tech Solutions, Equipe de Dev', meetLink: 'https://meet.google.com/xyz-abc-def' },
@@ -143,6 +143,14 @@ const ScheduleContent = () => {
                     Novo Agendamento
                 </Button>
             </div>
+
+            {/* Calendário visual mensal */}
+            <ScheduleCalendar
+                events={events}
+                currentDate={new Date()}
+                onDateChange={() => {}}
+                onEventClick={event => handleOpenModal(event)}
+            />
 
             <div className="bg-card rounded-xl border">
                 <div className="grid grid-cols-[1fr,2fr,2fr,auto] font-semibold p-4 border-b">
