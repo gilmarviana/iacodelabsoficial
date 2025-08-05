@@ -487,7 +487,11 @@ const LandingPage = () => {
                                 <Button 
                                     type="submit" 
                                     size="lg" 
-                                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-4 rounded-lg shadow-lg hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                                    className="w-full font-semibold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                                    style={{
+                                      background: section.buttonBgColor || 'linear-gradient(to right, #22c55e, #10b981)',
+                                      color: section.buttonTextColor || '#fff',
+                                    }}
                                 >
                                     {/* Efeito de brilho no hover */}
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>

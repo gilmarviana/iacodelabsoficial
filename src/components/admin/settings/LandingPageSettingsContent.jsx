@@ -97,6 +97,64 @@ const LandingPageSettingsContent = () => {
   const [testimonialsCollapsed, setTestimonialsCollapsed] = useState(true);
   const [servicesTitle, setServicesTitle] = useState('Serviços');
   const [miscTitle, setMiscTitle] = useState('Diversos');
+  const [footerConfig, setFooterConfig] = useState({
+    logoUrl: '',
+    logoText: 'IA Code Labs',
+    logoHeight: 40,
+    logoWidth: 40,
+    tagline: 'Innovate, Build, Scale – Your Vision, Our Code',
+    buttonText: 'Contact Us',
+    buttonColor: '#00bcd4',
+    columns: [
+      { 
+        title: 'Home', 
+        links: [
+          { label: 'Homepage', url: '#' },
+          { label: 'About Us', url: '#' },
+          { label: 'Service', url: '#' },
+          { label: 'Blog', url: '#' },
+          { label: 'Contact Us', url: '#' }
+        ] 
+      },
+      { 
+        title: 'About Us', 
+        links: [
+          { label: 'Homepage', url: '#' },
+          { label: 'About Us', url: '#' },
+          { label: 'Service', url: '#' },
+          { label: 'Blog', url: '#' },
+          { label: 'Contact Us', url: '#' }
+        ] 
+      },
+      { 
+        title: 'Service', 
+        links: [
+          { label: 'Homepage', url: '#' },
+          { label: 'About Us', url: '#' },
+          { label: 'Service', url: '#' },
+          { label: 'Blog', url: '#' },
+          { label: 'Contact Us', url: '#' }
+        ] 
+      }
+    ],
+    bgColor: '#1a1a1a',
+    textColor: '#ffffff',
+    policyLinks: [
+      { label: 'Privacy Policy', url: '#' },
+      { label: 'Terms of Service', url: '#' }
+    ],
+    socialLinks: [
+      { platform: 'GitHub', url: '#', icon: 'fa-brands fa-github' },
+      { platform: 'LinkedIn', url: '#', icon: 'fa-brands fa-linkedin' },
+      { platform: 'Instagram', url: '#', icon: 'fa-brands fa-instagram' }
+    ],
+    copyrightText: '© 2024 IA Code Labs. All rights reserved.',
+    copyrightBgColor: '#000000',
+    copyrightTextColor: '#ffffff'
+  });
+  const [footerCollapsed, setFooterCollapsed] = useState(true);
+  const [editingFooterColumn, setEditingFooterColumn] = useState(null);
+  const [isFooterColumnModalOpen, setIsFooterColumnModalOpen] = useState(false);
 
   const { toast } = useToast();
 
@@ -213,6 +271,13 @@ const LandingPageSettingsContent = () => {
     if (savedMiscTitle) setMiscTitle(savedMiscTitle);
   }, []);
 
+  useEffect(() => {
+    const savedFooterConfig = JSON.parse(localStorage.getItem('landingPageFooterConfig') || 'null');
+    if (savedFooterConfig) {
+      setFooterConfig(savedFooterConfig);
+    }
+  }, []);
+
   const moveSection = (dragIndex, hoverIndex) => {
     setSections(prev => {
       const newSections = [...prev];
@@ -232,7 +297,7 @@ const LandingPageSettingsContent = () => {
   };
 
   const handleSaveSection = (updatedSection) => {
-    setSections(prev => prev.map(s => {
+    const updatedSections = sections.map(s => {
       if (s.id === updatedSection.id) {
         if (s.id === 'misc') {
           if (updatedSection.name && updatedSection.name !== miscTitle) {
@@ -246,9 +311,13 @@ const LandingPageSettingsContent = () => {
         return updatedSection;
       }
       return s;
-    }));
+    });
+    
+    setSections(updatedSections);
+    // Salva automaticamente no localStorage
+    localStorage.setItem('landingPageSections', JSON.stringify(updatedSections));
     setIsSectionEditorOpen(false);
-    toast({ title: 'Seção salva!', description: 'As alterações na seção foram salvas.'});
+    toast({ title: 'Seção salva!', description: 'As alterações na seção foram salvas e aplicadas à landing page.'});
   };
 
   const handleAddSection = () => {
@@ -351,6 +420,7 @@ const LandingPageSettingsContent = () => {
     // Sempre salva a ordem atual do state sections
     localStorage.setItem('landingPageSections', JSON.stringify(sections));
     localStorage.setItem('landingPageConfig', JSON.stringify(headerConfig));
+    localStorage.setItem('landingPageFooterConfig', JSON.stringify(footerConfig));
     toast({ title: 'Sucesso!', description: 'Configurações da Landing Page salvas.' });
     window.dispatchEvent(new Event('storage'));
   };
@@ -472,6 +542,57 @@ const LandingPageSettingsContent = () => {
   const handleDeleteTestimonial = (id) => {
     const updated = testimonials.filter(t => t.id !== id);
     saveTestimonialsToStorage(updated);
+  };
+
+  // Funções para Footer
+  const saveFooterConfigToStorage = (config) => {
+    setFooterConfig(config);
+    localStorage.setItem('landingPageFooterConfig', JSON.stringify(config));
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const handleFooterConfigChange = (field, value) => {
+    const updatedConfig = { ...footerConfig, [field]: value };
+    saveFooterConfigToStorage(updatedConfig);
+  };
+
+  const handleAddFooterColumn = () => {
+    setEditingFooterColumn({ title: '', links: [{ label: '', url: '' }] });
+    setIsFooterColumnModalOpen(true);
+  };
+
+  const handleEditFooterColumn = (index) => {
+    setEditingFooterColumn({ ...footerConfig.columns[index], index });
+    setIsFooterColumnModalOpen(true);
+  };
+
+  const handleSaveFooterColumn = (column) => {
+    let updatedColumns = [...footerConfig.columns];
+    if (typeof column.index === 'number') {
+      updatedColumns[column.index] = { title: column.title, links: column.links };
+    } else {
+      updatedColumns.push({ title: column.title, links: column.links });
+    }
+    const updatedConfig = { ...footerConfig, columns: updatedColumns };
+    saveFooterConfigToStorage(updatedConfig);
+    setIsFooterColumnModalOpen(false);
+  };
+
+  const handleDeleteFooterColumn = (index) => {
+    const updatedColumns = footerConfig.columns.filter((_, i) => i !== index);
+    const updatedConfig = { ...footerConfig, columns: updatedColumns };
+    saveFooterConfigToStorage(updatedConfig);
+  };
+
+  const handleFooterLogoUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleFooterConfigChange('logoUrl', reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Lista de ícones Font Awesome gratuitos para seleção visual
@@ -993,6 +1114,413 @@ const LandingPageSettingsContent = () => {
                       </div>
                       <DialogFooter>
                         <Button type="button" variant="ghost" onClick={() => setIsMiscModalOpen(false)}>Cancelar</Button>
+                        <Button type="submit">Salvar</Button>
+                      </DialogFooter>
+                    </form>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+        </div>
+
+        {/* PAINEL DE FOOTER */}
+        <div className="bg-card p-6 rounded-xl border space-y-4">
+          <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setFooterCollapsed(v => !v)}>
+            <h3 className="text-xl font-semibold mb-2">Footer da Landing Page</h3>
+            <Button variant="ghost" size="icon">{footerCollapsed ? '+' : '-'}</Button>
+          </div>
+          {!footerCollapsed && (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Configurações Gerais */}
+                <div className="space-y-4 bg-muted/40 border rounded-lg p-4">
+                  <h4 className="font-semibold">Configurações Gerais</h4>
+                  
+                  {/* Logo */}
+                  <div>
+                    <Label>Logo (imagem)</Label>
+                    {footerConfig.logoUrl && (
+                      <img src={footerConfig.logoUrl} alt="Footer Logo" className="h-12 mb-2" />
+                    )}
+                    <input type="file" accept="image/*" onChange={handleFooterLogoUpload} className="block w-full text-sm" />
+                  </div>
+
+                  <div>
+                    <Label>Texto da Logo</Label>
+                    <input 
+                      type="text" 
+                      className="input input-bordered w-full" 
+                      value={footerConfig.logoText} 
+                      onChange={e => handleFooterConfigChange('logoText', e.target.value)} 
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label>Altura Logo (px)</Label>
+                      <input 
+                        type="number" 
+                        className="input input-bordered w-full" 
+                        value={footerConfig.logoHeight} 
+                        onChange={e => handleFooterConfigChange('logoHeight', parseInt(e.target.value))} 
+                      />
+                    </div>
+                    <div>
+                      <Label>Largura Logo (px)</Label>
+                      <input 
+                        type="number" 
+                        className="input input-bordered w-full" 
+                        value={footerConfig.logoWidth} 
+                        onChange={e => handleFooterConfigChange('logoWidth', parseInt(e.target.value))} 
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Tagline</Label>
+                    <textarea 
+                      className="input input-bordered w-full" 
+                      value={footerConfig.tagline} 
+                      onChange={e => handleFooterConfigChange('tagline', e.target.value)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Texto do Botão</Label>
+                    <input 
+                      type="text" 
+                      className="input input-bordered w-full" 
+                      value={footerConfig.buttonText} 
+                      onChange={e => handleFooterConfigChange('buttonText', e.target.value)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Cor do Botão</Label>
+                    <ColorPicker 
+                      value={footerConfig.buttonColor} 
+                      onChange={color => handleFooterConfigChange('buttonColor', color)} 
+                    />
+                  </div>
+                </div>
+
+                {/* Cores */}
+                <div className="space-y-4 bg-muted/40 border rounded-lg p-4">
+                  <h4 className="font-semibold">Cores</h4>
+                  
+                  <div>
+                    <Label>Cor de Fundo</Label>
+                    <ColorPicker 
+                      value={footerConfig.bgColor} 
+                      onChange={color => handleFooterConfigChange('bgColor', color)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Cor do Texto</Label>
+                    <ColorPicker 
+                      value={footerConfig.textColor} 
+                      onChange={color => handleFooterConfigChange('textColor', color)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Cor de Fundo do Copyright</Label>
+                    <ColorPicker 
+                      value={footerConfig.copyrightBgColor} 
+                      onChange={color => handleFooterConfigChange('copyrightBgColor', color)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Cor do Texto do Copyright</Label>
+                    <ColorPicker 
+                      value={footerConfig.copyrightTextColor} 
+                      onChange={color => handleFooterConfigChange('copyrightTextColor', color)} 
+                    />
+                  </div>
+
+                  <div>
+                    <Label>Texto do Copyright</Label>
+                    <input 
+                      type="text" 
+                      className="input input-bordered w-full" 
+                      value={footerConfig.copyrightText} 
+                      onChange={e => handleFooterConfigChange('copyrightText', e.target.value)} 
+                    />
+                  </div>
+                </div>
+
+                {/* Links de Política */}
+                <div className="space-y-4 bg-muted/40 border rounded-lg p-4">
+                  <h4 className="font-semibold">Links de Política</h4>
+                  
+                  {footerConfig.policyLinks?.map((link, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <input 
+                        type="text" 
+                        placeholder="Texto do Link" 
+                        className="input input-bordered flex-1" 
+                        value={link.label} 
+                        onChange={e => {
+                          const updatedLinks = [...footerConfig.policyLinks];
+                          updatedLinks[index] = { ...link, label: e.target.value };
+                          handleFooterConfigChange('policyLinks', updatedLinks);
+                        }} 
+                      />
+                      <input 
+                        type="text" 
+                        placeholder="URL" 
+                        className="input input-bordered flex-1" 
+                        value={link.url} 
+                        onChange={e => {
+                          const updatedLinks = [...footerConfig.policyLinks];
+                          updatedLinks[index] = { ...link, url: e.target.value };
+                          handleFooterConfigChange('policyLinks', updatedLinks);
+                        }} 
+                      />
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={() => {
+                          const updatedLinks = footerConfig.policyLinks.filter((_, i) => i !== index);
+                          handleFooterConfigChange('policyLinks', updatedLinks);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => {
+                      const updatedLinks = [...(footerConfig.policyLinks || []), { label: '', url: '' }];
+                      handleFooterConfigChange('policyLinks', updatedLinks);
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-1" /> Adicionar Link
+                  </Button>
+                </div>
+              </div>
+
+              {/* Colunas do Footer */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold">Colunas do Footer</h4>
+                  <Button onClick={handleAddFooterColumn} variant="outline">
+                    <Plus className="w-4 h-4 mr-1" />Adicionar Coluna
+                  </Button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {footerConfig.columns?.map((column, index) => (
+                    <div key={index} className="bg-muted/40 border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="font-medium">{column.title || `Coluna ${index + 1}`}</h5>
+                        <div className="flex gap-1">
+                          <Button size="icon" variant="ghost" onClick={() => handleEditFooterColumn(index)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => handleDeleteFooterColumn(index)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        {column.links?.slice(0, 3).map((link, linkIndex) => (
+                          <div key={linkIndex} className="text-sm text-muted-foreground">
+                            {link.label || 'Link sem título'}
+                          </div>
+                        ))}
+                        {column.links?.length > 3 && (
+                          <div className="text-xs text-muted-foreground">
+                            +{column.links.length - 3} mais...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Redes Sociais */}
+              <div className="space-y-4 bg-muted/40 border rounded-lg p-4">
+                <h4 className="font-semibold">Redes Sociais</h4>
+                
+                {footerConfig.socialLinks?.map((social, index) => (
+                  <div key={index} className="flex gap-2 items-center">
+                    <input 
+                      type="text" 
+                      placeholder="Plataforma" 
+                      className="input input-bordered" 
+                      value={social.platform} 
+                      onChange={e => {
+                        const updatedSocials = [...footerConfig.socialLinks];
+                        updatedSocials[index] = { ...social, platform: e.target.value };
+                        handleFooterConfigChange('socialLinks', updatedSocials);
+                      }} 
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="URL" 
+                      className="input input-bordered flex-1" 
+                      value={social.url} 
+                      onChange={e => {
+                        const updatedSocials = [...footerConfig.socialLinks];
+                        updatedSocials[index] = { ...social, url: e.target.value };
+                        handleFooterConfigChange('socialLinks', updatedSocials);
+                      }} 
+                    />
+                    <input 
+                      type="text" 
+                      placeholder="Ícone FA" 
+                      className="input input-bordered" 
+                      value={social.icon || ''} 
+                      onChange={e => {
+                        const updatedSocials = [...footerConfig.socialLinks];
+                        updatedSocials[index] = { ...social, icon: e.target.value };
+                        handleFooterConfigChange('socialLinks', updatedSocials);
+                      }} 
+                    />
+                    <span className="text-xs text-muted-foreground">ou</span>
+                    <input
+                      type="file"
+                      accept="image/*,.svg"
+                      style={{ maxWidth: 120 }}
+                      onChange={e => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            const updatedSocials = [...footerConfig.socialLinks];
+                            updatedSocials[index] = { ...social, customIcon: reader.result };
+                            handleFooterConfigChange('socialLinks', updatedSocials);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    {social.customIcon && (
+                      <>
+                        <img src={social.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
+                        <Button size="icon" variant="ghost" type="button" onClick={() => {
+                          const updatedSocials = [...footerConfig.socialLinks];
+                          updatedSocials[index] = { ...social, customIcon: undefined };
+                          handleFooterConfigChange('socialLinks', updatedSocials);
+                        }}><Trash2 className="w-4 h-4" /></Button>
+                      </>
+                    )}
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      onClick={() => {
+                        const updatedSocials = footerConfig.socialLinks.filter((_, i) => i !== index);
+                        handleFooterConfigChange('socialLinks', updatedSocials);
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => {
+                    const updatedSocials = [...(footerConfig.socialLinks || []), { platform: '', url: '', icon: '' }];
+                    handleFooterConfigChange('socialLinks', updatedSocials);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-1" /> Adicionar Rede Social
+                </Button>
+              </div>
+
+              {/* Modal para editar colunas do footer */}
+              <Dialog open={isFooterColumnModalOpen} onOpenChange={setIsFooterColumnModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {typeof editingFooterColumn?.index === 'number' ? 'Editar Coluna' : 'Nova Coluna'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  {editingFooterColumn && (
+                    <form 
+                      onSubmit={e => { 
+                        e.preventDefault(); 
+                        handleSaveFooterColumn(editingFooterColumn); 
+                      }} 
+                      className="space-y-4"
+                    >
+                      <div>
+                        <Label>Título da Coluna</Label>
+                        <input 
+                          type="text" 
+                          className="input input-bordered w-full" 
+                          value={editingFooterColumn.title} 
+                          onChange={e => setEditingFooterColumn(prev => ({ ...prev, title: e.target.value }))} 
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Links</Label>
+                        {editingFooterColumn.links?.map((link, index) => (
+                          <div key={index} className="flex gap-2 items-center mb-2">
+                            <input 
+                              type="text" 
+                              placeholder="Texto do Link" 
+                              className="input input-bordered flex-1" 
+                              value={link.label} 
+                              onChange={e => {
+                                const updatedLinks = [...editingFooterColumn.links];
+                                updatedLinks[index] = { ...link, label: e.target.value };
+                                setEditingFooterColumn(prev => ({ ...prev, links: updatedLinks }));
+                              }} 
+                            />
+                            <input 
+                              type="text" 
+                              placeholder="URL" 
+                              className="input input-bordered flex-1" 
+                              value={link.url} 
+                              onChange={e => {
+                                const updatedLinks = [...editingFooterColumn.links];
+                                updatedLinks[index] = { ...link, url: e.target.value };
+                                setEditingFooterColumn(prev => ({ ...prev, links: updatedLinks }));
+                              }} 
+                            />
+                            <Button 
+                              type="button"
+                              size="icon" 
+                              variant="ghost" 
+                              onClick={() => {
+                                const updatedLinks = editingFooterColumn.links.filter((_, i) => i !== index);
+                                setEditingFooterColumn(prev => ({ ...prev, links: updatedLinks }));
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        
+                        <Button 
+                          type="button"
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => {
+                            const updatedLinks = [...(editingFooterColumn.links || []), { label: '', url: '' }];
+                            setEditingFooterColumn(prev => ({ ...prev, links: updatedLinks }));
+                          }}
+                        >
+                          <Plus className="w-4 h-4 mr-1" /> Adicionar Link
+                        </Button>
+                      </div>
+                      
+                      <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={() => setIsFooterColumnModalOpen(false)}>
+                          Cancelar
+                        </Button>
                         <Button type="submit">Salvar</Button>
                       </DialogFooter>
                     </form>

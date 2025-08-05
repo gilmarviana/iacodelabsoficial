@@ -115,6 +115,22 @@ const SectionEditor = ({ isOpen, onClose, onSave, section }) => {
                                 </div>
                             </div>
                         </div>
+                        {/* Cores do botão do Contato */}
+                        {editedSection.type === 'contact' && (
+                          <div>
+                            <Label>Cores do Botão de Contato</Label>
+                            <div className="flex items-center gap-4 mt-2">
+                              <div className="flex items-center gap-2">
+                                <Label>Fundo:</Label>
+                                <ColorPicker value={editedSection.buttonBgColor || '#00bcd4'} onChange={color => setEditedSection(prev => ({ ...prev, buttonBgColor: color }))} />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label>Texto:</Label>
+                                <ColorPicker value={editedSection.buttonTextColor || '#ffffff'} onChange={color => setEditedSection(prev => ({ ...prev, buttonTextColor: color }))} />
+                              </div>
+                            </div>
+                          </div>
+                        )}
                         <div>
                             <Label>Fundo da Seção</Label>
                             <Tabs defaultValue="color" className="w-full mt-2">
