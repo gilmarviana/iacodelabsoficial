@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import FooterSection from './FooterSection';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { 
@@ -24,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import HeroSlider from '@/components/HeroSlider';
 import SchedulingModal from '@/components/SchedulingModal';
+import FooterSection from '@/pages/FooterSection';
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,6 +34,7 @@ const LandingPage = () => {
   const [sections, setSections] = useState([]);
   const [services, setServices] = useState([]);
   const [miscItems, setMiscItems] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
   const [servicesTitle, setServicesTitle] = useState('Serviços');
   const [miscTitle, setMiscTitle] = useState('Diversos');
   const { toast } = useToast();
@@ -45,7 +46,6 @@ const LandingPage = () => {
     { id: 'hero', name: 'Revolution Slide', type: 'hero', isVisible: true, isRemovable: false, title: 'Transformamos Ideias em Soluções Digitais', subtitle: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.' },
     { id: 'projects', name: 'Projetos', type: 'projects', isVisible: true, isRemovable: false, title: 'Nossos Projetos', subtitle: 'Conheça alguns dos projetos que desenvolvemos.' },
     { id: 'services', name: 'Serviços', type: 'services', isVisible: true, isRemovable: false, title: 'Nossos Serviços', subtitle: 'Soluções completas para suas necessidades digitais.' },
-    { id: 'misc', name: 'Diversos', type: 'misc', isVisible: true, isRemovable: false, title: 'Diversos', subtitle: 'Outros serviços e recursos oferecidos.' },
     { id: 'testimonials', name: 'Depoimentos', type: 'testimonials', isVisible: true, isRemovable: false, title: 'O que nossos clientes dizem', subtitle: '' },
     { id: 'contact', name: 'Contato', type: 'contact', isVisible: true, isRemovable: false, title: 'Entre em Contato', subtitle: 'Pronto para transformar sua ideia em realidade? Vamos conversar!' },
   ];
@@ -58,10 +58,14 @@ const LandingPage = () => {
     setConfig(savedConfig);
     
     const savedSections = JSON.parse(localStorage.getItem('landingPageSections'));
+    console.log('🔍 Seções carregadas do localStorage:', savedSections);
     if (savedSections && savedSections.length > 0) {
       setSections(savedSections);
+      console.log('✅ Seções aplicadas:', savedSections);
     } else {
-      setSections(getDefaultSections());
+      const defaultSections = getDefaultSections();
+      setSections(defaultSections);
+      console.log('📋 Usando seções padrão:', defaultSections);
     }
 
     const savedServices = JSON.parse(localStorage.getItem('landingPageServices') || '[]');
@@ -80,8 +84,18 @@ const LandingPage = () => {
   useEffect(() => {
     loadConfigAndData();
     window.addEventListener('storage', loadConfigAndData);
+    
+    // Também escutar por mudanças customizadas
+    const handleCustomStorageChange = () => {
+      console.log('🔄 Recarregando dados por evento customizado');
+      loadConfigAndData();
+    };
+    
+    window.addEventListener('landingPageUpdate', handleCustomStorageChange);
+    
     return () => {
       window.removeEventListener('storage', loadConfigAndData);
+      window.removeEventListener('landingPageUpdate', handleCustomStorageChange);
     };
   }, [loadConfigAndData]);
 
@@ -97,10 +111,19 @@ const LandingPage = () => {
     if (savedMiscTitle) setMiscTitle(savedMiscTitle);
   }, []);
 
-  const testimonials = [
-    { name: 'Maria Silva', company: 'Tech Solutions', text: 'Excelente trabalho! O projeto foi entregue no prazo e superou nossas expectativas.', rating: 5 },
-    { name: 'João Santos', company: 'StartupXYZ', text: 'Profissionais muito competentes. Recomendo para qualquer projeto de desenvolvimento.', rating: 5 },
-  ];
+  // Carregar depoimentos do localStorage
+  useEffect(() => {
+    const savedTestimonials = JSON.parse(localStorage.getItem('landingPageTestimonials') || '[]');
+    if (savedTestimonials.length > 0) {
+      setTestimonials(savedTestimonials);
+    } else {
+      // Depoimentos padrão
+      setTestimonials([
+        { id: 1, name: 'Maria Silva', company: 'Tech Solutions', text: 'Excelente trabalho! O projeto foi entregue no prazo e superou nossas expectativas.', rating: 5 },
+        { id: 2, name: 'João Santos', company: 'StartupXYZ', text: 'Profissionais muito competentes. Recomendo para qualquer projeto de desenvolvimento.', rating: 5 },
+      ]);
+    }
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -152,53 +175,61 @@ const LandingPage = () => {
     const subtitleStyle = { color: section.subtitleColor };
 
     switch (section.type) {
-        case 'misc': return (
-            <section id={section.id} className="py-20 px-6 bg-background" style={sectionStyle}>
-                <div className="container mx-auto">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{miscTitle}</h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
-                    </motion.div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {miscItems.map((item, index) => (
-                            <motion.div key={item.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
-                                <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                                    {item.customIcon
-                                        ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain" />
-                                        : item.fontAwesomeIcon
-                                            ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                                            : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10' })}
-                                </div>
-                                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                                <p className="text-muted-foreground">{item.description}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
         case 'hero': return (
             <section id={section.id} className="bg-background">
                 <HeroSlider landingPageConfig={config} onScheduleClick={() => setIsSchedulingModalOpen(true)} />
             </section>
         );
         case 'projects': return (
-            <section id={section.id} className="py-20 px-6 bg-secondary" style={sectionStyle}>
-                <div className="container mx-auto">
+            <section id={section.id} className="py-20 px-6 bg-secondary relative overflow-hidden" style={sectionStyle}>
+                {/* Background decorativo */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5"></div>
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
+                
+                <div className="container mx-auto relative z-10">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{section.title}</h2>
+                        <motion.h2 
+                            initial={{ opacity: 0, scale: 0.9 }} 
+                            whileInView={{ opacity: 1, scale: 1 }} 
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent" 
+                            style={titleStyle}
+                        >
+                            {section.title}
+                        </motion.h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
                     </motion.div>
                     <div className="grid md:grid-cols-2 gap-8">
                         {projects.map((project, index) => (
-                            <motion.div key={project.id} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card rounded-lg overflow-hidden border">
-                                <div className="aspect-video bg-muted flex items-center justify-center">
-                                    <img-replace alt={project.title} className="w-full h-full object-cover" />
+                            <motion.div 
+                                key={project.id} 
+                                initial={{ opacity: 0, y: 50, scale: 0.9 }} 
+                                whileInView={{ opacity: 1, y: 0, scale: 1 }} 
+                                viewport={{ once: true }} 
+                                transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+                                whileHover={{ y: -10, scale: 1.02 }}
+                                className="group bg-card/80 backdrop-blur-sm rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
+                            >
+                                <div className="aspect-video bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/40 transition-all duration-300"></div>
+                                    <motion.div 
+                                        whileHover={{ scale: 1.1 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-full h-full"
+                                    >
+                                        <img-replace alt={project.title} className="w-full h-full object-cover" />
+                                    </motion.div>
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
-                                <div className="p-6">
-                                    <span className="text-sm text-primary font-semibold">{project.category}</span>
-                                    <h3 className="text-xl font-bold mt-2 mb-3">{project.title}</h3>
-                                    <p className="text-muted-foreground">{project.description}</p>
+                                <div className="p-6 relative">
+                                    <div className="absolute -top-3 left-6 right-6 h-6 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <span className="inline-block px-3 py-1 text-xs text-primary font-semibold bg-primary/10 rounded-full border border-primary/20">
+                                        {project.category}
+                                    </span>
+                                    <h3 className="text-xl font-bold mt-3 mb-3 group-hover:text-primary transition-colors duration-300">{project.title}</h3>
+                                    <p className="text-muted-foreground leading-relaxed">{project.description}</p>
+                                    <div className="mt-4 h-1 w-0 bg-gradient-to-r from-primary to-purple-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
                                 </div>
                             </motion.div>
                         ))}
@@ -207,26 +238,66 @@ const LandingPage = () => {
             </section>
         );
         case 'services': return (
-            <section id={section.id} className="py-20 px-6 bg-background" style={sectionStyle}>
-                <div className="container mx-auto">
+            <section id={section.id} className="py-20 px-6 bg-background relative overflow-hidden" style={sectionStyle}>
+                {/* Background decorativo */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-cyan-500/5"></div>
+                <div className="absolute top-1/4 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl opacity-40 animate-bounce"></div>
+                <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl opacity-40 animate-bounce delay-500"></div>
+                
+                <div className="container mx-auto relative z-10">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{servicesTitle}</h2>
+                        <motion.h2 
+                            initial={{ opacity: 0, scale: 0.9 }} 
+                            whileInView={{ opacity: 1, scale: 1 }} 
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 bg-clip-text text-transparent" 
+                            style={titleStyle}
+                        >
+                            {servicesTitle}
+                        </motion.h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
                     </motion.div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {services.map((service, index) => {
                             const Icon = serviceIcons[service.icon] || Wrench;
                             return (
-                                <motion.div key={index} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border text-center">
-                                    <div className="w-16 h-16 bg-primary/10 text-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+                                <motion.div 
+                                    key={index} 
+                                    initial={{ opacity: 0, y: 50, rotateY: -15 }} 
+                                    whileInView={{ opacity: 1, y: 0, rotateY: 0 }} 
+                                    viewport={{ once: true }} 
+                                    transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+                                    whileHover={{ 
+                                        y: -10, 
+                                        scale: 1.05,
+                                        rotateY: 5,
+                                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                                    }}
+                                    className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 text-center relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
+                                >
+                                    {/* Background gradient animado */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    
+                                    {/* Brilho no hover */}
+                                    <div className="absolute -inset-1 bg-gradient-to-r from-primary via-cyan-500 to-blue-500 rounded-xl opacity-0 group-hover:opacity-10 blur transition-opacity duration-500"></div>
+                                    
+                                    <motion.div 
+                                        whileHover={{ scale: 1.1, rotate: 5 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-16 h-16 bg-gradient-to-br from-primary/20 to-cyan-500/20 text-primary rounded-xl flex items-center justify-center mx-auto mb-4 relative z-10 shadow-lg group-hover:shadow-xl group-hover:shadow-primary/20"
+                                    >
                                         {service.customIcon
-                                            ? <img src={service.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain" />
+                                            ? <img src={service.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain filter group-hover:brightness-110" />
                                             : service.fontAwesomeIcon
-                                                ? <i className={`w-8 h-8 text-2xl ${service.fontAwesomeIcon}`} style={{ display: 'inline-block' }}></i>
-                                                : <Icon className="w-8 h-8" />}
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">{service.title}</h3>
-                                    <p className="text-muted-foreground">{service.description}</p>
+                                                ? <i className={`w-8 h-8 text-2xl ${service.fontAwesomeIcon} group-hover:text-primary transition-colors duration-300`} style={{ display: 'inline-block' }}></i>
+                                                : <Icon className="w-8 h-8 group-hover:text-cyan-500 transition-colors duration-300" />}
+                                    </motion.div>
+                                    
+                                    <h3 className="text-xl font-bold mb-2 relative z-10 group-hover:text-primary transition-colors duration-300">{service.title}</h3>
+                                    <p className="text-muted-foreground relative z-10 leading-relaxed">{service.description}</p>
+                                    
+                                    {/* Linha decorativa */}
+                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-cyan-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
                                 </motion.div>
                             );
                         })}
@@ -235,20 +306,89 @@ const LandingPage = () => {
             </section>
         );
         case 'testimonials': return (
-            <section id={section.id} className="py-20 px-6 bg-secondary" style={sectionStyle}>
-                <div className="container mx-auto">
+            <section id={section.id} className="py-20 px-6 bg-secondary relative overflow-hidden" style={sectionStyle}>
+                {/* Background decorativo */}
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5"></div>
+                <div className="absolute top-0 right-1/3 w-80 h-80 bg-yellow-500/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-700"></div>
+                
+                <div className="container mx-auto relative z-10">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{section.title}</h2>
+                        <motion.h2 
+                            initial={{ opacity: 0, scale: 0.9 }} 
+                            whileInView={{ opacity: 1, scale: 1 }} 
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent" 
+                            style={titleStyle}
+                        >
+                            {section.title}
+                        </motion.h2>
                     </motion.div>
                     <div className="grid md:grid-cols-2 gap-8">
                         {testimonials.map((testimonial, index) => (
-                            <motion.div key={index} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card p-6 rounded-lg border">
-                                <div className="flex mb-4">{[...Array(testimonial.rating)].map((_, i) => (<Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />))}</div>
-                                <p className="text-muted-foreground mb-4 italic">"{testimonial.text}"</p>
-                                <div>
-                                    <div className="font-bold">{testimonial.name}</div>
-                                    <div className="text-sm text-primary">{testimonial.company}</div>
+                            <motion.div 
+                                key={index} 
+                                initial={{ opacity: 0, scale: 0.8, rotateX: -15 }} 
+                                whileInView={{ opacity: 1, scale: 1, rotateX: 0 }} 
+                                viewport={{ once: true }} 
+                                transition={{ delay: index * 0.2, type: "spring", stiffness: 100 }}
+                                whileHover={{ 
+                                    y: -8, 
+                                    scale: 1.02,
+                                    rotateX: 2,
+                                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                                }}
+                                className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500"
+                            >
+                                {/* Background gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                
+                                {/* Aspas decorativas */}
+                                <div className="absolute -top-2 -left-2 text-6xl text-yellow-500/20 font-serif">"</div>
+                                <div className="absolute -bottom-8 -right-2 text-6xl text-orange-500/20 font-serif rotate-180">"</div>
+                                
+                                <div className="relative z-10">
+                                    <motion.div 
+                                        initial={{ scale: 0 }}
+                                        whileInView={{ scale: 1 }}
+                                        transition={{ delay: index * 0.2 + 0.3 }}
+                                        className="flex mb-4 gap-1"
+                                    >
+                                        {[...Array(testimonial.rating)].map((_, i) => (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ opacity: 0, rotate: -180 }}
+                                                whileInView={{ opacity: 1, rotate: 0 }}
+                                                transition={{ delay: i * 0.1 + index * 0.2 + 0.4 }}
+                                                whileHover={{ scale: 1.2, rotate: 15 }}
+                                            >
+                                                <Star className="w-5 h-5 text-yellow-400 fill-current drop-shadow-sm" />
+                                            </motion.div>
+                                        ))}
+                                    </motion.div>
+                                    
+                                    <motion.p 
+                                        initial={{ opacity: 0 }}
+                                        whileInView={{ opacity: 1 }}
+                                        transition={{ delay: index * 0.2 + 0.5 }}
+                                        className="text-muted-foreground mb-4 italic leading-relaxed text-lg relative"
+                                    >
+                                        "{testimonial.text}"
+                                    </motion.p>
+                                    
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        whileInView={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.2 + 0.6 }}
+                                        className="border-t pt-4"
+                                    >
+                                        <div className="font-bold text-lg group-hover:text-primary transition-colors duration-300">{testimonial.name}</div>
+                                        <div className="text-sm text-yellow-600 font-medium">{testimonial.company}</div>
+                                    </motion.div>
                                 </div>
+                                
+                                {/* Linha decorativa */}
+                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
                             </motion.div>
                         ))}
                     </div>
@@ -256,29 +396,111 @@ const LandingPage = () => {
             </section>
         );
         case 'contact': return (
-            <section id={section.id} className="py-20 px-6 bg-background" style={sectionStyle}>
-                <div className="container mx-auto">
+            <section id={section.id} className="py-20 px-6 bg-background relative overflow-hidden" style={sectionStyle}>
+                {/* Background decorativo */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5"></div>
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl opacity-40 animate-ping"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl opacity-40 animate-ping delay-1000"></div>
+                
+                <div className="container mx-auto relative z-10">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{section.title}</h2>
+                        <motion.h2 
+                            initial={{ opacity: 0, scale: 0.9 }} 
+                            whileInView={{ opacity: 1, scale: 1 }} 
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 bg-clip-text text-transparent" 
+                            style={titleStyle}
+                        >
+                            {section.title}
+                        </motion.h2>
                         <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
                     </motion.div>
                     <div className="max-w-2xl mx-auto">
-                        <motion.form initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} onSubmit={handleSubmit} className="bg-card p-8 rounded-lg border space-y-6">
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block mb-2 font-medium">Nome</label>
-                                    <input type="text" name="name" value={formData.name} onChange={handleInputChange} className="w-full px-4 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Seu nome" />
-                                </div>
-                                <div>
-                                    <label className="block mb-2 font-medium">Email</label>
-                                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full px-4 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="seu@email.com" />
-                                </div>
+                        <motion.form 
+                            initial={{ opacity: 0, y: 50, scale: 0.95 }} 
+                            whileInView={{ opacity: 1, y: 0, scale: 1 }} 
+                            viewport={{ once: true }}
+                            transition={{ type: "spring", stiffness: 100 }}
+                            onSubmit={handleSubmit} 
+                            className="group bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border/50 space-y-6 shadow-xl hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-500 relative overflow-hidden"
+                        >
+                            {/* Background gradient animado */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            
+                            {/* Brilho sutil */}
+                            <div className="absolute -inset-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-2xl opacity-0 group-hover:opacity-10 blur transition-opacity duration-500"></div>
+                            
+                            <div className="grid md:grid-cols-2 gap-6 relative z-10">
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                >
+                                    <label className="block mb-2 font-medium text-foreground">Nome</label>
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        value={formData.name} 
+                                        onChange={handleInputChange} 
+                                        className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
+                                        placeholder="Seu nome" 
+                                    />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    <label className="block mb-2 font-medium text-foreground">Email</label>
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        value={formData.email} 
+                                        onChange={handleInputChange} 
+                                        className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
+                                        placeholder="seu@email.com" 
+                                    />
+                                </motion.div>
                             </div>
-                            <div>
-                                <label className="block mb-2 font-medium">Mensagem</label>
-                                <textarea name="message" value={formData.message} onChange={handleInputChange} rows={5} className="w-full px-4 py-2 bg-background border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Conte-nos sobre seu projeto..."></textarea>
-                            </div>
-                            <Button type="submit" size="lg" className="w-full">Enviar Mensagem <Send className="ml-2 w-5 h-5" /></Button>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="relative z-10"
+                            >
+                                <label className="block mb-2 font-medium text-foreground">Mensagem</label>
+                                <textarea 
+                                    name="message" 
+                                    value={formData.message} 
+                                    onChange={handleInputChange} 
+                                    rows={5} 
+                                    className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
+                                    placeholder="Conte-nos sobre seu projeto..."
+                                ></textarea>
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="relative z-10"
+                            >
+                                <Button 
+                                    type="submit" 
+                                    size="lg" 
+                                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold py-4 rounded-lg shadow-lg hover:shadow-xl hover:shadow-green-500/25 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
+                                >
+                                    {/* Efeito de brilho no hover */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                                    
+                                    <motion.span
+                                        whileHover={{ x: 5 }}
+                                        className="flex items-center justify-center relative z-10"
+                                    >
+                                        Enviar Mensagem 
+                                        <Send className="ml-2 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+                                    </motion.span>
+                                </Button>
+                            </motion.div>
                         </motion.form>
                     </div>
                 </div>
@@ -335,7 +557,7 @@ const LandingPage = () => {
                   ) : (
                     <span>{config.logoText || 'IA Code Labs'}</span>
                   )}
-                </motion.div>
+              </motion.div>
                 <div className="flex-1 flex">
                   {config.menuPosition === 'center' ? (
                     <div className="w-full flex items-center justify-center">
@@ -447,15 +669,100 @@ const LandingPage = () => {
         </header>
         )}
 
-        <main>
-            {sections.filter(s => s.isVisible).map((section, idx) => (
+        <main className="relative">
+            {/* Elementos decorativos globais */}
+            <div className="fixed top-1/4 left-0 w-2 h-32 bg-gradient-to-b from-primary to-purple-500 opacity-20 rounded-r-full"></div>
+            <div className="fixed top-1/2 right-0 w-2 h-32 bg-gradient-to-b from-cyan-500 to-blue-500 opacity-20 rounded-l-full"></div>
+            <div className="fixed bottom-1/4 left-0 w-2 h-32 bg-gradient-to-b from-green-500 to-emerald-500 opacity-20 rounded-r-full"></div>
+            
+            {sections.filter(s => s.isVisible).map((section, idx) => {
+                console.log('🎬 Renderizando seção:', section.id, section.name, section);
+                return (
                 <React.Fragment key={section.id}>
-                    {renderSection(section)}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8 }}
+                    >
+                        {renderSection(section)}
+                    </motion.div>
+                    {section.type === 'services' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true, margin: "-100px" }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            <section id="misc" className="py-20 px-6 bg-background relative overflow-hidden">
+                            {/* Background decorativo */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5"></div>
+                            <div className="absolute top-0 left-1/3 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                            <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
+                            
+                            <div className="container mx-auto relative z-10">
+                                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+                                    <motion.h2 
+                                        initial={{ opacity: 0, scale: 0.9 }} 
+                                        whileInView={{ opacity: 1, scale: 1 }} 
+                                        viewport={{ once: true }}
+                                        className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent"
+                                    >
+                                        {miscTitle}
+                                    </motion.h2>
+                                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Outros serviços e recursos oferecidos.</p>
+                                </motion.div>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {miscItems.map((item, index) => (
+                                        <motion.div 
+                                            key={item.id} 
+                                            initial={{ opacity: 0, y: 50, scale: 0.9 }} 
+                                            whileInView={{ opacity: 1, y: 0, scale: 1 }} 
+                                            viewport={{ once: true }} 
+                                            transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
+                                            whileHover={{ 
+                                                y: -10, 
+                                                scale: 1.05,
+                                                rotateZ: 2,
+                                                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                                            }}
+                                            className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 text-center relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500"
+                                        >
+                                            {/* Background gradient animado */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            
+                                            {/* Partículas flutuantes */}
+                                            <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500/30 rounded-full animate-ping"></div>
+                                            <div className="absolute bottom-4 left-4 w-1 h-1 bg-pink-500/40 rounded-full animate-ping delay-500"></div>
+                                            
+                                            <motion.div 
+                                                whileHover={{ scale: 1.1, rotate: -5 }}
+                                                transition={{ duration: 0.3 }}
+                                                className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-primary rounded-xl flex items-center justify-center mx-auto mb-4 relative z-10 shadow-lg group-hover:shadow-xl group-hover:shadow-purple-500/20"
+                                            >
+                                                {item.customIcon
+                                                    ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain filter group-hover:brightness-110" />
+                                                    : item.fontAwesomeIcon
+                                                        ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon} group-hover:text-purple-500 transition-colors duration-300`} style={{ display: 'inline-block' }}></i>
+                                                        : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10 group-hover:text-pink-500 transition-colors duration-300' })}
+                                            </motion.div>
+                                            
+                                            <h3 className="text-xl font-bold mb-2 relative z-10 group-hover:text-purple-500 transition-colors duration-300">{item.title}</h3>
+                                            <p className="text-muted-foreground relative z-10 leading-relaxed">{item.description}</p>
+                                            
+                                            {/* Linha decorativa */}
+                                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+                        </motion.div>
+                    )}
                 </React.Fragment>
-            ))}
+            )})}
         </main>
 
-        {/* Dynamic Footer (WYSIWYG, real-time from localStorage) */}
         <FooterSection />
 
         <ChatWidget />

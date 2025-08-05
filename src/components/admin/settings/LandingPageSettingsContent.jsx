@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDrag, useDrop, DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { GripVertical, Plus, Trash2, Edit, Eye, EyeOff, Save, Code, Star, Phone, Wrench, Globe, Smartphone, Database, Text, Image as ImageIcon, X } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Edit, Eye, EyeOff, Save, Code, Star, Phone, Wrench, Globe, Smartphone, Database, Text, Image as ImageIcon } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -57,194 +57,7 @@ const DraggableItem = ({ id, index, moveItem, children, type }) => {
 };
 
 
-const defaultFooterConfig = {
-  logoUrl: '',
-  logoText: 'Devop',
-  logoHeight: 40,
-  logoWidth: 40,
-  tagline: 'Innovate, Build, Scale – Your Vision, Our Code',
-  buttonText: 'Contact Us',
-  buttonColor: '#00bcd4',
-  columns: [
-    { 
-      title: 'Home', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    },
-    { 
-      title: 'About Us', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    },
-    { 
-      title: 'Service', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    }
-  ],
-  bgColor: '#1a1a1a',
-  textColor: '#ffffff',
-  policyLinks: [
-    { label: 'Privacy Policy', url: '#' },
-    { label: 'Terms of Service', url: '#' }
-  ],
-  socialLinks: [
-    { icon: 'fab fa-whatsapp', url: '#' },
-    { icon: 'fab fa-instagram', url: '#' },
-    { icon: 'fab fa-linkedin', url: '#' },
-    { icon: 'fab fa-twitter', url: '#' }
-  ],
-  copyrightText: 'Copyright © 2025 Devop - App Development Software House Agency Elementor Template Kit',
-  copyrightBgColor: '#111',
-  copyrightTextColor: '#fff',
-};
-
 const LandingPageSettingsContent = () => {
-  const [footerConfig, setFooterConfig] = useState(() => {
-    const saved = localStorage.getItem('landingPageFooterConfig');
-    return saved ? JSON.parse(saved) : defaultFooterConfig;
-  });
-  const handleFooterConfigChange = (field, value) => {
-    setFooterConfig(prev => {
-      const updated = { ...prev, [field]: value };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  const handleFooterLogoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handleFooterConfigChange('logoUrl', reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  const handleFooterColumnChange = (colIdx, field, value) => {
-    setFooterConfig(prev => {
-      const columns = prev.columns.map((col, idx) => idx === colIdx ? { ...col, [field]: value } : col);
-      const updated = { ...prev, columns };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  const handleFooterLinkChange = (colIdx, linkIdx, field, value) => {
-    setFooterConfig(prev => {
-      const columns = prev.columns.map((col, idx) => {
-        if (idx !== colIdx) return col;
-        const links = col.links.map((l, lidx) => lidx === linkIdx ? { ...l, [field]: value } : l);
-        return { ...col, links };
-      });
-      const updated = { ...prev, columns };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  const handleFooterPolicyLinkChange = (idx, field, value) => {
-    setFooterConfig(prev => {
-      const policyLinks = prev.policyLinks.map((l, i) => i === idx ? { ...l, [field]: value } : l);
-      const updated = { ...prev, policyLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  const handleFooterSocialLinkChange = (idx, field, value) => {
-    setFooterConfig(prev => {
-      const socialLinks = prev.socialLinks ? prev.socialLinks.map((l, i) => i === idx ? { ...l, [field]: value } : l) : [];
-      const updated = { ...prev, socialLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleAddFooterLink = (colIdx) => {
-    setFooterConfig(prev => {
-      const columns = prev.columns.map((col, idx) => {
-        if (idx === colIdx) {
-          return { ...col, links: [...col.links, { label: 'Novo Link', url: '' }] };
-        }
-        return col;
-      });
-      const updated = { ...prev, columns };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleRemoveFooterLink = (colIdx, linkIdx) => {
-    setFooterConfig(prev => {
-      const columns = prev.columns.map((col, idx) => {
-        if (idx === colIdx) {
-          return { ...col, links: col.links.filter((_, lidx) => lidx !== linkIdx) };
-        }
-        return col;
-      });
-      const updated = { ...prev, columns };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleRemoveFooterColumn = (colIdx) => {
-    setFooterConfig(prev => {
-      const columns = prev.columns.filter((_, idx) => idx !== colIdx);
-      const updated = { ...prev, columns };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleAddPolicyLink = () => {
-    setFooterConfig(prev => {
-      const policyLinks = [...(prev.policyLinks || []), { label: 'Nova Política', url: '' }];
-      const updated = { ...prev, policyLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleRemovePolicyLink = (idx) => {
-    setFooterConfig(prev => {
-      const policyLinks = (prev.policyLinks || []).filter((_, i) => i !== idx);
-      const updated = { ...prev, policyLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleAddSocialLink = () => {
-    setFooterConfig(prev => {
-      const socialLinks = [...(prev.socialLinks || []), { icon: 'fab fa-link', url: '' }];
-      const updated = { ...prev, socialLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
-  
-  const handleRemoveSocialLink = (idx) => {
-    setFooterConfig(prev => {
-      const socialLinks = (prev.socialLinks || []).filter((_, i) => i !== idx);
-      const updated = { ...prev, socialLinks };
-      localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-      return updated;
-    });
-  };
   const [sections, setSections] = useState([]);
   const [isSectionEditorOpen, setIsSectionEditorOpen] = useState(false);
   const [editingSection, setEditingSection] = useState(null);
@@ -278,6 +91,10 @@ const LandingPageSettingsContent = () => {
   const [editingMisc, setEditingMisc] = useState(null);
   const [isMiscModalOpen, setIsMiscModalOpen] = useState(false);
   const [miscCollapsed, setMiscCollapsed] = useState(true);
+  const [testimonials, setTestimonials] = useState([]);
+  const [editingTestimonial, setEditingTestimonial] = useState(null);
+  const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
+  const [testimonialsCollapsed, setTestimonialsCollapsed] = useState(true);
   const [servicesTitle, setServicesTitle] = useState('Serviços');
   const [miscTitle, setMiscTitle] = useState('Diversos');
 
@@ -375,6 +192,18 @@ const LandingPageSettingsContent = () => {
   useEffect(() => {
     const savedMisc = JSON.parse(localStorage.getItem('landingPageMisc') || '[]');
     setMiscItems(savedMisc);
+  }, []);
+
+  useEffect(() => {
+    const savedTestimonials = JSON.parse(localStorage.getItem('landingPageTestimonials') || '[]');
+    if (savedTestimonials.length > 0) {
+      setTestimonials(savedTestimonials);
+    } else {
+      setTestimonials([
+        { id: 1, name: 'Maria Silva', company: 'Tech Solutions', text: 'Excelente trabalho! O projeto foi entregue no prazo e superou nossas expectativas.', rating: 5 },
+        { id: 2, name: 'João Santos', company: 'StartupXYZ', text: 'Profissionais muito competentes. Recomendo para qualquer projeto de desenvolvimento.', rating: 5 },
+      ]);
+    }
   }, []);
 
   useEffect(() => {
@@ -612,6 +441,39 @@ const LandingPageSettingsContent = () => {
     window.dispatchEvent(new Event('storage'));
   };
 
+  // Funções para Depoimentos
+  const saveTestimonialsToStorage = (updated) => {
+    setTestimonials(updated);
+    localStorage.setItem('landingPageTestimonials', JSON.stringify(updated));
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const handleAddTestimonial = () => {
+    setEditingTestimonial({ id: null, name: '', company: '', text: '', rating: 5 });
+    setIsTestimonialModalOpen(true);
+  };
+
+  const handleEditTestimonial = (testimonial) => {
+    setEditingTestimonial(testimonial);
+    setIsTestimonialModalOpen(true);
+  };
+
+  const handleSaveTestimonial = (testimonial) => {
+    let updated;
+    if (testimonial.id) {
+      updated = testimonials.map(t => t.id === testimonial.id ? testimonial : t);
+    } else {
+      updated = [...testimonials, { ...testimonial, id: Date.now() }];
+    }
+    saveTestimonialsToStorage(updated);
+    setIsTestimonialModalOpen(false);
+  };
+
+  const handleDeleteTestimonial = (id) => {
+    const updated = testimonials.filter(t => t.id !== id);
+    saveTestimonialsToStorage(updated);
+  };
+
   // Lista de ícones Font Awesome gratuitos para seleção visual
   const faFreeIcons = [
     { class: 'fa-solid fa-house', label: 'Casa' },
@@ -635,144 +497,6 @@ const LandingPageSettingsContent = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="space-y-8">
-        {/* FOOTER EDITOR (layout compacto como na imagem) */}
-        <div className="bg-card p-6 rounded-xl border space-y-4">
-          <h3 className="text-xl font-semibold mb-4">Rodapé da Landing Page</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Bloco: Logo do rodapé */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Logo do Rodapé (imagem)</Label>
-              {footerConfig.logoUrl && <img src={footerConfig.logoUrl} alt="Logo" className="h-16 mb-2" style={{ maxWidth: 120 }} />}
-              <input type="file" accept="image/*" onChange={handleFooterLogoUpload} className="text-sm" />
-              <Label className="mt-3">Texto da Logo</Label>
-              <input type="text" className="input input-bordered w-full text-sm" value={footerConfig.logoText} onChange={e => handleFooterConfigChange('logoText', e.target.value)} />
-              <Label className="mt-3">Altura da Logo (px)</Label>
-              <input type="number" className="input input-bordered w-full text-sm" value={footerConfig.logoHeight} onChange={e => handleFooterConfigChange('logoHeight', Number(e.target.value))} />
-              <Label className="mt-3">Largura da Logo (px)</Label>
-              <input type="number" className="input input-bordered w-full text-sm" value={footerConfig.logoWidth} onChange={e => handleFooterConfigChange('logoWidth', Number(e.target.value))} />
-            </div>
-            
-            {/* Bloco: Colunas do rodapé */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Colunas do Rodapé</Label>
-              {footerConfig.columns.map((col, cidx) => (
-                <div key={cidx} className="mb-3 border border-muted rounded-lg p-3 bg-background/50">
-                  <div className="flex gap-1 mb-2">
-                    <input type="text" className="input input-bordered flex-1 font-bold text-sm" value={col.title} onChange={e => handleFooterColumnChange(cidx, 'title', e.target.value)} placeholder="Título da Coluna" />
-                    <Button size="sm" variant="destructive" onClick={() => handleRemoveFooterColumn(cidx)} title="Remover Coluna">
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  {col.links.map((link, lidx) => (
-                    <div key={lidx} className="flex gap-1 mb-1">
-                      <input type="text" className="input input-bordered flex-1 text-xs" value={link.label} onChange={e => handleFooterLinkChange(cidx, lidx, 'label', e.target.value)} placeholder="Texto" />
-                      <input type="text" className="input input-bordered flex-1 text-xs" value={link.url} onChange={e => handleFooterLinkChange(cidx, lidx, 'url', e.target.value)} placeholder="URL" />
-                      <Button size="sm" variant="ghost" onClick={() => handleRemoveFooterLink(cidx, lidx)} title="Remover Link">
-                        <X className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button size="sm" variant="outline" className="w-full mt-2" onClick={() => handleAddFooterLink(cidx)}>
-                    <Plus className="w-3 h-3 mr-1" /> Adicionar Link
-                  </Button>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" className="w-full" onClick={() => {
-                setFooterConfig(prev => {
-                  const columns = [
-                    ...prev.columns,
-                    { title: `Nova Coluna ${prev.columns.length + 1}`, links: [{ label: 'Novo Link', url: '' }] }
-                  ];
-                  const updated = { ...prev, columns };
-                  localStorage.setItem('landingPageFooterConfig', JSON.stringify(updated));
-                  return updated;
-                });
-              }}>
-                <Plus className="w-4 h-4 mr-1" /> Nova Coluna
-              </Button>
-            </div>
-            
-            {/* Bloco: Cores e Links de Política */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Cor de Fundo do Rodapé</Label>
-              <ColorPicker value={footerConfig.bgColor} onChange={color => handleFooterConfigChange('bgColor', color)} />
-              <Label className="mt-3">Cor do Texto do Rodapé</Label>
-              <ColorPicker value={footerConfig.textColor} onChange={color => handleFooterConfigChange('textColor', color)} />
-              <Label className="mt-3">Links de Política</Label>
-              {footerConfig.policyLinks && footerConfig.policyLinks.map((link, idx) => (
-                <div key={idx} className="flex gap-1 mb-1">
-                  <input type="text" className="input input-bordered flex-1 text-xs" value={link.label} onChange={e => handleFooterPolicyLinkChange(idx, 'label', e.target.value)} placeholder="Texto" />
-                  <input type="text" className="input input-bordered flex-1 text-xs" value={link.url} onChange={e => handleFooterPolicyLinkChange(idx, 'url', e.target.value)} placeholder="URL" />
-                  <Button size="sm" variant="ghost" onClick={() => handleRemovePolicyLink(idx)} title="Remover Link de Política">
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" className="w-full" onClick={handleAddPolicyLink}>
-                <Plus className="w-3 h-3 mr-1" /> Adicionar Link de Política
-              </Button>
-            </div>
-            
-            {/* Bloco: Copyright */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Texto do Copyright</Label>
-              <textarea className="input input-bordered w-full text-sm h-20 resize-none" value={footerConfig.copyrightText} onChange={e => handleFooterConfigChange('copyrightText', e.target.value)} />
-              <Label className="mt-3">Cor de Fundo do Copyright</Label>
-              <ColorPicker value={footerConfig.copyrightBgColor} onChange={color => handleFooterConfigChange('copyrightBgColor', color)} />
-              <Label className="mt-3">Cor do Texto do Copyright</Label>
-              <ColorPicker value={footerConfig.copyrightTextColor} onChange={color => handleFooterConfigChange('copyrightTextColor', color)} />
-            </div>
-          </div>
-          
-          {/* Linha adicional para novos campos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-4 border-t border-muted">
-            {/* Bloco: Tagline e Botão */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Tagline/Slogan</Label>
-              <textarea className="input input-bordered w-full text-sm h-16 resize-none" value={footerConfig.tagline || ''} onChange={e => handleFooterConfigChange('tagline', e.target.value)} placeholder="Innovate, Build, Scale – Your Vision, Our Code" />
-              <Label className="mt-3">Texto do Botão</Label>
-              <input type="text" className="input input-bordered w-full text-sm" value={footerConfig.buttonText || ''} onChange={e => handleFooterConfigChange('buttonText', e.target.value)} placeholder="Contact Us" />
-              <Label className="mt-3">Cor do Botão</Label>
-              <ColorPicker value={footerConfig.buttonColor || '#00bcd4'} onChange={color => handleFooterConfigChange('buttonColor', color)} />
-            </div>
-            
-            {/* Bloco: Redes Sociais */}
-            <div className="space-y-3 bg-muted/40 border rounded-lg p-4">
-              <Label className="font-semibold">Redes Sociais</Label>
-              {footerConfig.socialLinks && footerConfig.socialLinks.map((social, idx) => (
-                <div key={idx} className="flex flex-col gap-1 mb-2 p-2 border rounded bg-background/50">
-                  <div className="flex gap-1 items-center">
-                    <input type="text" className="input input-bordered flex-1 text-xs" value={social.icon || ''} onChange={e => handleFooterSocialLinkChange(idx, 'icon', e.target.value)} placeholder="fab fa-facebook" />
-                    <input type="text" className="input input-bordered flex-1 text-xs" value={social.url || ''} onChange={e => handleFooterSocialLinkChange(idx, 'url', e.target.value)} placeholder="URL" />
-                    <Button size="sm" variant="ghost" onClick={() => handleRemoveSocialLink(idx)} title="Remover Rede Social">
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  <div className="flex gap-2 items-center mt-1">
-                    <span className="text-xs text-muted-foreground">ou imagem personalizada:</span>
-                    <input type="file" accept="image/*,.svg" className="text-xs" onChange={e => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => handleFooterSocialLinkChange(idx, 'customIcon', reader.result);
-                        reader.readAsDataURL(file);
-                      }
-                    }} />
-                    {social.customIcon && (
-                      <>
-                        <img src={social.customIcon} alt="Custom Icon" className="w-8 h-8 inline-block border rounded ml-2" />
-                        <Button size="icon" variant="ghost" type="button" onClick={() => handleFooterSocialLinkChange(idx, 'customIcon', undefined)}><X className="w-3 h-3" /></Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              ))}
-              <Button size="sm" variant="outline" className="w-full" onClick={handleAddSocialLink}>
-                <Plus className="w-4 h-4 mr-1" /> Nova Rede Social
-              </Button>
-            </div>
-          </div>
-        </div>
         {/* HEADER EDITOR */}
         <div className="bg-card p-6 rounded-xl border space-y-4">
           <div className="flex items-center justify-between cursor-pointer select-none" onClick={() => setHeaderCollapsed(v => !v)}>
@@ -1058,6 +782,84 @@ const LandingPageSettingsContent = () => {
                       </div>
                       <DialogFooter>
                         <Button type="button" variant="ghost" onClick={() => setIsServiceModalOpen(false)}>Cancelar</Button>
+                        <Button type="submit">Salvar</Button>
+                      </DialogFooter>
+                    </form>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
+        </div>
+
+        {/* PAINEL DE DEPOIMENTOS */}
+        <div className="bg-card p-6 rounded-xl border space-y-4">
+          <div className="flex items-center justify-between mb-2 cursor-pointer select-none" onClick={() => setTestimonialsCollapsed(v => !v)}>
+            <div className="flex flex-col gap-1">
+              <h3 className="text-xl font-semibold">Depoimentos</h3>
+              <p className="text-sm text-muted-foreground">Gerencie os depoimentos de clientes exibidos na landing page</p>
+            </div>
+            <Button onClick={handleAddTestimonial} variant="outline"><Plus className="w-4 h-4 mr-1" />Adicionar Depoimento</Button>
+          </div>
+          {!testimonialsCollapsed && (
+            <>
+              <div className="space-y-2">
+                {testimonials.map((testimonial, idx) => (
+                  <div key={testimonial.id} className="flex items-center gap-2 bg-muted/40 border rounded-lg p-3">
+                    <div className="flex-1">
+                      <div className="font-bold">{testimonial.name}</div>
+                      <div className="text-xs text-muted-foreground">{testimonial.company}</div>
+                      <div className="text-sm text-muted-foreground mt-1 truncate max-w-md">"{testimonial.text}"</div>
+                      <div className="flex gap-1 mt-1">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-3 h-3 text-yellow-400 fill-current" />
+                        ))}
+                      </div>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => handleEditTestimonial(testimonial)}><Edit className="w-4 h-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => handleDeleteTestimonial(testimonial.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Modal de edição de depoimento */}
+              <Dialog open={isTestimonialModalOpen} onOpenChange={setIsTestimonialModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{editingTestimonial && editingTestimonial.id ? 'Editar Depoimento' : 'Novo Depoimento'}</DialogTitle>
+                  </DialogHeader>
+                  {editingTestimonial && (
+                    <form onSubmit={e => { e.preventDefault(); handleSaveTestimonial(editingTestimonial); }} className="space-y-4">
+                      <div>
+                        <Label>Nome do Cliente</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingTestimonial.name} onChange={e => setEditingTestimonial(prev => ({ ...prev, name: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Empresa</Label>
+                        <input type="text" className="input input-bordered w-full" value={editingTestimonial.company} onChange={e => setEditingTestimonial(prev => ({ ...prev, company: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Depoimento</Label>
+                        <textarea className="input input-bordered w-full min-h-[100px]" value={editingTestimonial.text} onChange={e => setEditingTestimonial(prev => ({ ...prev, text: e.target.value }))} />
+                      </div>
+                      <div>
+                        <Label>Avaliação (1-5 estrelas)</Label>
+                        <div className="flex gap-2 items-center">
+                          {[1,2,3,4,5].map(rating => (
+                            <button
+                              key={rating}
+                              type="button"
+                              onClick={() => setEditingTestimonial(prev => ({ ...prev, rating }))}
+                              className={`p-1 hover:scale-110 transition-transform ${editingTestimonial.rating >= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                            >
+                              <Star className="w-6 h-6 fill-current" />
+                            </button>
+                          ))}
+                          <span className="ml-2 text-sm text-muted-foreground">{editingTestimonial.rating} estrela{editingTestimonial.rating !== 1 ? 's' : ''}</span>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={() => setIsTestimonialModalOpen(false)}>Cancelar</Button>
                         <Button type="submit">Salvar</Button>
                       </DialogFooter>
                     </form>
