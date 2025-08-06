@@ -70,7 +70,6 @@ const TasksContent = () => {
     handleUpdateTask, 
     handleSaveColumn, 
     handleRemoveColumn,
-    handleRemoveTask,
     handleUpdateOption,
     handleUpdateTag,
     projects,
@@ -257,7 +256,6 @@ const TasksContent = () => {
                 onRemoveColumn={handleRemoveColumn}
                 onEditColumn={handleOpenColumnModal}
                 onTaskClick={handleTaskClick}
-                onRemoveTask={handleRemoveTask}
                 onNewTask={() => setIsTaskModalOpen(true)}
                 canAddTask={user?.role === 'admin' || (user?.role === 'client' && index === 0)}
                 userRole={user?.role}

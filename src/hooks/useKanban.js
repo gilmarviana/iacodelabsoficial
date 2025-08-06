@@ -247,23 +247,6 @@ const useKanban = () => {
     };
 
 
-    const handleRemoveTask = (taskId) => {
-        let newTasks = { ...tasks };
-        let removed = false;
-        for (const columnId in newTasks) {
-            const before = newTasks[columnId].length;
-            newTasks[columnId] = newTasks[columnId].filter(t => t.id !== taskId);
-            if (newTasks[columnId].length < before) removed = true;
-        }
-        if (removed) {
-            setTasks(newTasks);
-            saveData(newTasks, columns);
-            toast({ title: "Tarefa removida", description: "A tarefa foi excluída com sucesso." });
-        } else {
-            toast({ title: "Erro", description: "Tarefa não encontrada.", variant: "destructive" });
-        }
-    };
-
     return {
         tasks,
         columns,
@@ -275,7 +258,6 @@ const useKanban = () => {
         handleUpdateTask,
         handleSaveColumn,
         handleRemoveColumn,
-        handleRemoveTask,
         handleUpdateOption,
         handleUpdateTag,
     };

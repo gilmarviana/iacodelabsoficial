@@ -16,8 +16,6 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
     technologies: []
   });
   const [newTech, setNewTech] = useState('');
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
   const { toast } = useToast();
 
   const categories = ['Website', 'E-commerce', 'Mobile', 'Sistema', 'API', 'Dashboard'];
@@ -36,15 +34,11 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
         endDate: project.endDate || '',
         technologies: project.technologies || []
       });
-      setImage(null);
-      setImagePreview(project.image);
     } else {
       setFormData({
         title: '', description: '', client: '', category: '', status: 'Em Desenvolvimento',
         startDate: '', endDate: '', technologies: []
       });
-      setImage(null);
-      setImagePreview(null);
     }
   }, [project, isOpen]);
 
@@ -63,21 +57,13 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
     setFormData({ ...formData, technologies: formData.technologies.filter(t => t !== tech) });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.title || !formData.description || !formData.client) {
       toast({ title: "Erro", description: "Por favor, preencha os campos obrigatórios.", variant: "destructive" });
       return;
     }
-    onSave({ ...formData, image });
+    onSave(formData);
   };
 
   return (
@@ -153,13 +139,6 @@ const ProjectModal = ({ isOpen, onClose, onSave, project }) => {
                   <input type="text" value={newTech} onChange={e => setNewTech(e.target.value)} onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddTechnology(newTech.trim()))} className="flex-1 px-3 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Adicionar tecnologia" />
                   <Button type="button" onClick={() => handleAddTechnology(newTech.trim())}>Adicionar</Button>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Imagem do Projeto</label>
-                {imagePreview && (
-                  <img src={imagePreview} alt="Preview" className="mb-2 max-h-32 rounded shadow" />
-                )}
-                <input type="file" accept="image/*" onChange={handleImageChange} className="w-full px-3 py-2 bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" />
               </div>
               <div className="flex items-center justify-end space-x-3 pt-4 border-t">
                 <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
