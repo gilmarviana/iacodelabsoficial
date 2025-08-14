@@ -57,15 +57,29 @@ const AdminDashboard = () => {
     }
   }, [user, navigate]);
 
-  const handleSaveProject = (projectData) => {
+  const handleSaveProject = async (projectData) => {
+    let processedProjectData = { ...projectData };
+
+    // Processar imagem se existir
+    if (projectData.image && projectData.image instanceof File) {
+      try {
+        const base64Image = await convertFileToBase64(projectData.image);
+        processedProjectData.image = base64Image;
+      } catch (error) {
+        console.error('Erro ao processar imagem:', error);
+        toast({ title: "Erro", description: "Erro ao processar a imagem.", variant: "destructive" });
+        return;
+      }
+    }
+
     let updatedProjects;
     let oldProjectName = null;
     if (editingProject) {
       oldProjectName = projects.find(p => p.id === editingProject.id)?.title;
-      updatedProjects = projects.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, createdAt: editingProject.createdAt } : p);
+      updatedProjects = projects.map(p => p.id === editingProject.id ? { ...processedProjectData, id: editingProject.id, createdAt: editingProject.createdAt } : p);
       toast({ title: "Projeto atualizado!", description: "As alterações foram salvas." });
     } else {
-      const newProject = { ...projectData, id: Date.now(), createdAt: new Date().toISOString() };
+      const newProject = { ...processedProjectData, id: Date.now(), createdAt: new Date().toISOString() };
       updatedProjects = [...projects, newProject];
       toast({ title: "Projeto criado!", description: "Novo projeto adicionado." });
     }
@@ -73,14 +87,14 @@ const AdminDashboard = () => {
     localStorage.setItem('projects', JSON.stringify(updatedProjects));
 
     // Atualiza nome do projeto nas tarefas se necessário
-    if (editingProject && oldProjectName && oldProjectName !== projectData.title) {
+    if (editingProject && oldProjectName && oldProjectName !== processedProjectData.title) {
       const kanbanTasks = JSON.parse(localStorage.getItem('kanbanTasks') || '{}');
       let changed = false;
       Object.keys(kanbanTasks).forEach(col => {
         kanbanTasks[col] = kanbanTasks[col].map(task => {
           if (task.project === oldProjectName) {
             changed = true;
-            return { ...task, project: projectData.title };
+            return { ...task, project: processedProjectData.title };
           }
           return task;
         });
@@ -92,6 +106,16 @@ const AdminDashboard = () => {
 
     setIsProjectModalOpen(false);
     setEditingProject(null);
+  };
+
+  // Função auxiliar para converter File para base64
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   };
 
   const handleEditProject = (project) => {

@@ -79,7 +79,12 @@ const HeroSlider = ({ landingPageConfig, onScheduleClick }) => {
                     {slide.image && slide.image.startsWith('data:image') ? (
                       <img src={slide.image} alt={slide.title} className="w-full h-full object-cover rounded-l-3xl shadow-2xl" />
                     ) : (
-                      <img-replace alt={slide.imagePrompt || slide.title} className="w-full h-full object-cover rounded-l-3xl shadow-2xl" />
+                      <div className="w-full h-full bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-l-3xl shadow-2xl flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <div className="text-lg font-semibold opacity-80">Imagem do Slide</div>
+                          <div className="text-sm opacity-60">{slide.imagePrompt || slide.title}</div>
+                        </div>
+                      </div>
                     )}
                     <div className="absolute inset-0 bg-black/30 rounded-l-3xl" />
                   </div>
@@ -95,7 +100,12 @@ const HeroSlider = ({ landingPageConfig, onScheduleClick }) => {
                     {slide.image && slide.image.startsWith('data:image') ? (
                       <img src={slide.image} alt={slide.title} className="w-full h-full object-cover rounded-r-3xl shadow-2xl" />
                     ) : (
-                      <img-replace alt={slide.imagePrompt || slide.title} className="w-full h-full object-cover rounded-r-3xl shadow-2xl" />
+                      <div className="w-full h-full bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-r-3xl shadow-2xl flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <div className="text-lg font-semibold opacity-80">Imagem do Slide</div>
+                          <div className="text-sm opacity-60">{slide.imagePrompt || slide.title}</div>
+                        </div>
+                      </div>
                     )}
                     <div className="absolute inset-0 bg-black/30 rounded-r-3xl" />
                   </div>
@@ -120,7 +130,12 @@ const HeroSlider = ({ landingPageConfig, onScheduleClick }) => {
                   {slide.image && slide.image.startsWith('data:image') ? (
                     <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
                   ) : (
-                    <img-replace alt={slide.imagePrompt || slide.title} className="absolute inset-0 w-full h-full object-cover" />
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                      <div className="text-center text-white opacity-40">
+                        <div className="text-2xl font-semibold">Imagem de Fundo</div>
+                        <div className="text-lg">{slide.imagePrompt || slide.title}</div>
+                      </div>
+                    </div>
                   )}
                   <div className="absolute inset-0 bg-black/60 z-10" />
                   <div className="relative z-20 container mx-auto px-6 h-full flex flex-col justify-center text-center text-white">
@@ -152,7 +167,12 @@ const HeroSlider = ({ landingPageConfig, onScheduleClick }) => {
                 {slide.image && slide.image.startsWith('data:image') ? (
                   <img src={slide.image} alt={slide.title} className="absolute inset-0 w-full h-full object-cover" />
                 ) : (
-                  <img-replace alt={slide.imagePrompt || slide.title} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                    <div className="text-center text-white opacity-40">
+                      <div className="text-2xl font-semibold">Imagem de Fundo</div>
+                      <div className="text-lg">{slide.imagePrompt || slide.title}</div>
+                    </div>
+                  </div>
                 )}
                 <div className="relative z-20 container mx-auto px-6 h-full flex flex-col justify-center text-center text-white">
                   <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

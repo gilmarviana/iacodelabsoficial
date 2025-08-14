@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Imagem do Projeto</title>
+</head>
+<body>
+    <h1>Teste de Funcionalidade - Imagem do Projeto</h1>
+    
+    <div>
+        <h2>Adicionar Projeto de Teste</h2>
+        <button onclick="addTestProject()">Adicionar Projeto com Imagem</button>
+        <button onclick="viewProjects()">Ver Projetos no localStorage</button>
+        <button onclick="clearProjects()">Limpar Projetos</button>
+    </div>
+    
+    <div id="output"></div>
+    
+    <script>
+        function addTestProject() {
+            // Criar uma imagem base64 simples (pixel vermelho 1x1)
+            const testImageBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
+            
+            const testProject = {
+                id: Date.now(),
+                title: 'Projeto de Teste com Imagem',
+                description: 'Este é um projeto de teste para verificar se as imagens estão funcionando corretamente.',
+                client: 'Cliente Teste',
+                category: 'Website',
+                status: 'Concluído',
+                startDate: '2024-01-01',
+                endDate: '2024-01-31',
+                technologies: ['React', 'JavaScript'],
+                image: testImageBase64,
+                isVisibleOnSite: true,
+                createdAt: new Date().toISOString()
+            };
+            
+            const existingProjects = JSON.parse(localStorage.getItem('projects') || '[]');
+            const updatedProjects = [...existingProjects, testProject];
+            localStorage.setItem('projects', JSON.stringify(updatedProjects));
+            
+            document.getElementById('output').innerHTML = '<p style="color: green;">Projeto de teste adicionado com sucesso!</p>';
+        }
+        
+        function viewProjects() {
+            const projects = JSON.parse(localStorage.getItem('projects') || '[]');
+            let output = '<h3>Projetos no localStorage:</h3>';
+            
+            if (projects.length === 0) {
+                output += '<p>Nenhum projeto encontrado.</p>';
+            } else {
+                projects.forEach((project, index) => {
+                    output += `
+                        <div style="border: 1px solid #ccc; margin: 10px 0; padding: 10px;">
+                            <h4>${project.title}</h4>
+                            <p><strong>ID:</strong> ${project.id}</p>
+                            <p><strong>Descrição:</strong> ${project.description}</p>
+                            <p><strong>Cliente:</strong> ${project.client}</p>
+                            <p><strong>Categoria:</strong> ${project.category}</p>
+                            <p><strong>Visível no Site:</strong> ${project.isVisibleOnSite !== false ? 'Sim' : 'Não'}</p>
+                            <p><strong>Tem Imagem:</strong> ${project.image ? 'Sim' : 'Não'}</p>
+                            ${project.image ? `<p><strong>Tipo de Imagem:</strong> ${project.image.substring(0, 30)}...</p>` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('output').innerHTML = output;
+        }
+        
+        function clearProjects() {
+            localStorage.removeItem('projects');
+            document.getElementById('output').innerHTML = '<p style="color: orange;">Todos os projetos foram removidos do localStorage.</p>';
+        }
+    </script>
+</body>
+</html>
