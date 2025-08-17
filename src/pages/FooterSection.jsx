@@ -1,61 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin, Brain } from 'lucide-react';
 
 const defaultFooterConfig = {
   logoUrl: '',
-  logoText: 'Devop',
+  logoText: 'IA Code Labs',
   logoHeight: 40,
   logoWidth: 40,
-  tagline: 'Innovate, Build, Scale – Your Vision, Our Code',
+  tagline: 'Especialistas em desenvolvimento de software e inteligência artificial, criando soluções inovadoras que transformam negócios e impulsionam o futuro digital.',
   buttonText: 'Contact Us',
-  buttonColor: '#00bcd4',
-  columns: [
-    { 
-      title: 'Home', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    },
-    { 
-      title: 'About Us', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    },
-    { 
-      title: 'Service', 
-      links: [
-        { label: 'Homepage', url: '#' },
-        { label: 'About Us', url: '#' },
-        { label: 'Service', url: '#' },
-        { label: 'Blog', url: '#' },
-        { label: 'Contact Us', url: '#' }
-      ] 
-    }
+  buttonColor: '#3b82f6',
+  contact: {
+    email: 'contato@iacodelabs.com',
+    phone: '+55 (11) 99999-9999',
+    location: 'São Paulo, Brasil'
+  },
+  quickLinks: [
+    { label: 'Sobre Nós', url: '#about' },
+    { label: 'Serviços', url: '#services' },
+    { label: 'Projetos', url: '#cases' },
+    { label: 'Contato', url: '#contact' }
   ],
-  bgColor: '#1a1a1a',
-  textColor: '#ffffff',
-  policyLinks: [
-    { label: 'Privacy Policy', url: '#' },
-    { label: 'Terms of Service', url: '#' }
-  ],
+  bgColor: '#1e293b',
+  textColor: '#94a3b8',
+  policyLinks: [],
   socialLinks: [
-    { icon: 'fab fa-whatsapp', url: '#' },
-    { icon: 'fab fa-instagram', url: '#' },
+    { icon: 'fab fa-github', url: '#' },
     { icon: 'fab fa-linkedin', url: '#' },
     { icon: 'fab fa-twitter', url: '#' }
   ],
-  copyrightText: 'Copyright © 2025 Devop - App Development Software House Agency Elementor Template Kit',
-  copyrightBgColor: '#111',
-  copyrightTextColor: '#fff',
+  copyrightText: '© 2025 IA Code Labs. Todos os direitos reservados.',
+  copyrightSubText: 'Desenvolvido com ♥ e Inteligência Artificial',
+  copyrightBgColor: '#0f172a',
+  copyrightTextColor: '#64748b',
 };
 
 const FooterSection = () => {
@@ -91,107 +68,131 @@ const FooterSection = () => {
     <>
       <footer style={{ background: footerConfig.bgColor, color: footerConfig.textColor, padding: '0', position: 'relative' }}>
         <div className="container mx-auto px-6 py-16">
-        {/* Policy Links positioned at top right */}
-        <div className="absolute top-6 right-6 flex gap-6">
-          {footerConfig.policyLinks && footerConfig.policyLinks.map((link, idx) => (
-            <a
-              key={idx}
-              href={link.url || '#'}
-              className="text-sm hover:underline"
-              style={{ color: footerConfig.textColor }}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex flex-col lg:flex-row justify-between">
-          {/* Left section - Logo and tagline */}
-          <div className="flex-1 max-w-md mb-8 lg:mb-0">
-            <div className="flex items-center gap-3 mb-4">
-              {footerConfig.logoUrl && (
-                <img
-                  src={footerConfig.logoUrl}
-                  alt="Logo"
-                  style={{ height: footerConfig.logoHeight, width: footerConfig.logoWidth, objectFit: 'contain' }}
-                />
-              )}
-              {footerConfig.logoText && (
-                <span className="font-bold text-2xl" style={{ color: footerConfig.textColor }}>{footerConfig.logoText}</span>
-              )}
-            </div>
-            
-            {/* Tagline/Description */}
-            <h2 className="text-3xl font-light mb-6 leading-tight" style={{ color: footerConfig.textColor }}>
-              {footerConfig.tagline || 'Innovate, Build, Scale – Your Vision, Our Code'}
-            </h2>
-
-            {/* Contact Button */}
-            <button 
-              className="px-6 py-3 rounded text-white font-medium hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: footerConfig.buttonColor || '#00bcd4' }}
-            >
-              {footerConfig.buttonText || 'Contact Us'}
-            </button>
-
-            {/* Social Icons */}
-            <div className="flex gap-3 mt-8">
-              {footerConfig.socialLinks && footerConfig.socialLinks.map((social, idx) => (
-                <a
-                  key={idx}
-                  href={social.url || '#'}
-                  className="w-10 h-10 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {social.customIcon
-                    ? <img src={social.customIcon} alt="Custom Icon" className="w-6 h-6 object-contain" />
-                    : <i className={social.icon || 'fa-brands fa-facebook'} style={{ color: footerConfig.textColor }}></i>
-                  }
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Right section - Navigation columns */}
-          <div className="flex-1 flex justify-end">
-            <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
-              {/* Navigation Columns */}
-              {footerConfig.columns && footerConfig.columns.map((col, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <h3 className="text-xl font-medium mb-4" style={{ color: footerConfig.textColor }}>
-                    {col.title}
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    {col.links && col.links.map((link, lidx) => (
-                      <a
-                        key={lidx}
-                        href={link.url || '#'}
-                        className="text-sm hover:underline"
-                        style={{ color: footerConfig.textColor, opacity: 0.8 }}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
+          <div className="grid lg:grid-cols-3 gap-12">
+            {/* Left section - Logo and description */}
+            <div className="lg:col-span-1">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 mb-6"
+              >
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Brain className="w-6 h-6 text-white" />
                 </div>
-              ))}
+                <span className="font-bold text-2xl text-white">
+                  {footerConfig.logoText}
+                </span>
+              </motion.div>
+              
+              <p className="text-slate-400 leading-relaxed mb-8 max-w-sm">
+                {footerConfig.tagline}
+              </p>
+
+              {/* Social Icons */}
+              <div className="flex gap-4">
+                {footerConfig.socialLinks && footerConfig.socialLinks.map((social, idx) => (
+                  <motion.a
+                    key={idx}
+                    href={social.url || '#'}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <i className={social.icon || 'fab fa-github'} style={{ color: '#fff', fontSize: '18px' }}></i>
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+
+            {/* Middle section - Contact */}
+            <div className="lg:col-span-1">
+              <h3 className="text-xl font-semibold text-white mb-6">Contato</h3>
+              
+              <div className="space-y-4">
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="flex items-center gap-3"
+                >
+                  <Mail className="w-5 h-5 text-blue-400" />
+                  <a 
+                    href={`mailto:${footerConfig.contact?.email}`}
+                    className="text-slate-400 hover:text-white transition-colors"
+                  >
+                    {footerConfig.contact?.email}
+                  </a>
+                </motion.div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="flex items-center gap-3"
+                >
+                  <Phone className="w-5 h-5 text-blue-400" />
+                  <a 
+                    href={`tel:${footerConfig.contact?.phone}`}
+                    className="text-slate-400 hover:text-white transition-colors"
+                  >
+                    {footerConfig.contact?.phone}
+                  </a>
+                </motion.div>
+                
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex items-center gap-3"
+                >
+                  <MapPin className="w-5 h-5 text-blue-400" />
+                  <span className="text-slate-400">
+                    {footerConfig.contact?.location}
+                  </span>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Right section - Quick Links */}
+            <div className="lg:col-span-1">
+              <h3 className="text-xl font-semibold text-white mb-6">Links Rápidos</h3>
+              
+              <div className="space-y-3">
+                {footerConfig.quickLinks && footerConfig.quickLinks.map((link, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                  >
+                    <a
+                      href={link.url}
+                      className="text-slate-400 hover:text-white transition-colors block"
+                    >
+                      {link.label}
+                    </a>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-
         </div>
       </footer>
-      {/* Copyright below footer */}
+      
+      {/* Copyright section */}
       <div style={{ background: footerConfig.copyrightBgColor, color: footerConfig.copyrightTextColor }}>
-        <p className="text-sm text-center py-3 m-0">
-          {footerConfig.copyrightText}
-        </p>
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-center md:text-left">
+              {footerConfig.copyrightText}
+            </p>
+            <p className="text-sm text-center md:text-right">
+              {footerConfig.copyrightSubText}
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

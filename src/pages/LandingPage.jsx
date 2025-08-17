@@ -1,9 +1,8 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { 
-  Code, 
+  Brain,
   Smartphone, 
   Globe, 
   Database, 
@@ -11,17 +10,32 @@ import {
   Send, 
   Menu, 
   X,
-  Wrench,
+  BarChart3,
+  Shield,
+  Zap,
+  Users,
+  CheckCircle,
+  ArrowRight,
+  Play,
+  Award,
+  Target,
+  Clock,
+  TrendingUp,
+  MessageSquare,
+  ChevronRight,
+  Code,
+  Rocket,
+  Trophy,
+  Mail,
   Phone,
-  Text,
-  Image as ImageIcon
+  MapPin,
+  Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import ChatWidget from '@/components/ChatWidget';
 import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import HeroSlider from '@/components/HeroSlider';
 import SchedulingModal from '@/components/SchedulingModal';
 import FooterSection from '@/pages/FooterSection';
 
@@ -29,101 +43,8 @@ const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [projects, setProjects] = useState([]);
-  const [config, setConfig] = useState({});
-  const [sections, setSections] = useState([]);
-  const [services, setServices] = useState([]);
-  const [miscItems, setMiscItems] = useState([]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [servicesTitle, setServicesTitle] = useState('Serviços');
-  const [miscTitle, setMiscTitle] = useState('Diversos');
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const serviceIcons = { Wrench, Code, Star, Phone, Globe, Smartphone, Database, Text, ImageIcon };
-
-  const getDefaultSections = () => [
-    { id: 'hero', name: 'Revolution Slide', type: 'hero', isVisible: true, isRemovable: false, title: 'Transformamos Ideias em Soluções Digitais', subtitle: 'Especialistas em desenvolvimento web, mobile e sistemas personalizados.' },
-    { id: 'projects', name: 'Projetos', type: 'projects', isVisible: true, isRemovable: false, title: 'Nossos Projetos', subtitle: 'Conheça alguns dos projetos que desenvolvemos.' },
-    { id: 'services', name: 'Serviços', type: 'services', isVisible: true, isRemovable: false, title: 'Nossos Serviços', subtitle: 'Soluções completas para suas necessidades digitais.' },
-    { id: 'testimonials', name: 'Depoimentos', type: 'testimonials', isVisible: true, isRemovable: false, title: 'O que nossos clientes dizem', subtitle: '' },
-    { id: 'contact', name: 'Contato', type: 'contact', isVisible: true, isRemovable: false, title: 'Entre em Contato', subtitle: 'Pronto para transformar sua ideia em realidade? Vamos conversar!' },
-  ];
-
-  const loadConfigAndData = useCallback(() => {
-    const savedProjects = JSON.parse(localStorage.getItem('projects') || '[]');
-    setProjects(savedProjects.filter(p => p.isVisibleOnSite !== false));
-
-    const savedConfig = JSON.parse(localStorage.getItem('landingPageConfig') || '{}');
-    setConfig(savedConfig);
-    
-    const savedSections = JSON.parse(localStorage.getItem('landingPageSections'));
-    console.log('🔍 Seções carregadas do localStorage:', savedSections);
-    if (savedSections && savedSections.length > 0) {
-      setSections(savedSections);
-      console.log('✅ Seções aplicadas:', savedSections);
-    } else {
-      const defaultSections = getDefaultSections();
-      setSections(defaultSections);
-      console.log('📋 Usando seções padrão:', defaultSections);
-    }
-
-    const savedServices = JSON.parse(localStorage.getItem('landingPageServices') || '[]');
-    if (savedServices.length > 0) {
-        setServices(savedServices);
-    } else {
-        setServices([
-            { id: 1, icon: 'Globe', title: 'Desenvolvimento Web', description: 'Sites responsivos e aplicações web modernas.' },
-            { id: 2, icon: 'Smartphone', title: 'Apps Mobile', description: 'Aplicativos nativos e híbridos para iOS e Android.' },
-            { id: 3, icon: 'Database', title: 'Sistemas Personalizados', description: 'Soluções sob medida para otimizar seu negócio.' },
-            { id: 4, icon: 'Code', title: 'Consultoria Tech', description: 'Orientação técnica e estratégica para seus projetos.' }
-        ]);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadConfigAndData();
-    window.addEventListener('storage', loadConfigAndData);
-    
-    // Também escutar por mudanças customizadas
-    const handleCustomStorageChange = () => {
-      console.log('🔄 Recarregando dados por evento customizado');
-      loadConfigAndData();
-    };
-    
-    window.addEventListener('landingPageUpdate', handleCustomStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', loadConfigAndData);
-      window.removeEventListener('landingPageUpdate', handleCustomStorageChange);
-    };
-  }, [loadConfigAndData]);
-
-  useEffect(() => {
-    const savedMisc = JSON.parse(localStorage.getItem('landingPageMisc') || '[]');
-    setMiscItems(savedMisc);
-  }, []);
-
-  useEffect(() => {
-    const savedServicesTitle = localStorage.getItem('landingPageServicesTitle');
-    if (savedServicesTitle) setServicesTitle(savedServicesTitle);
-    const savedMiscTitle = localStorage.getItem('landingPageMiscTitle');
-    if (savedMiscTitle) setMiscTitle(savedMiscTitle);
-  }, []);
-
-  // Carregar depoimentos do localStorage
-  useEffect(() => {
-    const savedTestimonials = JSON.parse(localStorage.getItem('landingPageTestimonials') || '[]');
-    if (savedTestimonials.length > 0) {
-      setTestimonials(savedTestimonials);
-    } else {
-      // Depoimentos padrão
-      setTestimonials([
-        { id: 1, name: 'Maria Silva', company: 'Tech Solutions', text: 'Excelente trabalho! O projeto foi entregue no prazo e superou nossas expectativas.', rating: 5 },
-        { id: 2, name: 'João Santos', company: 'StartupXYZ', text: 'Profissionais muito competentes. Recomendo para qualquer projeto de desenvolvimento.', rating: 5 },
-      ]);
-    }
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -162,626 +83,1109 @@ const LandingPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const renderSection = (section) => {
-    const sectionStyle = {
-      backgroundColor: section.bgImage ? 'transparent' : section.bgColor,
-      backgroundImage: section.bgImage ? `url(${section.bgImage})` : 'none',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      color: section.textColor,
-    };
-    
-    const titleStyle = { color: section.titleColor };
-    const subtitleStyle = { color: section.subtitleColor };
-
-    switch (section.type) {
-        case 'hero': return (
-            <section id={section.id} className="bg-background">
-                <HeroSlider landingPageConfig={config} onScheduleClick={() => setIsSchedulingModalOpen(true)} />
-            </section>
-        );
-        case 'projects': return (
-            <section id={section.id} className="py-20 px-6 bg-secondary relative overflow-hidden" style={sectionStyle}>
-                {/* Background decorativo */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5"></div>
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
-                
-                <div className="container mx-auto relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <motion.h2 
-                            initial={{ opacity: 0, scale: 0.9 }} 
-                            whileInView={{ opacity: 1, scale: 1 }} 
-                            viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent" 
-                            style={titleStyle}
-                        >
-                            {section.title}
-                        </motion.h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
-                    </motion.div>
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {projects.map((project, index) => (
-                            <motion.div 
-                                key={project.id} 
-                                initial={{ opacity: 0, y: 50, scale: 0.9 }} 
-                                whileInView={{ opacity: 1, y: 0, scale: 1 }} 
-                                viewport={{ once: true }} 
-                                transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
-                                whileHover={{ y: -10, scale: 1.02 }}
-                                className="group bg-card/80 backdrop-blur-sm rounded-xl overflow-hidden border border-border/50 shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
-                            >
-                                <div className="aspect-video bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/40 transition-all duration-300"></div>
-                                    <motion.div
-                                        whileHover={{ scale: 1.1 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="w-full h-full"
-                                    >
-                                        {project.image ? (
-                                            <img
-                                                src={project.image}
-                                                alt={project.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/30 to-purple-500/30">
-                                                <div className="text-center text-white/80">
-                                                    <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-60" />
-                                                    <p className="text-sm opacity-60">Imagem do projeto</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                </div>
-                                <div className="p-6 relative">
-                                    <div className="absolute -top-3 left-6 right-6 h-6 bg-gradient-to-r from-primary/20 via-purple-500/20 to-pink-500/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    <span className="inline-block px-3 py-1 text-xs text-primary font-semibold bg-primary/10 rounded-full border border-primary/20">
-                                        {project.category}
-                                    </span>
-                                    <h3 className="text-xl font-bold mt-3 mb-3 group-hover:text-primary transition-colors duration-300">{project.title}</h3>
-                                    <p className="text-muted-foreground leading-relaxed">{project.description}</p>
-                                    <div className="mt-4 h-1 w-0 bg-gradient-to-r from-primary to-purple-500 group-hover:w-full transition-all duration-500 rounded-full"></div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
-        case 'services': return (
-            <section id={section.id} className="py-20 px-6 bg-background relative overflow-hidden" style={sectionStyle}>
-                {/* Background decorativo */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-cyan-500/5"></div>
-                <div className="absolute top-1/4 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl opacity-40 animate-bounce"></div>
-                <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl opacity-40 animate-bounce delay-500"></div>
-                
-                <div className="container mx-auto relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <motion.h2 
-                            initial={{ opacity: 0, scale: 0.9 }} 
-                            whileInView={{ opacity: 1, scale: 1 }} 
-                            viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 bg-clip-text text-transparent" 
-                            style={titleStyle}
-                        >
-                            {servicesTitle}
-                        </motion.h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
-                    </motion.div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {services.map((service, index) => {
-                            const Icon = serviceIcons[service.icon] || Wrench;
-                            return (
-                                <motion.div 
-                                    key={index} 
-                                    initial={{ opacity: 0, y: 50, rotateY: -15 }} 
-                                    whileInView={{ opacity: 1, y: 0, rotateY: 0 }} 
-                                    viewport={{ once: true }} 
-                                    transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
-                                    whileHover={{ 
-                                        y: -10, 
-                                        scale: 1.05,
-                                        rotateY: 5,
-                                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-                                    }}
-                                    className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 text-center relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
-                                >
-                                    {/* Background gradient animado */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    
-                                    {/* Brilho no hover */}
-                                    <div className="absolute -inset-1 bg-gradient-to-r from-primary via-cyan-500 to-blue-500 rounded-xl opacity-0 group-hover:opacity-10 blur transition-opacity duration-500"></div>
-                                    
-                                    <motion.div 
-                                        whileHover={{ scale: 1.1, rotate: 5 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="w-16 h-16 bg-gradient-to-br from-primary/20 to-cyan-500/20 text-primary rounded-xl flex items-center justify-center mx-auto mb-4 relative z-10 shadow-lg group-hover:shadow-xl group-hover:shadow-primary/20"
-                                    >
-                                        {service.customIcon
-                                            ? <img src={service.customIcon} alt="Custom Icon" className="w-8 h-8 object-contain filter group-hover:brightness-110" />
-                                            : service.fontAwesomeIcon
-                                                ? <i className={`w-8 h-8 text-2xl ${service.fontAwesomeIcon} group-hover:text-primary transition-colors duration-300`} style={{ display: 'inline-block' }}></i>
-                                                : <Icon className="w-8 h-8 group-hover:text-cyan-500 transition-colors duration-300" />}
-                                    </motion.div>
-                                    
-                                    <h3 className="text-xl font-bold mb-2 relative z-10 group-hover:text-primary transition-colors duration-300">{service.title}</h3>
-                                    <p className="text-muted-foreground relative z-10 leading-relaxed">{service.description}</p>
-                                    
-                                    {/* Linha decorativa */}
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-cyan-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </div>
-            </section>
-        );
-        case 'testimonials': return (
-            <section id={section.id} className="py-20 px-6 bg-secondary relative overflow-hidden" style={sectionStyle}>
-                {/* Background decorativo */}
-                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5"></div>
-                <div className="absolute top-0 right-1/3 w-80 h-80 bg-yellow-500/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-                <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-700"></div>
-                
-                <div className="container mx-auto relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <motion.h2 
-                            initial={{ opacity: 0, scale: 0.9 }} 
-                            whileInView={{ opacity: 1, scale: 1 }} 
-                            viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 bg-clip-text text-transparent" 
-                            style={titleStyle}
-                        >
-                            {section.title}
-                        </motion.h2>
-                    </motion.div>
-                    <div className="grid md:grid-cols-2 gap-8">
-                        {testimonials.map((testimonial, index) => (
-                            <motion.div 
-                                key={index} 
-                                initial={{ opacity: 0, scale: 0.8, rotateX: -15 }} 
-                                whileInView={{ opacity: 1, scale: 1, rotateX: 0 }} 
-                                viewport={{ once: true }} 
-                                transition={{ delay: index * 0.2, type: "spring", stiffness: 100 }}
-                                whileHover={{ 
-                                    y: -8, 
-                                    scale: 1.02,
-                                    rotateX: 2,
-                                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-                                }}
-                                className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-yellow-500/10 transition-all duration-500"
-                            >
-                                {/* Background gradient */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                
-                                {/* Aspas decorativas */}
-                                <div className="absolute -top-2 -left-2 text-6xl text-yellow-500/20 font-serif">"</div>
-                                <div className="absolute -bottom-8 -right-2 text-6xl text-orange-500/20 font-serif rotate-180">"</div>
-                                
-                                <div className="relative z-10">
-                                    <motion.div 
-                                        initial={{ scale: 0 }}
-                                        whileInView={{ scale: 1 }}
-                                        transition={{ delay: index * 0.2 + 0.3 }}
-                                        className="flex mb-4 gap-1"
-                                    >
-                                        {[...Array(testimonial.rating)].map((_, i) => (
-                                            <motion.div
-                                                key={i}
-                                                initial={{ opacity: 0, rotate: -180 }}
-                                                whileInView={{ opacity: 1, rotate: 0 }}
-                                                transition={{ delay: i * 0.1 + index * 0.2 + 0.4 }}
-                                                whileHover={{ scale: 1.2, rotate: 15 }}
-                                            >
-                                                <Star className="w-5 h-5 text-yellow-400 fill-current drop-shadow-sm" />
-                                            </motion.div>
-                                        ))}
-                                    </motion.div>
-                                    
-                                    <motion.p 
-                                        initial={{ opacity: 0 }}
-                                        whileInView={{ opacity: 1 }}
-                                        transition={{ delay: index * 0.2 + 0.5 }}
-                                        className="text-muted-foreground mb-4 italic leading-relaxed text-lg relative"
-                                    >
-                                        "{testimonial.text}"
-                                    </motion.p>
-                                    
-                                    <motion.div
-                                        initial={{ opacity: 0, x: -20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: index * 0.2 + 0.6 }}
-                                        className="border-t pt-4"
-                                    >
-                                        <div className="font-bold text-lg group-hover:text-primary transition-colors duration-300">{testimonial.name}</div>
-                                        <div className="text-sm text-yellow-600 font-medium">{testimonial.company}</div>
-                                    </motion.div>
-                                </div>
-                                
-                                {/* Linha decorativa */}
-                                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
-        case 'contact': return (
-            <section id={section.id} className="py-20 px-6 bg-background relative overflow-hidden" style={sectionStyle}>
-                {/* Background decorativo */}
-                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5"></div>
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl opacity-40 animate-ping"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl opacity-40 animate-ping delay-1000"></div>
-                
-                <div className="container mx-auto relative z-10">
-                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                        <motion.h2 
-                            initial={{ opacity: 0, scale: 0.9 }} 
-                            whileInView={{ opacity: 1, scale: 1 }} 
-                            viewport={{ once: true }}
-                            className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 bg-clip-text text-transparent" 
-                            style={titleStyle}
-                        >
-                            {section.title}
-                        </motion.h2>
-                        <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
-                    </motion.div>
-                    <div className="max-w-2xl mx-auto">
-                        <motion.form 
-                            initial={{ opacity: 0, y: 50, scale: 0.95 }} 
-                            whileInView={{ opacity: 1, y: 0, scale: 1 }} 
-                            viewport={{ once: true }}
-                            transition={{ type: "spring", stiffness: 100 }}
-                            onSubmit={handleSubmit} 
-                            className="group bg-card/90 backdrop-blur-sm p-8 rounded-2xl border border-border/50 space-y-6 shadow-xl hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-500 relative overflow-hidden"
-                        >
-                            {/* Background gradient animado */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-transparent to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            
-                            {/* Brilho sutil */}
-                            <div className="absolute -inset-1 bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-2xl opacity-0 group-hover:opacity-10 blur transition-opacity duration-500"></div>
-                            
-                            <div className="grid md:grid-cols-2 gap-6 relative z-10">
-                                <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.1 }}
-                                >
-                                    <label className="block mb-2 font-medium text-foreground">Nome</label>
-                                    <input 
-                                        type="text" 
-                                        name="name" 
-                                        value={formData.name} 
-                                        onChange={handleInputChange} 
-                                        className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
-                                        placeholder="Seu nome" 
-                                    />
-                                </motion.div>
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: 0.2 }}
-                                >
-                                    <label className="block mb-2 font-medium text-foreground">Email</label>
-                                    <input 
-                                        type="email" 
-                                        name="email" 
-                                        value={formData.email} 
-                                        onChange={handleInputChange} 
-                                        className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
-                                        placeholder="seu@email.com" 
-                                    />
-                                </motion.div>
-                            </div>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="relative z-10"
-                            >
-                                <label className="block mb-2 font-medium text-foreground">Mensagem</label>
-                                <textarea 
-                                    name="message" 
-                                    value={formData.message} 
-                                    onChange={handleInputChange} 
-                                    rows={5} 
-                                    className="w-full px-4 py-3 bg-background/80 border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 hover:shadow-md backdrop-blur-sm" 
-                                    placeholder="Conte-nos sobre seu projeto..."
-                                ></textarea>
-                            </motion.div>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="relative z-10"
-                            >
-                                <Button 
-                                    type="submit" 
-                                    size="lg" 
-                                    className="w-full font-semibold py-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] relative overflow-hidden group"
-                                    style={{
-                                      background: section.buttonBgColor || 'linear-gradient(to right, #22c55e, #10b981)',
-                                      color: section.buttonTextColor || '#fff',
-                                    }}
-                                >
-                                    {/* Efeito de brilho no hover */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                                    
-                                    <motion.span
-                                        whileHover={{ x: 5 }}
-                                        className="flex items-center justify-center relative z-10"
-                                    >
-                                        Enviar Mensagem 
-                                        <Send className="ml-2 w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
-                                    </motion.span>
-                                </Button>
-                            </motion.div>
-                        </motion.form>
-                    </div>
-                </div>
-            </section>
-        );
-        case 'custom_text':
-        case 'custom_image':
-             return (
-                 <section id={section.id} className="py-20 px-6 relative" style={sectionStyle}>
-                    {section.bgImage && <div className="absolute inset-0 bg-black/50 z-0"></div>}
-                     <div className="container mx-auto relative z-10">
-                         <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center">
-                             <h2 className="text-4xl font-bold mb-4" style={titleStyle}>{section.title}</h2>
-                             <p className="text-lg opacity-80 max-w-3xl mx-auto" style={subtitleStyle}>{section.subtitle}</p>
-                         </motion.div>
-                     </div>
-                 </section>
-             );
-        default: return null;
+  // Dados dos serviços
+  const services = [
+    {
+      icon: Brain,
+      title: "Desenvolvimento Web",
+      description: "Criamos sites modernos e responsivos utilizando as mais recentes tecnologias do mercado."
+    },
+    {
+      icon: Smartphone,
+      title: "Aplicações Mobile",
+      description: "Desenvolvemos aplicativos nativos e híbridos para Android e iOS com alta performance."
+    },
+    {
+      icon: Database,
+      title: "Inteligência Artificial",
+      description: "Implementamos soluções de IA personalizadas para automatizar e otimizar processos."
+    },
+    {
+      icon: BarChart3,
+      title: "Análise de Dados",
+      description: "Transformamos dados em insights valiosos para decisões estratégicas do seu negócio."
+    },
+    {
+      icon: Shield,
+      title: "Segurança Digital",
+      description: "Protegemos seus sistemas com as melhores práticas de segurança cibernética."
+    },
+    {
+      icon: Zap,
+      title: "Automação de Processos",
+      description: "Automatizamos tarefas repetitivas para aumentar eficiência e reduzir custos."
     }
-  };
+  ];
 
-  // Definir alinhamento do menu
-  const menuAlignClass = config.menuPosition === 'left' ? 'justify-start' : config.menuPosition === 'right' ? 'justify-end' : 'justify-center';
-  const menuBg = config.menuBgColor || 'rgba(255,255,255,0)';
-  const menuText = config.menuTextColor || '#222222';
-  const menuHover = config.menuHoverColor || '#3b82f6';
-  const menuPadding = config.menuPadding || 'px-4 py-2';
-  const menuMargin = config.menuMargin || 'mx-2 my-0';
-  const menuRadius = config.menuRadius || '8px';
+  // Processo de trabalho
+  const workProcess = [
+    {
+      number: "01",
+      title: "Análise",
+      description: "Entendemos suas necessidades e objetivos"
+    },
+    {
+      number: "02", 
+      title: "Planejamento",
+      description: "Criamos estratégia personalizada para seu projeto"
+    },
+    {
+      number: "03",
+      title: "Desenvolvimento",
+      description: "Executamos com excelência técnica e agilidade"
+    },
+    {
+      number: "04",
+      title: "Entrega",
+      description: "Implementamos e oferecemos suporte contínuo"
+    }
+  ];
+
+  // Casos de sucesso
+  const successCases = [
+    {
+      title: "E-commerce Moderno 1",
+      category: "E-commerce",
+      badge: "Destaque",
+      description: "Plataforma de e-commerce responsiva com sistema de pagamentos integrado, dashboard administrativo e gestão completa de produtos e pedidos.",
+      image: "/api/placeholder/400/250",
+      features: [
+        "Carrinho de compras",
+        "Sistema de pagamentos", 
+        "Dashboard admin",
+        "+2 funcionalidades"
+      ],
+      technologies: ["Next.js", "TypeScript", "Stripe", "PostgreSQL"],
+      additionalTech: "+2",
+      result: "💡 Aumento de 150% nas vendas online",
+      buttonText: "Ver Detalhes"
+    },
+    {
+      title: "Dashboard Analytics",
+      category: "Dashboard", 
+      badge: "Destaque",
+      description: "Dashboard empresarial com visualizações de dados em tempo real, relatórios customizáveis e integração com múltiplas fontes de dados.",
+      image: "/api/placeholder/400/250",
+      features: [
+        "Visualizações interativas",
+        "Relatórios PDF",
+        "Filtros avançados", 
+        "+2 funcionalidades"
+      ],
+      technologies: ["React", "D3.js", "Node.js", "MongoDB"],
+      additionalTech: "+1",
+      result: "💡 Redução de 40% no tempo de análise",
+      buttonText: "Ver Detalhes"
+    },
+    {
+      title: "API de Microserviços",
+      category: "API",
+      badge: "Destaque", 
+      description: "Arquitetura de microserviços escalável para e-commerce com autenticação, processamento de pagamentos e gestão de inventário.",
+      image: "/api/placeholder/400/250",
+      features: [
+        "Microserviços",
+        "Auto-scaling",
+        "Monitoring",
+        "+2 funcionalidades"
+      ],
+      technologies: ["Node.js", "Docker", "Kubernetes", "PostgreSQL"],
+      additionalTech: "+2",
+      result: "💡 Suporte a 10k+ requisições/seg",
+      buttonText: "Ver Detalhes"
+    }
+  ];
+
+  // Estatísticas da empresa
+  const stats = [
+    { 
+      number: "50+", 
+      label: "Projetos Entregues",
+      icon: Trophy,
+      color: "text-blue-500"
+    },
+    { 
+      number: "100%", 
+      label: "Cliente Satisfeito",
+      icon: Users,
+      color: "text-blue-500"
+    },
+    { 
+      number: "5+", 
+      label: "Anos de Experiência",
+      icon: Target,
+      color: "text-blue-500"
+    },
+    { 
+      number: "24/7", 
+      label: "Suporte Dedicado",
+      icon: Shield,
+      color: "text-blue-500"
+    }
+  ];
+
+  // Depoimentos
+  const testimonials = [
+    {
+      name: "Carlos Silva",
+      company: "Tech Solutions CEO",
+      text: "A IA Code Labs transformou completamente nossa operação. O sistema desenvolvido superou todas as expectativas.",
+      rating: 5,
+      avatar: "/api/placeholder/60/60"
+    },
+    {
+      name: "Maria Santos",
+      company: "StartupXYZ Founder",
+      text: "Profissionais excepcionais! Entregaram nosso app mobile no prazo com qualidade impecável.",
+      rating: 5,
+      avatar: "/api/placeholder/60/60"
+    }
+  ];
 
   return (
     <>
       <Helmet>
-        <title>{`${config.logoUrl || 'IA Code Labs'} - Desenvolvimento de Software e Aplicações`}</title>
-        <meta name="description" content={config.heroSubtitle || ''} />
+        <title>IA Code Labs - Inteligência Artificial Para o Seu Negócio</title>
+        <meta name="description" content="Transformamos ideias em soluções digitais inovadoras com Inteligência Artificial, desenvolvimento web e mobile." />
       </Helmet>
       
       <SchedulingModal isOpen={isSchedulingModalOpen} onClose={() => setIsSchedulingModalOpen(false)} />
 
-      <div className="bg-background text-foreground transition-colors duration-300">
-        {/* HEADER customizável */}
-        {config.isVisible !== false && (
-          <header
-            className="fixed top-0 w-full z-50 transition-all duration-300"
-            id="main-header"
-            style={{ background: config.bgColor || 'rgba(0,0,0,0.7)' }}
-          >
+      <div className="bg-background text-foreground min-h-screen">
+        {/* HEADER */}
+        <header className="fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm border-b border-border">
           <nav className="container mx-auto px-6 py-4">
-              <div className="flex items-center justify-between w-full">
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold flex items-center gap-2">
-                  {config.logoUrl ? (
-                    <img src={config.logoUrl} alt="Logo" className="h-8" />
-                  ) : (
-                    <span>{config.logoText || 'IA Code Labs'}</span>
-                  )}
-              </motion.div>
-                <div className="flex-1 flex">
-                  {config.menuPosition === 'center' ? (
-                    <div className="w-full flex items-center justify-center">
-                      <div className={`hidden md:flex items-center space-x-6 justify-center`} style={{ background: menuBg, color: menuText }}>
-                        {/* menu items */}
-                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
-                          item.label && item.href ? (
-                            item.children && item.children.length > 0 ? (
-                              <div key={idx} className={`relative group ${menuMargin}`}>
-                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
-                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
-                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
-                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : (
-                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
-                            )
-                          ) : (
-                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  ) : config.menuPosition === 'right' ? (
-                    <div className="flex flex-1 items-center justify-end">
-                      <div className={`hidden md:flex items-center space-x-6`} style={{ background: menuBg, color: menuText }}>
-                        {/* menu items */}
-                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
-                          item.label && item.href ? (
-                            item.children && item.children.length > 0 ? (
-                              <div key={idx} className={`relative group ${menuMargin}`}>
-                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
-                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
-                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
-                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : (
-                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
-                            )
-                          ) : (
-                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <div className={`hidden md:flex items-center space-x-6`} style={{ background: menuBg, color: menuText }}>
-                        {/* menu items */}
-                        {(config.menu || sections.filter(s => s.isVisible)).filter(item => item.isVisible !== false).map((item, idx) =>
-                          item.label && item.href ? (
-                            item.children && item.children.length > 0 ? (
-                              <div key={idx} className={`relative group ${menuMargin}`}>
-                                <a href={item.href} className={`transition-colors cursor-pointer ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }}>{item.label}</a>
-                                <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
-                                  {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
-                                    <a key={cidx} href={child.href} className={`block transition-colors text-sm ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{child.label}</a>
-                                  ))}
-                                </div>
-                              </div>
-                            ) : (
-                              <a key={idx} href={item.href} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.label}</a>
-                            )
-                          ) : (
-                            <a key={item.id || idx} href={`#${item.id}`} className={`hover:bg-[${menuHover}] transition-colors ${menuPadding}`} style={{ color: menuText, borderRadius: menuRadius }} onMouseOver={e => e.currentTarget.style.background = menuHover} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>{item.name}</a>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                className="text-2xl font-bold flex items-center gap-2"
+              >
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
                 </div>
-                <div className="flex items-center gap-2 ml-4">
-                  <Button onClick={() => navigate('/login')} variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-primary">
-                    {config.loginButtonText || 'Login'}
-                  </Button>
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  IA Code Labs
+                </span>
+              </motion.div>
+
+              {/* Desktop Menu */}
+              <div className="hidden md:flex items-center space-x-8">
+                <a href="#home" className="hover:text-blue-600 transition-colors">Início</a>
+                <a href="#services" className="hover:text-blue-600 transition-colors">Serviços</a>
+                <a href="#process" className="hover:text-blue-600 transition-colors">Processo</a>
+                <a href="#cases" className="hover:text-blue-600 transition-colors">Casos</a>
+                <a href="#about" className="hover:text-blue-600 transition-colors">Sobre</a>
+                <a href="#contact" className="hover:text-blue-600 transition-colors">Contato</a>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="hidden md:flex items-center gap-4">
+                <Button 
+                  onClick={() => navigate('/login')} 
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                >
+                  Login
+                </Button>
+                <Button 
+                  onClick={() => setIsSchedulingModalOpen(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  Agendar Consulta
+                </Button>
                 <ThemeToggle />
               </div>
-              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+
+            {/* Mobile Menu */}
             {isMenuOpen && (
-              <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="md:hidden mt-4 bg-card/90 rounded-lg p-4">
-                <div className="flex flex-col space-y-4 items-center text-card-foreground">
-                    {(config.menu || sections.filter(s => s.isVisible)).map((item, idx) =>
-                      item.label && item.href ? (
-                        item.children && item.children.length > 0 ? (
-                          <div key={idx} className="relative group">
-                            <a href={item.href} className="hover:text-primary transition-colors cursor-pointer" style={{ color: menuText }}>{item.label}</a>
-                            <div className="absolute left-0 top-full mt-2 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50 min-w-[160px]" style={{ background: menuBg }}>
-                              {item.children.filter(child => child.isVisible !== false).map((child, cidx) => (
-                                <a key={cidx} href={child.href} className="block px-4 py-2 hover:bg-primary/10 text-sm" style={{ color: menuText }}>{child.label}</a>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <a key={idx} href={item.href} onClick={() => setIsMenuOpen(false)} className="hover:text-primary transition-colors w-full text-center py-2" style={{ color: menuText }}>{item.label}</a>
-                        )
-                      ) : (
-                        <a key={item.id || idx} href={`#${item.id}`} onClick={() => setIsMenuOpen(false)} className="hover:text-primary transition-colors w-full text-center py-2" style={{ color: menuText }}>{item.name}</a>
-                      )
-                    )}
-                    <Button onClick={() => {navigate('/login'); setIsMenuOpen(false);}} className="w-full" style={{ color: menuText }}>{config.loginButtonText || 'Login'}</Button>
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                className="md:hidden mt-4 bg-card rounded-lg p-4 shadow-lg border border-border"
+              >
+                <div className="flex flex-col space-y-4">
+                  <a href="#home" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Início</a>
+                  <a href="#services" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Serviços</a>
+                  <a href="#process" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Processo</a>
+                  <a href="#cases" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Casos</a>
+                  <a href="#about" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Sobre</a>
+                  <a href="#contact" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition-colors">Contato</a>
+                  <Button onClick={() => navigate('/login')} variant="outline" className="w-full">Login</Button>
+                  <Button onClick={() => setIsSchedulingModalOpen(true)} className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
+                    Agendar Consulta
+                  </Button>
                 </div>
               </motion.div>
             )}
           </nav>
         </header>
-        )}
 
-        <main className="relative">
-            {/* Elementos decorativos globais */}
-            <div className="fixed top-1/4 left-0 w-2 h-32 bg-gradient-to-b from-primary to-purple-500 opacity-20 rounded-r-full"></div>
-            <div className="fixed top-1/2 right-0 w-2 h-32 bg-gradient-to-b from-cyan-500 to-blue-500 opacity-20 rounded-l-full"></div>
-            <div className="fixed bottom-1/4 left-0 w-2 h-32 bg-gradient-to-b from-green-500 to-emerald-500 opacity-20 rounded-r-full"></div>
-            
-            {sections.filter(s => s.isVisible).map((section, idx) => {
-                console.log('🎬 Renderizando seção:', section.id, section.name, section);
-                return (
-                <React.Fragment key={section.id}>
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.8 }}
+        <main className="pt-20">
+          {/* HERO SECTION */}
+          <section id="home" className="relative py-20 px-6 bg-gradient-to-br from-blue-50 via-background to-purple-50 dark:from-blue-950/20 dark:via-background dark:to-purple-950/20 overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute inset-0">
+              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            </div>
+
+            <div className="container mx-auto relative z-10">
+              <div className="grid lg:grid-cols-2 gap-12 items-center">
+                {/* Content */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                    <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                      Inteligência Artificial
+                    </span>
+                    <br />
+                    <span className="text-foreground">Para o Seu Negócio</span>
+                  </h1>
+                  
+                  <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
+                    Transformamos ideias em soluções digitais inovadoras. 
+                    Especializados em desenvolvimento web, mobile e sistemas 
+                    inteligentes com IA para impulsionar seu negócio.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                    <Button 
+                      size="lg" 
+                      onClick={() => setIsSchedulingModalOpen(true)}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
                     >
-                        {renderSection(section)}
-                    </motion.div>
-                    {section.type === 'services' && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true, margin: "-100px" }}
-                            transition={{ duration: 0.8, delay: 0.2 }}
-                        >
-                            <section id="misc" className="py-20 px-6 bg-background relative overflow-hidden">
-                            {/* Background decorativo */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5"></div>
-                            <div className="absolute top-0 left-1/3 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-                            <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
-                            
-                            <div className="container mx-auto relative z-10">
-                                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-                                    <motion.h2 
-                                        initial={{ opacity: 0, scale: 0.9 }} 
-                                        whileInView={{ opacity: 1, scale: 1 }} 
-                                        viewport={{ once: true }}
-                                        className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent"
-                                    >
-                                        {miscTitle}
-                                    </motion.h2>
-                                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Outros serviços e recursos oferecidos.</p>
-                                </motion.div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                    {miscItems.map((item, index) => (
-                                        <motion.div 
-                                            key={item.id} 
-                                            initial={{ opacity: 0, y: 50, scale: 0.9 }} 
-                                            whileInView={{ opacity: 1, y: 0, scale: 1 }} 
-                                            viewport={{ once: true }} 
-                                            transition={{ delay: index * 0.1, type: "spring", stiffness: 100 }}
-                                            whileHover={{ 
-                                                y: -10, 
-                                                scale: 1.05,
-                                                rotateZ: 2,
-                                                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-                                            }}
-                                            className="group bg-card/90 backdrop-blur-sm p-6 rounded-xl border border-border/50 text-center relative overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-500"
-                                        >
-                                            {/* Background gradient animado */}
-                                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                            
-                                            {/* Partículas flutuantes */}
-                                            <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500/30 rounded-full animate-ping"></div>
-                                            <div className="absolute bottom-4 left-4 w-1 h-1 bg-pink-500/40 rounded-full animate-ping delay-500"></div>
-                                            
-                                            <motion.div 
-                                                whileHover={{ scale: 1.1, rotate: -5 }}
-                                                transition={{ duration: 0.3 }}
-                                                className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-primary rounded-xl flex items-center justify-center mx-auto mb-4 relative z-10 shadow-lg group-hover:shadow-xl group-hover:shadow-purple-500/20"
-                                            >
-                                                {item.customIcon
-                                                    ? <img src={item.customIcon} alt="Custom Icon" className="w-10 h-10 object-contain filter group-hover:brightness-110" />
-                                                    : item.fontAwesomeIcon
-                                                        ? <i className={`w-10 h-10 text-3xl ${item.fontAwesomeIcon} group-hover:text-purple-500 transition-colors duration-300`} style={{ display: 'inline-block' }}></i>
-                                                        : React.createElement(serviceIcons[item.icon] || Star, { className: 'w-10 h-10 group-hover:text-pink-500 transition-colors duration-300' })}
-                                            </motion.div>
-                                            
-                                            <h3 className="text-xl font-bold mb-2 relative z-10 group-hover:text-purple-500 transition-colors duration-300">{item.title}</h3>
-                                            <p className="text-muted-foreground relative z-10 leading-relaxed">{item.description}</p>
-                                            
-                                            {/* Linha decorativa */}
-                                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-center"></div>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                        </motion.div>
+                      Começar Projeto
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                    
+                    <Button 
+                      size="lg" 
+                      variant="outline"
+                      onClick={() => document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="text-lg px-8 py-6 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                    >
+                      <Play className="mr-2 w-5 h-5" />
+                      Ver Projetos
+                    </Button>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-8">
+                    {stats.map((stat, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        className="text-center"
+                      >
+                        <div className="text-3xl font-bold text-blue-600 mb-1">{stat.number}</div>
+                        <div className="text-sm text-muted-foreground">{stat.label}</div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Image/Visual */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="relative"
+                >
+                  <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 shadow-2xl">
+                    {/* Placeholder for hero image/graphic */}
+                    <div className="aspect-square bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                      <div className="text-center text-white">
+                        <Brain className="w-24 h-24 mx-auto mb-4 opacity-80" />
+                        <div className="text-lg font-semibold opacity-90">IA Powered Solutions</div>
+                      </div>
+                    </div>
+                    
+                    {/* Floating elements */}
+                    <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
+                    <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-400 rounded-full animate-bounce delay-500"></div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+
+          {/* SERVICES SECTION */}
+          <section id="services" className="py-20 px-6 bg-secondary/30">
+            <div className="container mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Soluções Tecnológicas
+                  </span>
+                  <br />
+                  <span className="text-foreground">Completas</span>
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Oferecemos um portfólio completo de serviços para transformar 
+                  seu negócio com as mais avançadas tecnologias do mercado.
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {services.map((service, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -10, scale: 1.02 }}
+                    className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-border/50"
+                  >
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <service.icon className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-4 group-hover:text-blue-600 transition-colors">
+                      {service.title}
+                    </h3>
+                    
+                    <p className="text-muted-foreground leading-relaxed">
+                      {service.description}
+                    </p>
+
+                    <div className="mt-6 h-1 w-0 bg-gradient-to-r from-blue-500 to-purple-600 group-hover:w-full transition-all duration-500 rounded-full"></div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* PROCESS SECTION */}
+          <section id="process" className="py-20 px-6 bg-background">
+            <div className="container mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="text-foreground">Nosso Processo de</span>
+                  <br />
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Trabalho
+                  </span>
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Seguimos uma metodologia comprovada para entregar resultados excepcionais 
+                  e garantir o sucesso do seu projeto.
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {workProcess.map((step, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="relative text-center group"
+                  >
+                    {/* Connection line */}
+                    {index < workProcess.length - 1 && (
+                      <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 opacity-30"></div>
                     )}
-                </React.Fragment>
-            )})}
+                    
+                    <div className="relative">
+                      <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white font-bold text-xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        {step.number}
+                      </div>
+                      
+                      <h3 className="text-xl font-bold mb-4 group-hover:text-blue-600 transition-colors">
+                        {step.title}
+                      </h3>
+                      
+                      <p className="text-muted-foreground">
+                        {step.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* SUCCESS CASES SECTION */}
+          <section id="cases" className="py-20 px-6 bg-secondary/30">
+            <div className="container mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="text-foreground">Casos de Sucesso</span>
+                  <br />
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Comprovados
+                  </span>
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  Conheça alguns dos projetos que desenvolvemos e os resultados 
+                  extraordinários que alcançamos para nossos clientes.
+                </p>
+              </motion.div>
+
+              <div className="mb-8 text-center">
+                <div className="inline-flex items-center gap-2 bg-slate-800 rounded-lg px-4 py-2 text-white">
+                  <span className="text-slate-400">Filtrar por tecnologia:</span>
+                  <select className="bg-transparent border-none text-white focus:outline-none">
+                    <option>Todas as tecnologias</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {successCases.map((project, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ y: -10, scale: 1.02 }}
+                    className="group bg-slate-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 relative"
+                  >
+                    {/* Image Section */}
+                    <div className="aspect-video bg-slate-700 relative overflow-hidden">
+                      {/* Category and Badge Tags */}
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span className="px-3 py-1 text-xs bg-blue-600 text-white rounded-full font-medium">
+                          🛒 {project.category}
+                        </span>
+                        <span className="px-3 py-1 text-xs bg-yellow-500 text-black rounded-full font-medium">
+                          ⭐ {project.badge}
+                        </span>
+                      </div>
+                      
+                      {/* Project Preview Image/Placeholder */}
+                      <div className="w-full h-full flex items-center justify-center text-slate-400">
+                        {project.category === "E-commerce" && (
+                          <div className="text-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                              <Globe className="w-8 h-8" />
+                            </div>
+                            <div className="text-sm">E-commerce Preview</div>
+                          </div>
+                        )}
+                        {project.category === "Dashboard" && (
+                          <div className="text-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                              <BarChart3 className="w-8 h-8" />
+                            </div>
+                            <div className="text-sm">Dashboard Preview</div>
+                          </div>
+                        )}
+                        {project.category === "API" && (
+                          <div className="text-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                              <Database className="w-8 h-8" />
+                            </div>
+                            <div className="text-sm">API Preview</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Content Section */}
+                    <div className="p-6 text-white">
+                      <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">
+                        {project.title}
+                      </h3>
+                      
+                      <p className="text-slate-300 mb-4 text-sm leading-relaxed">
+                        {project.description}
+                      </p>
+
+                      {/* Features List */}
+                      <div className="space-y-2 mb-4">
+                        {project.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-sm text-slate-300">
+                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Technologies */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.technologies.map((tech, idx) => (
+                          <span 
+                            key={idx}
+                            className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                        <span className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600">
+                          {project.additionalTech}
+                        </span>
+                      </div>
+
+                      {/* Result */}
+                      <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-3 mb-4">
+                        <p className="text-green-400 text-sm font-medium">{project.result}</p>
+                      </div>
+
+                      {/* Button */}
+                      <button className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group">
+                        <span>{project.buttonText}</span>
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ABOUT SECTION */}
+          <section id="about" className="py-20 px-6 bg-slate-900 text-white">
+            <div className="container mx-auto">
+              {/* Header com Link "Sobre Nós" */}
+              <div className="text-center mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="inline-block"
+                >
+                  <span className="text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    Sobre Nós
+                  </span>
+                </motion.div>
+              </div>
+
+              {/* Título Principal */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="text-white">Quem Somos a </span>
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    IA Code Labs
+                  </span>
+                </h2>
+                
+                <p className="text-slate-300 text-lg leading-relaxed max-w-4xl mx-auto">
+                  Somos uma empresa especializada em desenvolvimento de software e 
+                  inteligência artificial, comprometida em transformar ideias em soluções 
+                  tecnológicas inovadoras que impulsionam o crescimento dos nossos clientes.
+                </p>
+              </motion.div>
+
+              {/* Estatísticas */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                {stats.map((stat, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:bg-slate-800/80 transition-all duration-300"
+                  >
+                    <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <stat.icon className="w-8 h-8 text-blue-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-white mb-2">{stat.number}</div>
+                    <div className="text-sm text-slate-400">{stat.label}</div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Seções de Informações */}
+              <div className="grid lg:grid-cols-2 gap-12">
+                {/* Coluna Esquerda */}
+                <div className="space-y-8">
+                  {/* Nossa Missão */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="space-y-4"
+                  >
+                    <h3 className="text-2xl font-bold text-white">Nossa Missão</h3>
+                    <p className="text-slate-300 leading-relaxed">
+                      Capacitar empresas através da tecnologia, desenvolvendo soluções de 
+                      software personalizadas e implementando inteligência artificial para otimizar 
+                      processos, aumentar a eficiência e gerar valor real para nossos clientes.
+                    </p>
+                  </motion.div>
+
+                  {/* Nossa Visão */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                    className="space-y-4"
+                  >
+                    <h3 className="text-2xl font-bold text-white">Nossa Visão</h3>
+                    <p className="text-slate-300 leading-relaxed">
+                      Ser reconhecida como a principal referência em desenvolvimento de 
+                      software e IA, criando um futuro onde a tecnologia inteligente seja acessível 
+                      e transformadora para empresas de todos os portes.
+                    </p>
+                  </motion.div>
+
+                  {/* Tecnologias */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="flex flex-wrap gap-2"
+                  >
+                    {["React/Next.js", "Python/Django", "Node.js", "Machine Learning", "Cloud AWS/Azure", "DevOps"].map((tech, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-sm border border-blue-500/30"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </motion.div>
+                </div>
+
+                {/* Coluna Direita */}
+                <div className="grid grid-cols-1 gap-6">
+                  {/* Excelência Técnica */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                  >
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                      <Code className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Excelência Técnica</h4>
+                    <p className="text-slate-300 text-sm">
+                      Utilizamos as melhores práticas e tecnologias mais modernas para 
+                      garantir qualidade excepcional em cada projeto.
+                    </p>
+                  </motion.div>
+
+                  {/* Inovação Constante */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                  >
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                      <Rocket className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Inovação Constante</h4>
+                    <p className="text-slate-300 text-sm">
+                      Mantemos-nos sempre na vanguarda tecnológica, 
+                      explorando novas possibilidades em IA e desenvolvimento.
+                    </p>
+                  </motion.div>
+
+                  {/* Agilidade na Entrega */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                  >
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                      <Zap className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Agilidade na Entrega</h4>
+                    <p className="text-slate-300 text-sm">
+                      Metodologias ágeis garantem entregas rápidas sem 
+                      comprometer a qualidade e a satisfação do cliente.
+                    </p>
+                  </motion.div>
+
+                  {/* Parceria Verdadeira */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                  >
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                      <Users className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <h4 className="text-lg font-bold text-white mb-2">Parceria Verdadeira</h4>
+                    <p className="text-slate-300 text-sm">
+                      Trabalhamos como uma extensão da sua equipe, entendendo 
+                      profundamente suas necessidades e objetivos.
+                    </p>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* TESTIMONIALS SECTION */}
+          <section className="py-20 px-6 bg-secondary/30">
+            <div className="container mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="text-foreground">O que Nossos</span>
+                  <br />
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Clientes Dizem
+                  </span>
+                </h2>
+                <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                  A satisfação dos nossos clientes é nossa maior conquista. 
+                  Veja o que eles têm a dizer sobre nosso trabalho.
+                </p>
+              </motion.div>
+
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {testimonials.map((testimonial, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-card rounded-xl p-8 shadow-lg border border-border/50 relative"
+                  >
+                    <div className="absolute -top-4 -left-4 text-6xl text-blue-500/20 font-serif">"</div>
+                    
+                    <div className="flex mb-4">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                      ))}
+                    </div>
+                    
+                    <p className="text-muted-foreground mb-6 italic text-lg leading-relaxed">
+                      {testimonial.text}
+                    </p>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <Users className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-bold">{testimonial.name}</div>
+                        <div className="text-sm text-muted-foreground">{testimonial.company}</div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* CONTACT SECTION */}
+          <section id="contact" className="py-20 px-6 bg-slate-900 text-white">
+            <div className="container mx-auto">
+              {/* Header com Link "Contato" */}
+              <div className="text-center mb-4">
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="inline-block"
+                >
+                  <span className="text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    Contato
+                  </span>
+                </motion.div>
+              </div>
+
+              {/* Título Principal */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+              >
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                  <span className="text-white">Vamos Criar Algo </span>
+                  <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    Incrível Juntos
+                  </span>
+                </h2>
+                
+                <p className="text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
+                  Pronto para transformar sua ideia em realidade? Entre em contato conosco e 
+                  vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.
+                </p>
+              </motion.div>
+
+              <div className="grid lg:grid-cols-2 gap-12">
+                {/* Coluna Esquerda - Informações de Contato */}
+                <motion.div
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-8"
+                >
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-6">Entre em Contato</h3>
+                    <p className="text-slate-300 mb-8">
+                      Estamos aqui para ajudar! Seja qual for o seu projeto ou dúvida, 
+                      nossa equipe está pronta para oferecer a melhor solução.
+                    </p>
+                  </div>
+
+                  {/* Informações de Contato */}
+                  <div className="space-y-6">
+                    {/* Email */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                    >
+                      <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                        <Mail className="w-6 h-6 text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-white">Email</h4>
+                        <p className="text-blue-400">contato@iacodelabs.com</p>
+                        <p className="text-sm text-slate-400">Resposta em até 24h</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Telefone */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.1 }}
+                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                    >
+                      <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
+                        <Phone className="w-6 h-6 text-green-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-white">Telefone</h4>
+                        <p className="text-green-400">+55 (11) 99999-9999</p>
+                        <p className="text-sm text-slate-400">Seg a Sex, 9h às 18h</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Localização */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                    >
+                      <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                        <MapPin className="w-6 h-6 text-purple-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-white">Localização</h4>
+                        <p className="text-purple-400">São Paulo, Brasil</p>
+                        <p className="text-sm text-slate-400">Atendimento remoto</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Horário */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 }}
+                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                    >
+                      <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-6 h-6 text-orange-400" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-white">Horário</h4>
+                        <p className="text-orange-400">24/7 Suporte</p>
+                        <p className="text-sm text-slate-400">Para clientes ativos</p>
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Por que Escolher a IA Code Labs */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 }}
+                    className="mt-8"
+                  >
+                    <h4 className="text-lg font-bold text-white mb-4">Por que Escolher a IA Code Labs?</h4>
+                    <div className="space-y-3">
+                      {[
+                        "Equipe especializada e experiente",
+                        "Tecnologias de ponta",
+                        "Suporte contínuo",
+                        "Metodologia ágil",
+                        "Resultados comprovados"
+                      ].map((item, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                          <span className="text-slate-300">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                </motion.div>
+
+                {/* Coluna Direita - Formulário */}
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  className="space-y-6"
+                >
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2">Envie sua Mensagem</h3>
+                    <p className="text-slate-300 mb-6">
+                      Preencha o formulário abaixo e entraremos em contato em até 24 horas.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {/* Nome Completo */}
+                      <div>
+                        <label className="block text-white font-medium mb-2">
+                          Nome Completo <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          placeholder="Seu nome completo"
+                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          required
+                        />
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label className="block text-white font-medium mb-2">
+                          Email <span className="text-red-400">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="seu@email.com"
+                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {/* Telefone */}
+                      <div>
+                        <label className="block text-white font-medium mb-2">Telefone</label>
+                        <input
+                          type="tel"
+                          placeholder="(11) 99999-9999"
+                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                        />
+                      </div>
+
+                      {/* Empresa */}
+                      <div>
+                        <label className="block text-white font-medium mb-2">Empresa</label>
+                        <input
+                          type="text"
+                          placeholder="Nome da empresa"
+                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Serviço de Interesse */}
+                    <div>
+                      <label className="block text-white font-medium mb-2">Serviço de Interesse</label>
+                      <select className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                        <option value="">Selecione um serviço</option>
+                        <option value="desenvolvimento-web">Desenvolvimento Web</option>
+                        <option value="aplicativo-mobile">Aplicativo Mobile</option>
+                        <option value="inteligencia-artificial">Inteligência Artificial</option>
+                        <option value="analise-dados">Análise de Dados</option>
+                        <option value="consultoria">Consultoria Técnica</option>
+                        <option value="outros">Outros</option>
+                      </select>
+                    </div>
+
+                    {/* Mensagem */}
+                    <div>
+                      <label className="block text-white font-medium mb-2">
+                        Mensagem <span className="text-red-400">*</span>
+                      </label>
+                      <textarea
+                        name="message"
+                        value={formData.message}
+                        onChange={handleInputChange}
+                        rows={5}
+                        placeholder="Conte-nos sobre seu projeto, necessidades e objetivos..."
+                        className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                        required
+                      ></textarea>
+                    </div>
+
+                    {/* Botão de Envio */}
+                    <button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group"
+                    >
+                      <span>Enviar Mensagem</span>
+                      <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </form>
+                </motion.div>
+              </div>
+            </div>
+          </section>
         </main>
 
         <FooterSection />
-
         <ChatWidget />
       </div>
     </>
