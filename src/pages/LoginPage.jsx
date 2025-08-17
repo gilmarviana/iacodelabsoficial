@@ -84,7 +84,7 @@ const LoginPage = () => {
       <div className="min-h-screen bg-background flex items-center justify-center p-6 relative">
         {config.backgroundImageUrl && (
           <div className="absolute inset-0 z-0">
-            <img-replace src={config.backgroundImageUrl} alt="Background" className="w-full h-full object-cover" />
+            <img src={config.backgroundImageUrl} alt="Background" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/50"></div>
           </div>
         )}
