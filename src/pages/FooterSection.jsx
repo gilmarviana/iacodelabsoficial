@@ -66,10 +66,10 @@ const FooterSection = () => {
 
   return (
     <>
-      <footer style={{ background: footerConfig.bgColor, color: footerConfig.textColor, padding: '0', position: 'relative' }}>
+      <footer className="bg-slate-800 text-slate-300 relative">
         <div className="container mx-auto px-6 py-16">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Left section - Logo and description */}
+            {/* Left section - Logo, description and social */}
             <div className="lg:col-span-1">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
@@ -80,29 +80,46 @@ const FooterSection = () => {
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <span className="font-bold text-2xl text-white">
-                  {footerConfig.logoText}
+                  IA Code Labs
                 </span>
               </motion.div>
               
               <p className="text-slate-400 leading-relaxed mb-8 max-w-sm">
-                {footerConfig.tagline}
+                Especialistas em desenvolvimento de software e inteligência artificial, criando soluções inovadoras que transformam negócios e impulsionam o futuro digital.
               </p>
 
               {/* Social Icons */}
               <div className="flex gap-4">
-                {footerConfig.socialLinks && footerConfig.socialLinks.map((social, idx) => (
-                  <motion.a
-                    key={idx}
-                    href={social.url || '#'}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className={social.icon || 'fab fa-github'} style={{ color: '#fff', fontSize: '18px' }}></i>
-                  </motion.a>
-                ))}
+                <motion.a
+                  href="#"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fab fa-github" style={{ color: '#fff', fontSize: '18px' }}></i>
+                </motion.a>
+                <motion.a
+                  href="#"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fab fa-linkedin" style={{ color: '#fff', fontSize: '18px' }}></i>
+                </motion.a>
+                <motion.a
+                  href="#"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <i className="fab fa-twitter" style={{ color: '#fff', fontSize: '18px' }}></i>
+                </motion.a>
               </div>
             </div>
 
@@ -119,10 +136,10 @@ const FooterSection = () => {
                 >
                   <Mail className="w-5 h-5 text-blue-400" />
                   <a 
-                    href={`mailto:${footerConfig.contact?.email}`}
+                    href="mailto:contato@iacodelabs.com"
                     className="text-slate-400 hover:text-white transition-colors"
                   >
-                    {footerConfig.contact?.email}
+                    contato@iacodelabs.com
                   </a>
                 </motion.div>
                 
@@ -134,10 +151,10 @@ const FooterSection = () => {
                 >
                   <Phone className="w-5 h-5 text-blue-400" />
                   <a 
-                    href={`tel:${footerConfig.contact?.phone}`}
+                    href="tel:+5511999999999"
                     className="text-slate-400 hover:text-white transition-colors"
                   >
-                    {footerConfig.contact?.phone}
+                    +55 (11) 99999-9999
                   </a>
                 </motion.div>
                 
@@ -149,7 +166,7 @@ const FooterSection = () => {
                 >
                   <MapPin className="w-5 h-5 text-blue-400" />
                   <span className="text-slate-400">
-                    {footerConfig.contact?.location}
+                    São Paulo, Brasil
                   </span>
                 </motion.div>
               </div>
@@ -160,21 +177,54 @@ const FooterSection = () => {
               <h3 className="text-xl font-semibold text-white mb-6">Links Rápidos</h3>
               
               <div className="space-y-3">
-                {footerConfig.quickLinks && footerConfig.quickLinks.map((link, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.1 }}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0 * 0.1 }}
+                >
+                  <a
+                    href="#about"
+                    className="text-slate-400 hover:text-white transition-colors block"
                   >
-                    <a
-                      href={link.url}
-                      className="text-slate-400 hover:text-white transition-colors block"
-                    >
-                      {link.label}
-                    </a>
-                  </motion.div>
-                ))}
+                    Sobre Nós
+                  </a>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1 * 0.1 }}
+                >
+                  <a
+                    href="#services"
+                    className="text-slate-400 hover:text-white transition-colors block"
+                  >
+                    Serviços
+                  </a>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 2 * 0.1 }}
+                >
+                  <a
+                    href="#cases"
+                    className="text-slate-400 hover:text-white transition-colors block"
+                  >
+                    Projetos
+                  </a>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 3 * 0.1 }}
+                >
+                  <a
+                    href="#contact"
+                    className="text-slate-400 hover:text-white transition-colors block"
+                  >
+                    Contato
+                  </a>
+                </motion.div>
               </div>
             </div>
           </div>
@@ -182,14 +232,14 @@ const FooterSection = () => {
       </footer>
       
       {/* Copyright section */}
-      <div style={{ background: footerConfig.copyrightBgColor, color: footerConfig.copyrightTextColor }}>
+      <div className="bg-slate-900 text-slate-500">
         <div className="container mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-center md:text-left">
-              {footerConfig.copyrightText}
+              © 2025 IA Code Labs. Todos os direitos reservados.
             </p>
             <p className="text-sm text-center md:text-right">
-              {footerConfig.copyrightSubText}
+              Desenvolvido com ♥ e Inteligência Artificial
             </p>
           </div>
         </div>

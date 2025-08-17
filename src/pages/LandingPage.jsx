@@ -556,9 +556,9 @@ const LandingPage = () => {
               </motion.div>
 
               <div className="mb-8 text-center">
-                <div className="inline-flex items-center gap-2 bg-slate-800 rounded-lg px-4 py-2 text-white">
-                  <span className="text-slate-400">Filtrar por tecnologia:</span>
-                  <select className="bg-transparent border-none text-white focus:outline-none">
+                <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-slate-800 rounded-lg px-4 py-2 text-gray-800 dark:text-white border border-gray-200 dark:border-slate-700 shadow-lg">
+                  <span className="text-gray-600 dark:text-slate-400">Filtrar por tecnologia:</span>
+                  <select className="bg-transparent border-none text-gray-800 dark:text-white focus:outline-none">
                     <option>Todas as tecnologias</option>
                   </select>
                 </div>
@@ -588,10 +588,10 @@ const LandingPage = () => {
                       </div>
                       
                       {/* Project Preview Image/Placeholder */}
-                      <div className="w-full h-full flex items-center justify-center text-slate-400">
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-slate-400">
                         {project.category === "E-commerce" && (
                           <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
                               <Globe className="w-8 h-8" />
                             </div>
                             <div className="text-sm">E-commerce Preview</div>
@@ -599,7 +599,7 @@ const LandingPage = () => {
                         )}
                         {project.category === "Dashboard" && (
                           <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
                               <BarChart3 className="w-8 h-8" />
                             </div>
                             <div className="text-sm">Dashboard Preview</div>
@@ -607,7 +607,7 @@ const LandingPage = () => {
                         )}
                         {project.category === "API" && (
                           <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-slate-600 rounded-lg flex items-center justify-center">
+                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
                               <Database className="w-8 h-8" />
                             </div>
                             <div className="text-sm">API Preview</div>
@@ -657,7 +657,7 @@ const LandingPage = () => {
                       </div>
 
                       {/* Button */}
-                      <button className="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group">
+                      <button className="w-full bg-gray-600 hover:bg-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group">
                         <span>{project.buttonText}</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
@@ -669,7 +669,7 @@ const LandingPage = () => {
           </section>
 
           {/* ABOUT SECTION */}
-          <section id="about" className="py-20 px-6 bg-slate-900 text-white">
+          <section id="about" className="py-20 px-6 bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-white">
             <div className="container mx-auto">
               {/* Header com Link "Sobre Nós" */}
               <div className="text-center mb-4">
@@ -679,7 +679,7 @@ const LandingPage = () => {
                   viewport={{ once: true }}
                   className="inline-block"
                 >
-                  <span className="text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <span className="text-blue-600 dark:text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                     Sobre Nós
                   </span>
                 </motion.div>
@@ -693,13 +693,13 @@ const LandingPage = () => {
                 className="text-center mb-12"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-white">Quem Somos a </span>
+                  <span className="text-gray-800 dark:text-white">Quem Somos a </span>
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     IA Code Labs
                   </span>
                 </h2>
                 
-                <p className="text-slate-300 text-lg leading-relaxed max-w-4xl mx-auto">
+                <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed max-w-4xl mx-auto">
                   Somos uma empresa especializada em desenvolvimento de software e 
                   inteligência artificial, comprometida em transformar ideias em soluções 
                   tecnológicas inovadoras que impulsionam o crescimento dos nossos clientes.
@@ -715,13 +715,13 @@ const LandingPage = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="text-center p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:bg-slate-800/80 transition-all duration-300"
+                    className="text-center p-6 bg-white/70 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800/80 transition-all duration-300 shadow-lg hover:shadow-xl"
                   >
                     <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <stat.icon className="w-8 h-8 text-blue-400" />
+                      <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="text-3xl font-bold text-white mb-2">{stat.number}</div>
-                    <div className="text-sm text-slate-400">{stat.label}</div>
+                    <div className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{stat.number}</div>
+                    <div className="text-sm text-gray-600 dark:text-slate-400">{stat.label}</div>
                   </motion.div>
                 ))}
               </div>
@@ -737,8 +737,8 @@ const LandingPage = () => {
                     viewport={{ once: true }}
                     className="space-y-4"
                   >
-                    <h3 className="text-2xl font-bold text-white">Nossa Missão</h3>
-                    <p className="text-slate-300 leading-relaxed">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nossa Missão</h3>
+                    <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
                       Capacitar empresas através da tecnologia, desenvolvendo soluções de 
                       software personalizadas e implementando inteligência artificial para otimizar 
                       processos, aumentar a eficiência e gerar valor real para nossos clientes.
@@ -753,8 +753,8 @@ const LandingPage = () => {
                     transition={{ delay: 0.1 }}
                     className="space-y-4"
                   >
-                    <h3 className="text-2xl font-bold text-white">Nossa Visão</h3>
-                    <p className="text-slate-300 leading-relaxed">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nossa Visão</h3>
+                    <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
                       Ser reconhecida como a principal referência em desenvolvimento de 
                       software e IA, criando um futuro onde a tecnologia inteligente seja acessível 
                       e transformadora para empresas de todos os portes.
@@ -772,7 +772,7 @@ const LandingPage = () => {
                     {["React/Next.js", "Python/Django", "Node.js", "Machine Learning", "Cloud AWS/Azure", "DevOps"].map((tech, idx) => (
                       <span 
                         key={idx}
-                        className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-lg text-sm border border-blue-500/30"
+                        className="px-3 py-1 bg-blue-500/20 text-blue-600 dark:text-blue-300 rounded-lg text-sm border border-blue-500/30"
                       >
                         {tech}
                       </span>
@@ -787,13 +787,13 @@ const LandingPage = () => {
                     initial={{ opacity: 0, x: 30 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
                   >
                     <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Code className="w-6 h-6 text-blue-400" />
+                      <Code className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-2">Excelência Técnica</h4>
-                    <p className="text-slate-300 text-sm">
+                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Excelência Técnica</h4>
+                    <p className="text-gray-600 dark:text-slate-300 text-sm">
                       Utilizamos as melhores práticas e tecnologias mais modernas para 
                       garantir qualidade excepcional em cada projeto.
                     </p>
@@ -805,13 +805,13 @@ const LandingPage = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.1 }}
-                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
                   >
                     <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Rocket className="w-6 h-6 text-blue-400" />
+                      <Rocket className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-2">Inovação Constante</h4>
-                    <p className="text-slate-300 text-sm">
+                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Inovação Constante</h4>
+                    <p className="text-gray-600 dark:text-slate-300 text-sm">
                       Mantemos-nos sempre na vanguarda tecnológica, 
                       explorando novas possibilidades em IA e desenvolvimento.
                     </p>
@@ -823,13 +823,13 @@ const LandingPage = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 }}
-                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
                   >
                     <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Zap className="w-6 h-6 text-blue-400" />
+                      <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-2">Agilidade na Entrega</h4>
-                    <p className="text-slate-300 text-sm">
+                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Agilidade na Entrega</h4>
+                    <p className="text-gray-600 dark:text-slate-300 text-sm">
                       Metodologias ágeis garantem entregas rápidas sem 
                       comprometer a qualidade e a satisfação do cliente.
                     </p>
@@ -841,13 +841,13 @@ const LandingPage = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.3 }}
-                    className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50"
+                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
                   >
                     <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Users className="w-6 h-6 text-blue-400" />
+                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <h4 className="text-lg font-bold text-white mb-2">Parceria Verdadeira</h4>
-                    <p className="text-slate-300 text-sm">
+                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Parceria Verdadeira</h4>
+                    <p className="text-gray-600 dark:text-slate-300 text-sm">
                       Trabalhamos como uma extensão da sua equipe, entendendo 
                       profundamente suas necessidades e objetivos.
                     </p>
@@ -917,7 +917,7 @@ const LandingPage = () => {
           </section>
 
           {/* CONTACT SECTION */}
-          <section id="contact" className="py-20 px-6 bg-slate-900 text-white">
+          <section id="contact" className="py-20 px-6 bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-white">
             <div className="container mx-auto">
               {/* Header com Link "Contato" */}
               <div className="text-center mb-4">
@@ -927,7 +927,7 @@ const LandingPage = () => {
                   viewport={{ once: true }}
                   className="inline-block"
                 >
-                  <span className="text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                  <span className="text-blue-600 dark:text-blue-400 text-sm font-medium px-4 py-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
                     Contato
                   </span>
                 </motion.div>
@@ -941,13 +941,13 @@ const LandingPage = () => {
                 className="text-center mb-12"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-white">Vamos Criar Algo </span>
+                  <span className="text-gray-800 dark:text-white">Vamos Criar Algo </span>
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                     Incrível Juntos
                   </span>
                 </h2>
                 
-                <p className="text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
+                <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
                   Pronto para transformar sua ideia em realidade? Entre em contato conosco e 
                   vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.
                 </p>
@@ -962,8 +962,8 @@ const LandingPage = () => {
                   className="space-y-8"
                 >
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-6">Entre em Contato</h3>
-                    <p className="text-slate-300 mb-8">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Entre em Contato</h3>
+                    <p className="text-gray-600 dark:text-slate-300 mb-8">
                       Estamos aqui para ajudar! Seja qual for o seu projeto ou dúvida, 
                       nossa equipe está pronta para oferecer a melhor solução.
                     </p>
@@ -976,15 +976,15 @@ const LandingPage = () => {
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                      className="flex items-center gap-4 p-4 bg-white/70 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700/50 shadow-lg"
                     >
                       <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                        <Mail className="w-6 h-6 text-blue-400" />
+                        <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-white">Email</h4>
-                        <p className="text-blue-400">contato@iacodelabs.com</p>
-                        <p className="text-sm text-slate-400">Resposta em até 24h</p>
+                        <h4 className="font-semibold text-gray-800 dark:text-white">Email</h4>
+                        <p className="text-blue-600 dark:text-blue-400">contato@iacodelabs.com</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">Resposta em até 24h</p>
                       </div>
                     </motion.div>
 
@@ -994,15 +994,15 @@ const LandingPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.1 }}
-                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                      className="flex items-center gap-4 p-4 bg-white/70 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700/50 shadow-lg"
                     >
                       <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-green-400" />
+                        <Phone className="w-6 h-6 text-green-600 dark:text-green-400" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-white">Telefone</h4>
-                        <p className="text-green-400">+55 (11) 99999-9999</p>
-                        <p className="text-sm text-slate-400">Seg a Sex, 9h às 18h</p>
+                        <h4 className="font-semibold text-gray-800 dark:text-white">Telefone</h4>
+                        <p className="text-green-600 dark:text-green-400">+55 (11) 99999-9999</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">Seg a Sex, 9h às 18h</p>
                       </div>
                     </motion.div>
 
@@ -1012,15 +1012,15 @@ const LandingPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 }}
-                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                      className="flex items-center gap-4 p-4 bg-white/70 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700/50 shadow-lg"
                     >
                       <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                        <MapPin className="w-6 h-6 text-purple-400" />
+                        <MapPin className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-white">Localização</h4>
-                        <p className="text-purple-400">São Paulo, Brasil</p>
-                        <p className="text-sm text-slate-400">Atendimento remoto</p>
+                        <h4 className="font-semibold text-gray-800 dark:text-white">Localização</h4>
+                        <p className="text-purple-600 dark:text-purple-400">São Paulo, Brasil</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">Atendimento remoto</p>
                       </div>
                     </motion.div>
 
@@ -1030,15 +1030,15 @@ const LandingPage = () => {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.3 }}
-                      className="flex items-center gap-4 p-4 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                      className="flex items-center gap-4 p-4 bg-white/70 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-slate-700/50 shadow-lg"
                     >
                       <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                        <Calendar className="w-6 h-6 text-orange-400" />
+                        <Calendar className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-white">Horário</h4>
-                        <p className="text-orange-400">24/7 Suporte</p>
-                        <p className="text-sm text-slate-400">Para clientes ativos</p>
+                        <h4 className="font-semibold text-gray-800 dark:text-white">Horário</h4>
+                        <p className="text-orange-600 dark:text-orange-400">24/7 Suporte</p>
+                        <p className="text-sm text-gray-500 dark:text-slate-400">Para clientes ativos</p>
                       </div>
                     </motion.div>
                   </div>
@@ -1051,7 +1051,7 @@ const LandingPage = () => {
                     transition={{ delay: 0.4 }}
                     className="mt-8"
                   >
-                    <h4 className="text-lg font-bold text-white mb-4">Por que Escolher a IA Code Labs?</h4>
+                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Por que Escolher a IA Code Labs?</h4>
                     <div className="space-y-3">
                       {[
                         "Equipe especializada e experiente",
@@ -1061,8 +1061,8 @@ const LandingPage = () => {
                         "Resultados comprovados"
                       ].map((item, idx) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-400" />
-                          <span className="text-slate-300">{item}</span>
+                          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                          <span className="text-gray-600 dark:text-slate-300">{item}</span>
                         </div>
                       ))}
                     </div>
@@ -1077,8 +1077,8 @@ const LandingPage = () => {
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Envie sua Mensagem</h3>
-                    <p className="text-slate-300 mb-6">
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Envie sua Mensagem</h3>
+                    <p className="text-gray-600 dark:text-slate-300 mb-6">
                       Preencha o formulário abaixo e entraremos em contato em até 24 horas.
                     </p>
                   </div>
@@ -1087,8 +1087,8 @@ const LandingPage = () => {
                     <div className="grid md:grid-cols-2 gap-4">
                       {/* Nome Completo */}
                       <div>
-                        <label className="block text-white font-medium mb-2">
-                          Nome Completo <span className="text-red-400">*</span>
+                        <label className="block text-gray-800 dark:text-white font-medium mb-2">
+                          Nome Completo <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -1096,15 +1096,15 @@ const LandingPage = () => {
                           value={formData.name}
                           onChange={handleInputChange}
                           placeholder="Seu nome completo"
-                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                           required
                         />
                       </div>
 
                       {/* Email */}
                       <div>
-                        <label className="block text-white font-medium mb-2">
-                          Email <span className="text-red-400">*</span>
+                        <label className="block text-gray-800 dark:text-white font-medium mb-2">
+                          Email <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="email"
@@ -1112,7 +1112,7 @@ const LandingPage = () => {
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder="seu@email.com"
-                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                           required
                         />
                       </div>
@@ -1121,29 +1121,29 @@ const LandingPage = () => {
                     <div className="grid md:grid-cols-2 gap-4">
                       {/* Telefone */}
                       <div>
-                        <label className="block text-white font-medium mb-2">Telefone</label>
+                        <label className="block text-gray-800 dark:text-white font-medium mb-2">Telefone</label>
                         <input
                           type="tel"
                           placeholder="(11) 99999-9999"
-                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                         />
                       </div>
 
                       {/* Empresa */}
                       <div>
-                        <label className="block text-white font-medium mb-2">Empresa</label>
+                        <label className="block text-gray-800 dark:text-white font-medium mb-2">Empresa</label>
                         <input
                           type="text"
                           placeholder="Nome da empresa"
-                          className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                          className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                         />
                       </div>
                     </div>
 
                     {/* Serviço de Interesse */}
                     <div>
-                      <label className="block text-white font-medium mb-2">Serviço de Interesse</label>
-                      <select className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                      <label className="block text-gray-800 dark:text-white font-medium mb-2">Serviço de Interesse</label>
+                      <select className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
                         <option value="">Selecione um serviço</option>
                         <option value="desenvolvimento-web">Desenvolvimento Web</option>
                         <option value="aplicativo-mobile">Aplicativo Mobile</option>
@@ -1156,8 +1156,8 @@ const LandingPage = () => {
 
                     {/* Mensagem */}
                     <div>
-                      <label className="block text-white font-medium mb-2">
-                        Mensagem <span className="text-red-400">*</span>
+                      <label className="block text-gray-800 dark:text-white font-medium mb-2">
+                        Mensagem <span className="text-red-500">*</span>
                       </label>
                       <textarea
                         name="message"
@@ -1165,7 +1165,7 @@ const LandingPage = () => {
                         onChange={handleInputChange}
                         rows={5}
                         placeholder="Conte-nos sobre seu projeto, necessidades e objetivos..."
-                        className="w-full px-4 py-3 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                        className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                         required
                       ></textarea>
                     </div>
@@ -1173,7 +1173,7 @@ const LandingPage = () => {
                     {/* Botão de Envio */}
                     <button
                       type="submit"
-                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group"
+                      className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
                     >
                       <span>Enviar Mensagem</span>
                       <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
