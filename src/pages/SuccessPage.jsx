@@ -26,14 +26,14 @@ const SuccessPage = () => {
           >
             <CheckCircle className="mx-auto h-20 w-20 text-green-500 mb-6" />
           </motion.div>
-          
+
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Pagamento Aprovado!</h1>
           <p className="text-muted-foreground mb-8">
             Obrigado pela sua compra! Você receberá um e-mail de confirmação em breve com os detalhes do seu pedido.
           </p>
-          
+
           <Button asChild size="lg">
-            <Link to="/store">
+            <Link to="/loja">
               Continuar Comprando <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
