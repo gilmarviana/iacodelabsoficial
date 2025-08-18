@@ -825,7 +825,7 @@ const LandingPage = () => {
 
                 {/* Coluna Direita - Valores Dinâmicos */}
                 <div className="grid grid-cols-1 gap-6">
-                  {(aboutData?.values || [
+                  {(Array.isArray(aboutData?.values) ? aboutData.values : [
                     {
                       title: 'Excelência Técnica',
                       description: 'Utilizamos as melhores práticas e tecnologias mais modernas para garantir qualidade excepcional em cada projeto.',
