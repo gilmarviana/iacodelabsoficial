@@ -29,7 +29,8 @@ import {
   Mail,
   Phone,
   MapPin,
-  Calendar
+  Calendar,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -38,6 +39,8 @@ import { useNavigate } from 'react-router-dom';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import SchedulingModal from '@/components/SchedulingModal';
 import FooterSection from '@/pages/FooterSection';
+import HeroSlider from '@/components/HeroSlider';
+import { useSiteEditorData } from '@/hooks/useSiteEditorData';
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,6 +48,28 @@ const LandingPage = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Carregar dados do editor de site
+  const { siteData: editorData, isLoading: isLoadingEditorData } = useSiteEditorData();
+
+  // Mapeamento de ícones para converter strings em componentes
+  const iconMap = {
+    Brain,
+    Smartphone,
+    Database,
+    BarChart3,
+    Shield,
+    Zap,
+    Code,
+    Globe,
+    Settings,
+    Users
+  };
+
+  // Função para obter componente de ícone
+  const getIconComponent = (iconName) => {
+    return iconMap[iconName] || Brain;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,7 +108,7 @@ const LandingPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Dados dos serviços
+  // Dados padrão dos serviços
   const services = [
     {
       icon: Brain,
@@ -116,6 +141,26 @@ const LandingPage = () => {
       description: "Automatizamos tarefas repetitivas para aumentar eficiência e reduzir custos."
     }
   ];
+
+  // Dados dos serviços - usar dados do editor se disponíveis, senão usar dados padrão
+  const getServicesData = () => {
+    if (editorData?.services) {
+      return {
+        title: editorData.services.title || 'Soluções Tecnológicas Completas',
+        subtitle: editorData.services.subtitle || 'Oferecemos um portfólio completo de serviços para transformar seu negócio com as mais avançadas tecnologias do mercado.',
+        items: editorData.services.items?.filter(item => item.visible) || []
+      };
+    }
+    
+    // Dados padrão se não houver dados do editor
+    return {
+      title: 'Soluções Tecnológicas Completas',
+      subtitle: 'Oferecemos um portfólio completo de serviços para transformar seu negócio com as mais avançadas tecnologias do mercado.',
+      items: services
+    };
+  };
+
+  const servicesData = getServicesData();
 
   // Processo de trabalho
   const workProcess = [
@@ -196,8 +241,8 @@ const LandingPage = () => {
     }
   ];
 
-  // Estatísticas da empresa
-  const stats = [
+  // Estatísticas da empresa - usar dados do editor se disponíveis
+  const stats = editorData?.about?.stats || [
     { 
       number: "50+", 
       label: "Projetos Entregues",
@@ -224,8 +269,8 @@ const LandingPage = () => {
     }
   ];
 
-  // Depoimentos
-  const testimonials = [
+  // Depoimentos - usar dados do editor se disponíveis
+  const testimonials = editorData?.testimonials?.testimonials || [
     {
       name: "Carlos Silva",
       company: "Tech Solutions CEO",
@@ -235,12 +280,33 @@ const LandingPage = () => {
     },
     {
       name: "Maria Santos",
-      company: "StartupXYZ Founder",
+      company: "StartupXYZ Founder", 
       text: "Profissionais excepcionais! Entregaram nosso app mobile no prazo com qualidade impecável.",
       rating: 5,
       avatar: "/api/placeholder/60/60"
     }
   ];
+
+  // Casos de sucesso - usar dados do editor se disponíveis
+  const casesData = editorData?.cases?.cases || successCases;
+
+  // Dados sobre a empresa - usar dados do editor se disponíveis
+  const aboutData = editorData?.about ? {
+    title: editorData.about.title || 'Quem Somos a IA Code Labs',
+    subtitle: editorData.about.subtitle || 'Somos uma empresa especializada em desenvolvimento de software e inteligência artificial.',
+    mission: editorData.about.mission || 'Capacitar empresas através da tecnologia.',
+    vision: editorData.about.vision || 'Ser referência em soluções tecnológicas inovadoras.',
+    values: editorData.about.values || 'Inovação, excelência e foco no cliente.'
+  } : null;
+
+  // Dados de contato - usar dados do editor se disponíveis
+  const contactData = editorData?.contact ? {
+    title: editorData.contact.title || 'Entre em Contato',
+    subtitle: editorData.contact.subtitle || 'Vamos conversar sobre seu projeto.',
+    email: editorData.contact.email || 'contato@iacodelabs.com',
+    phone: editorData.contact.phone || '+55 (11) 99999-9999',
+    address: editorData.contact.address || 'São Paulo, SP - Brasil'
+  } : null;
 
   return (
     <>
@@ -266,18 +332,28 @@ const LandingPage = () => {
                   <Brain className="w-5 h-5 text-white" />
                 </div>
                 <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  IA Code Labs
+                  {editorData?.header?.logo || 'IA Code Labs'}
                 </span>
               </motion.div>
 
               {/* Desktop Menu */}
               <div className="hidden md:flex items-center space-x-8">
-                <a href="#home" className="hover:text-blue-600 transition-colors">Início</a>
-                <a href="#services" className="hover:text-blue-600 transition-colors">Serviços</a>
-                <a href="#process" className="hover:text-blue-600 transition-colors">Processo</a>
-                <a href="#cases" className="hover:text-blue-600 transition-colors">Casos</a>
-                <a href="#about" className="hover:text-blue-600 transition-colors">Sobre</a>
-                <a href="#contact" className="hover:text-blue-600 transition-colors">Contato</a>
+                {(editorData?.header?.navigation || [
+                  { label: 'Início', link: '#home', active: true },
+                  { label: 'Serviços', link: '#services', active: true },
+                  { label: 'Processo', link: '#process', active: true },
+                  { label: 'Casos', link: '#cases', active: true },
+                  { label: 'Sobre', link: '#about', active: true },
+                  { label: 'Contato', link: '#contact', active: true }
+                ]).filter(item => item.active).map((item, index) => (
+                  <a 
+                    key={index}
+                    href={item.link} 
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ))}
               </div>
 
               {/* Action Buttons */}
@@ -290,10 +366,27 @@ const LandingPage = () => {
                   Login
                 </Button>
                 <Button 
-                  onClick={() => setIsSchedulingModalOpen(true)}
+                  onClick={() => {
+                    const ctaLink = editorData?.header?.ctaButton?.link;
+                    if (ctaLink) {
+                      if (ctaLink.startsWith('#')) {
+                        // Link interno, fazer scroll suave
+                        const element = document.querySelector(ctaLink);
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      } else {
+                        // Link externo
+                        window.open(ctaLink, '_blank');
+                      }
+                    } else {
+                      // Fallback para o modal de agendamento
+                      setIsSchedulingModalOpen(true);
+                    }
+                  }}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 >
-                  Agendar Consulta
+                  {editorData?.header?.ctaButton?.text || 'Agendar Consulta'}
                 </Button>
                 <ThemeToggle />
               </div>
@@ -333,96 +426,8 @@ const LandingPage = () => {
 
         <main className="pt-20">
           {/* HERO SECTION */}
-          <section id="home" className="relative py-20 px-6 bg-gradient-to-br from-blue-50 via-background to-purple-50 dark:from-blue-950/20 dark:via-background dark:to-purple-950/20 overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute inset-0">
-              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            </div>
-
-            <div className="container mx-auto relative z-10">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                {/* Content */}
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8 }}
-                >
-                  <h1 className="text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                    <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                      Inteligência Artificial
-                    </span>
-                    <br />
-                    <span className="text-foreground">Para o Seu Negócio</span>
-                  </h1>
-                  
-                  <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                    Transformamos ideias em soluções digitais inovadoras. 
-                    Especializados em desenvolvimento web, mobile e sistemas 
-                    inteligentes com IA para impulsionar seu negócio.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                    <Button 
-                      size="lg" 
-                      onClick={() => setIsSchedulingModalOpen(true)}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-6"
-                    >
-                      Começar Projeto
-                      <ArrowRight className="ml-2 w-5 h-5" />
-                    </Button>
-                    
-                    <Button 
-                      size="lg" 
-                      variant="outline"
-                      onClick={() => document.getElementById('cases')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="text-lg px-8 py-6 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
-                    >
-                      <Play className="mr-2 w-5 h-5" />
-                      Ver Projetos
-                    </Button>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-8">
-                    {stats.map((stat, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 + index * 0.1 }}
-                        className="text-center"
-                      >
-                        <div className="text-3xl font-bold text-blue-600 mb-1">{stat.number}</div>
-                        <div className="text-sm text-muted-foreground">{stat.label}</div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Image/Visual */}
-                <motion.div
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className="relative"
-                >
-                  <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-8 shadow-2xl">
-                    {/* Placeholder for hero image/graphic */}
-                    <div className="aspect-square bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                      <div className="text-center text-white">
-                        <Brain className="w-24 h-24 mx-auto mb-4 opacity-80" />
-                        <div className="text-lg font-semibold opacity-90">IA Powered Solutions</div>
-                      </div>
-                    </div>
-                    
-                    {/* Floating elements */}
-                    <div className="absolute -top-4 -right-4 w-8 h-8 bg-yellow-400 rounded-full animate-bounce"></div>
-                    <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-green-400 rounded-full animate-bounce delay-500"></div>
-                  </div>
-                </motion.div>
-              </div>
-            </div>
+          <section id="home">
+            <HeroSlider onScheduleClick={() => setIsSchedulingModalOpen(true)} />
           </section>
 
           {/* SERVICES SECTION */}
@@ -436,21 +441,18 @@ const LandingPage = () => {
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Soluções Tecnológicas
+                    {servicesData.title}
                   </span>
-                  <br />
-                  <span className="text-foreground">Completas</span>
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                  Oferecemos um portfólio completo de serviços para transformar 
-                  seu negócio com as mais avançadas tecnologias do mercado.
+                  {servicesData.subtitle}
                 </p>
               </motion.div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {services.map((service, index) => (
+                {servicesData.items.map((service, index) => (
                   <motion.div
-                    key={index}
+                    key={service.id || index}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -459,7 +461,7 @@ const LandingPage = () => {
                     className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-border/50"
                   >
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <service.icon className="w-8 h-8 text-white" />
+                      {React.createElement(service.icon ? getIconComponent(service.icon) : Brain, { className: "w-8 h-8 text-white" })}
                     </div>
                     
                     <h3 className="text-xl font-bold mb-4 group-hover:text-blue-600 transition-colors">
@@ -543,15 +545,16 @@ const LandingPage = () => {
                 className="text-center mb-16"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-foreground">Casos de Sucesso</span>
+                  <span className="text-foreground">
+                    {editorData?.cases?.title?.split(' ').slice(0, -2).join(' ') || 'Casos de Sucesso'}
+                  </span>
                   <br />
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Comprovados
+                    {editorData?.cases?.title?.split(' ').slice(-2).join(' ') || 'Comprovados'}
                   </span>
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                  Conheça alguns dos projetos que desenvolvemos e os resultados 
-                  extraordinários que alcançamos para nossos clientes.
+                  {editorData?.cases?.subtitle || 'Conheça alguns dos projetos que desenvolvemos e os resultados extraordinários que alcançamos para nossos clientes.'}
                 </p>
               </motion.div>
 
@@ -565,9 +568,9 @@ const LandingPage = () => {
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {successCases.map((project, index) => (
+                {casesData.map((project, index) => (
                   <motion.div
-                    key={index}
+                    key={project.id || index}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -582,38 +585,48 @@ const LandingPage = () => {
                         <span className="px-3 py-1 text-xs bg-blue-600 text-white rounded-full font-medium">
                           🛒 {project.category}
                         </span>
-                        <span className="px-3 py-1 text-xs bg-yellow-500 text-black rounded-full font-medium">
-                          ⭐ {project.badge}
-                        </span>
+                        {project.badge && (
+                          <span className="px-3 py-1 text-xs bg-yellow-500 text-black rounded-full font-medium">
+                            ⭐ {project.badge}
+                          </span>
+                        )}
                       </div>
                       
-                      {/* Project Preview Image/Placeholder */}
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-slate-400">
-                        {project.category === "E-commerce" && (
-                          <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
-                              <Globe className="w-8 h-8" />
+                      {/* Project Preview Image */}
+                      {project.image ? (
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-500 dark:text-slate-400">
+                          {project.category === "E-commerce" && (
+                            <div className="text-center">
+                              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
+                                <Globe className="w-8 h-8" />
+                              </div>
+                              <div className="text-sm">E-commerce Preview</div>
                             </div>
-                            <div className="text-sm">E-commerce Preview</div>
-                          </div>
-                        )}
-                        {project.category === "Dashboard" && (
-                          <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
-                              <BarChart3 className="w-8 h-8" />
+                          )}
+                          {project.category === "Dashboard" && (
+                            <div className="text-center">
+                              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
+                                <BarChart3 className="w-8 h-8" />
+                              </div>
+                              <div className="text-sm">Dashboard Preview</div>
                             </div>
-                            <div className="text-sm">Dashboard Preview</div>
-                          </div>
-                        )}
-                        {project.category === "API" && (
-                          <div className="text-center">
-                            <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
-                              <Database className="w-8 h-8" />
+                          )}
+                          {project.category === "API" && (
+                            <div className="text-center">
+                              <div className="w-16 h-16 mx-auto mb-2 bg-gray-300 dark:bg-slate-600 rounded-lg flex items-center justify-center">
+                                <Database className="w-8 h-8" />
+                              </div>
+                              <div className="text-sm">API Preview</div>
                             </div>
-                            <div className="text-sm">API Preview</div>
-                          </div>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     {/* Content Section */}
@@ -627,38 +640,54 @@ const LandingPage = () => {
                       </p>
 
                       {/* Features List */}
-                      <div className="space-y-2 mb-4">
-                        {project.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-sm text-slate-300">
-                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                            <span>{feature}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {project.features && project.features.length > 0 && (
+                        <div className="space-y-2 mb-4">
+                          {project.features.map((feature, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-sm text-slate-300">
+                              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                              <span>{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Technologies */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.technologies.map((tech, idx) => (
-                          <span 
-                            key={idx}
-                            className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        <span className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600">
-                          {project.additionalTech}
-                        </span>
-                      </div>
+                      {project.technologies && project.technologies.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.technologies.map((tech, idx) => (
+                            <span 
+                              key={idx}
+                              className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600"
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {project.additionalTech && (
+                            <span className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded border border-slate-600">
+                              {project.additionalTech}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-                      {/* Result */}
-                      <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-3 mb-4">
-                        <p className="text-green-400 text-sm font-medium">{project.result}</p>
-                      </div>
+                      {/* Results */}
+                      {(project.result || (project.results && project.results.length > 0)) && (
+                        <div className="bg-green-900/30 border border-green-700/50 rounded-lg p-3 mb-4">
+                          {project.result ? (
+                            <p className="text-green-400 text-sm font-medium">{project.result}</p>
+                          ) : (
+                            project.results.map((result, idx) => (
+                              <p key={idx} className="text-green-400 text-sm font-medium">
+                                💡 {result}
+                              </p>
+                            ))
+                          )}
+                        </div>
+                      )}
 
                       {/* Button */}
                       <button className="w-full bg-gray-600 hover:bg-gray-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 group">
-                        <span>{project.buttonText}</span>
+                        <span>{project.buttonText || 'Ver Detalhes'}</span>
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </button>
                     </div>
@@ -693,37 +722,40 @@ const LandingPage = () => {
                 className="text-center mb-12"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-gray-800 dark:text-white">Quem Somos a </span>
+                  <span className="text-gray-800 dark:text-white">
+                    {aboutData?.title?.split(' ').slice(0, -3).join(' ') || 'Quem Somos a'} 
+                  </span>
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    IA Code Labs
+                    {aboutData?.title?.split(' ').slice(-3).join(' ') || 'IA Code Labs'}
                   </span>
                 </h2>
                 
                 <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed max-w-4xl mx-auto">
-                  Somos uma empresa especializada em desenvolvimento de software e 
-                  inteligência artificial, comprometida em transformar ideias em soluções 
-                  tecnológicas inovadoras que impulsionam o crescimento dos nossos clientes.
+                  {aboutData?.subtitle || 'Somos uma empresa especializada em desenvolvimento de software e inteligência artificial, comprometida em transformar ideias em soluções tecnológicas inovadoras que impulsionam o crescimento dos nossos clientes.'}
                 </p>
               </motion.div>
 
               {/* Estatísticas */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                {stats.map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 50 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="text-center p-6 bg-white/70 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800/80 transition-all duration-300 shadow-lg hover:shadow-xl"
-                  >
-                    <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{stat.number}</div>
-                    <div className="text-sm text-gray-600 dark:text-slate-400">{stat.label}</div>
-                  </motion.div>
-                ))}
+                {stats.map((stat, index) => {
+                  const IconComponent = stat.icon || Trophy;
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="text-center p-6 bg-white/70 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700/50 hover:bg-white dark:hover:bg-slate-800/80 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      <div className="w-16 h-16 bg-blue-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <IconComponent className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{stat.number || stat.value}</div>
+                      <div className="text-sm text-gray-600 dark:text-slate-400">{stat.label}</div>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Seções de Informações */}
@@ -739,9 +771,7 @@ const LandingPage = () => {
                   >
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nossa Missão</h3>
                     <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
-                      Capacitar empresas através da tecnologia, desenvolvendo soluções de 
-                      software personalizadas e implementando inteligência artificial para otimizar 
-                      processos, aumentar a eficiência e gerar valor real para nossos clientes.
+                      {aboutData?.mission || 'Capacitar empresas através da tecnologia, desenvolvendo soluções de software personalizadas e implementando inteligência artificial para otimizar processos, aumentar a eficiência e gerar valor real para nossos clientes.'}
                     </p>
                   </motion.div>
 
@@ -755,9 +785,7 @@ const LandingPage = () => {
                   >
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-white">Nossa Visão</h3>
                     <p className="text-gray-600 dark:text-slate-300 leading-relaxed">
-                      Ser reconhecida como a principal referência em desenvolvimento de 
-                      software e IA, criando um futuro onde a tecnologia inteligente seja acessível 
-                      e transformadora para empresas de todos os portes.
+                      {aboutData?.vision || 'Ser reconhecida como a principal referência em desenvolvimento de software e IA, criando um futuro onde a tecnologia inteligente seja acessível e transformadora para empresas de todos os portes.'}
                     </p>
                   </motion.div>
 
@@ -867,15 +895,16 @@ const LandingPage = () => {
                 className="text-center mb-16"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-foreground">O que Nossos</span>
+                  <span className="text-foreground">
+                    {editorData?.testimonials?.title?.split(' ').slice(0, -2).join(' ') || 'O que Nossos'}
+                  </span>
                   <br />
                   <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Clientes Dizem
+                    {editorData?.testimonials?.title?.split(' ').slice(-2).join(' ') || 'Clientes Dizem'}
                   </span>
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                  A satisfação dos nossos clientes é nossa maior conquista. 
-                  Veja o que eles têm a dizer sobre nosso trabalho.
+                  {editorData?.testimonials?.subtitle || 'A satisfação dos nossos clientes é nossa maior conquista. Veja o que eles têm a dizer sobre nosso trabalho.'}
                 </p>
               </motion.div>
 
@@ -903,11 +932,21 @@ const LandingPage = () => {
                     
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <Users className="w-6 h-6 text-white" />
+                        {testimonial.image || testimonial.avatar ? (
+                          <img 
+                            src={testimonial.image || testimonial.avatar} 
+                            alt={testimonial.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <Users className="w-6 h-6 text-white" />
+                        )}
                       </div>
                       <div>
                         <div className="font-bold">{testimonial.name}</div>
-                        <div className="text-sm text-muted-foreground">{testimonial.company}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {testimonial.role ? `${testimonial.role}${testimonial.company ? `, ${testimonial.company}` : ''}` : testimonial.company}
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -941,15 +980,16 @@ const LandingPage = () => {
                 className="text-center mb-12"
               >
                 <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  <span className="text-gray-800 dark:text-white">Vamos Criar Algo </span>
+                  <span className="text-gray-800 dark:text-white">
+                    {contactData?.title?.split(' ').slice(0, -2).join(' ') || 'Vamos Criar Algo'}
+                  </span>
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    Incrível Juntos
+                    {contactData?.title?.split(' ').slice(-2).join(' ') || 'Incrível Juntos'}
                   </span>
                 </h2>
                 
                 <p className="text-gray-600 dark:text-slate-300 text-lg leading-relaxed max-w-3xl mx-auto">
-                  Pronto para transformar sua ideia em realidade? Entre em contato conosco e 
-                  vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.
+                  {contactData?.subtitle || 'Pronto para transformar sua ideia em realidade? Entre em contato conosco e vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.'}
                 </p>
               </motion.div>
 
@@ -983,7 +1023,7 @@ const LandingPage = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-white">Email</h4>
-                        <p className="text-blue-600 dark:text-blue-400">contato@iacodelabs.com</p>
+                        <p className="text-blue-600 dark:text-blue-400">{contactData?.email || 'contato@iacodelabs.com'}</p>
                         <p className="text-sm text-gray-500 dark:text-slate-400">Resposta em até 24h</p>
                       </div>
                     </motion.div>
@@ -1001,7 +1041,7 @@ const LandingPage = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-white">Telefone</h4>
-                        <p className="text-green-600 dark:text-green-400">+55 (11) 99999-9999</p>
+                        <p className="text-green-600 dark:text-green-400">{contactData?.phone || '+55 (11) 99999-9999'}</p>
                         <p className="text-sm text-gray-500 dark:text-slate-400">Seg a Sex, 9h às 18h</p>
                       </div>
                     </motion.div>
@@ -1019,7 +1059,7 @@ const LandingPage = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-white">Localização</h4>
-                        <p className="text-purple-600 dark:text-purple-400">São Paulo, Brasil</p>
+                        <p className="text-purple-600 dark:text-purple-400">{contactData?.address || 'São Paulo, Brasil'}</p>
                         <p className="text-sm text-gray-500 dark:text-slate-400">Atendimento remoto</p>
                       </div>
                     </motion.div>

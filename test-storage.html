@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Storage</title>
+</head>
+<body>
+    <h1>Teste de Sincronização de Dados</h1>
+    
+    <div>
+        <h2>Dados do Header no localStorage:</h2>
+        <div id="siteData"></div>
+    </div>
+    
+    <div>
+        <button onclick="testSave()">Testar Salvar Header</button>
+        <button onclick="testLoad()">Recarregar Dados</button>
+    </div>
+
+    <script>
+        function testLoad() {
+            try {
+                // Carregar dados do siteEditorData
+                const savedData = localStorage.getItem('siteEditorData');
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData);
+                    document.getElementById('siteData').innerHTML = `
+                        <pre>${JSON.stringify(parsedData.siteData?.header, null, 2)}</pre>
+                    `;
+                } else {
+                    document.getElementById('siteData').innerHTML = 'Nenhum dado encontrado';
+                }
+            } catch (error) {
+                document.getElementById('siteData').innerHTML = 'Erro ao carregar: ' + error.message;
+            }
+        }
+
+        function testSave() {
+            const testData = {
+                header: {
+                    logo: 'TESTE - IA Code Labs Modificado',
+                    navigation: [
+                        { label: 'Teste', link: '#test', active: true }
+                    ],
+                    ctaButton: {
+                        text: 'Teste CTA',
+                        link: '#test'
+                    }
+                }
+            };
+
+            try {
+                const dataToSave = {
+                    siteData: testData,
+                    lastSaved: new Date().toISOString(),
+                    version: '1.0'
+                };
+                
+                localStorage.setItem('siteEditorData', JSON.stringify(dataToSave));
+                
+                // Disparar evento customizado
+                window.dispatchEvent(new CustomEvent('siteDataUpdated', { 
+                    detail: testData 
+                }));
+                
+                alert('Dados salvos! Verifique se a LandingPage foi atualizada.');
+                testLoad();
+            } catch (error) {
+                alert('Erro ao salvar: ' + error.message);
+            }
+        }
+
+        // Carregar dados iniciais
+        testLoad();
+
+        // Escutar atualizações
+        window.addEventListener('siteDataUpdated', () => {
+            console.log('Evento siteDataUpdated recebido!');
+            testLoad();
+        });
+    </script>
+</body>
+</html>

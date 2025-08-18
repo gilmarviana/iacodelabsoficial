@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Brain } from 'lucide-react';
+import { useSiteEditorData } from '@/hooks/useSiteEditorData';
 
 const defaultFooterConfig = {
   logoUrl: '',
@@ -36,10 +37,37 @@ const defaultFooterConfig = {
 };
 
 const FooterSection = () => {
+  // Carregar dados do editor de site
+  const { siteData: editorData } = useSiteEditorData();
+  
   const [footerConfig, setFooterConfig] = useState(() => {
     const saved = localStorage.getItem('landingPageFooterConfig');
     return saved ? JSON.parse(saved) : defaultFooterConfig;
   });
+
+  // Usar dados do editor se disponíveis, senão usar configuração padrão
+  const finalFooterConfig = editorData?.footer ? {
+    logoText: editorData.footer.company || footerConfig.logoText,
+    tagline: editorData.footer.description || footerConfig.tagline,
+    contact: {
+      email: editorData.footer.contact?.email || footerConfig?.contact?.email || defaultFooterConfig.contact.email,
+      phone: editorData.footer.contact?.phone || footerConfig?.contact?.phone || defaultFooterConfig.contact.phone,
+      location: editorData.footer.contact?.address || footerConfig?.contact?.location || defaultFooterConfig.contact.location
+    },
+    quickLinks: editorData.footer.sections?.length > 0 ? 
+      editorData.footer.sections.flatMap(section => section.links || []) : 
+      footerConfig?.quickLinks || defaultFooterConfig.quickLinks,
+    copyrightText: editorData.footer.copyright || footerConfig?.copyrightText || defaultFooterConfig.copyrightText,
+    copyrightSubText: footerConfig?.copyrightSubText || defaultFooterConfig.copyrightSubText,
+    ...footerConfig
+  } : {
+    ...defaultFooterConfig,
+    ...footerConfig,
+    contact: {
+      ...defaultFooterConfig.contact,
+      ...footerConfig?.contact
+    }
+  };
 
   useEffect(() => {
     const handleStorage = () => {
@@ -47,7 +75,19 @@ const FooterSection = () => {
       setFooterConfig(saved ? JSON.parse(saved) : defaultFooterConfig);
     };
     window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    
+    // Escutar mudanças no editor de site
+    const handleSiteDataUpdate = () => {
+      // Este evento é disparado quando dados do site são atualizados
+      const saved = localStorage.getItem('landingPageFooterConfig');
+      setFooterConfig(saved ? JSON.parse(saved) : defaultFooterConfig);
+    };
+    window.addEventListener('siteDataUpdated', handleSiteDataUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('siteDataUpdated', handleSiteDataUpdate);
+    };
   }, []);
 
   // Also update on tab where editing happens
@@ -80,12 +120,12 @@ const FooterSection = () => {
                   <Brain className="w-6 h-6 text-white" />
                 </div>
                 <span className="font-bold text-2xl text-white">
-                  IA Code Labs
+                  {finalFooterConfig?.logoText || 'IA Code Labs'}
                 </span>
               </motion.div>
               
               <p className="text-slate-400 leading-relaxed mb-8 max-w-sm">
-                Especialistas em desenvolvimento de software e inteligência artificial, criando soluções inovadoras que transformam negócios e impulsionam o futuro digital.
+                {finalFooterConfig?.tagline || 'Especialistas em desenvolvimento de software e inteligência artificial.'}
               </p>
 
               {/* Social Icons */}
@@ -136,10 +176,10 @@ const FooterSection = () => {
                 >
                   <Mail className="w-5 h-5 text-blue-400" />
                   <a 
-                    href="mailto:contato@iacodelabs.com"
+                    href={`mailto:${finalFooterConfig?.contact?.email || 'contato@iacodelabs.com'}`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
-                    contato@iacodelabs.com
+                    {finalFooterConfig?.contact?.email || 'contato@iacodelabs.com'}
                   </a>
                 </motion.div>
                 
@@ -151,10 +191,10 @@ const FooterSection = () => {
                 >
                   <Phone className="w-5 h-5 text-blue-400" />
                   <a 
-                    href="tel:+5511999999999"
+                    href={`tel:${(finalFooterConfig?.contact?.phone || '+55 (11) 99999-9999').replace(/\D/g, '')}`}
                     className="text-slate-400 hover:text-white transition-colors"
                   >
-                    +55 (11) 99999-9999
+                    {finalFooterConfig?.contact?.phone || '+55 (11) 99999-9999'}
                   </a>
                 </motion.div>
                 
@@ -166,7 +206,7 @@ const FooterSection = () => {
                 >
                   <MapPin className="w-5 h-5 text-blue-400" />
                   <span className="text-slate-400">
-                    São Paulo, Brasil
+                    {finalFooterConfig?.contact?.location || 'São Paulo, Brasil'}
                   </span>
                 </motion.div>
               </div>
@@ -177,54 +217,21 @@ const FooterSection = () => {
               <h3 className="text-xl font-semibold text-white mb-6">Links Rápidos</h3>
               
               <div className="space-y-3">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0 * 0.1 }}
-                >
-                  <a
-                    href="#about"
-                    className="text-slate-400 hover:text-white transition-colors block"
+                {(finalFooterConfig?.quickLinks || []).map((link, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    Sobre Nós
-                  </a>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1 * 0.1 }}
-                >
-                  <a
-                    href="#services"
-                    className="text-slate-400 hover:text-white transition-colors block"
-                  >
-                    Serviços
-                  </a>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 2 * 0.1 }}
-                >
-                  <a
-                    href="#cases"
-                    className="text-slate-400 hover:text-white transition-colors block"
-                  >
-                    Projetos
-                  </a>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 3 * 0.1 }}
-                >
-                  <a
-                    href="#contact"
-                    className="text-slate-400 hover:text-white transition-colors block"
-                  >
-                    Contato
-                  </a>
-                </motion.div>
+                    <a
+                      href={link?.url || link?.href || '#'}
+                      className="text-slate-400 hover:text-white transition-colors block"
+                    >
+                      {link?.label || link?.text || link?.title || 'Link'}
+                    </a>
+                  </motion.div>
+                ))}
               </div>
             </div>
           </div>
@@ -236,10 +243,10 @@ const FooterSection = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-center md:text-left">
-              © 2025 IA Code Labs. Todos os direitos reservados.
+              {finalFooterConfig?.copyrightText || '© 2025 IA Code Labs. Todos os direitos reservados.'}
             </p>
             <p className="text-sm text-center md:text-right">
-              Desenvolvido com ♥ e Inteligência Artificial
+              {finalFooterConfig?.copyrightSubText || 'Desenvolvido com ♥ e Inteligência Artificial'}
             </p>
           </div>
         </div>

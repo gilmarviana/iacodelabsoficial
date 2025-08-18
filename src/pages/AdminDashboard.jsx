@@ -10,6 +10,8 @@ import ProjectsContent from '@/components/admin/ProjectsContent';
 import SliderSettingsContent from '@/components/admin/settings/SliderSettingsContent';
 import SiteProjectsSettingsContent from '@/components/admin/settings/SiteProjectsSettingsContent';
 import LandingPageSettingsContent from '@/components/admin/settings/LandingPageSettingsContent';
+import SiteEditorContent from '@/components/admin/settings/SiteEditorContent';
+import SiteEditorContentFixed from '@/components/admin/settings/SiteEditorContentFixed';
 import AuthSettingsContent from '@/components/admin/settings/AuthSettingsContent';
 import DashboardSettingsContent from '@/components/admin/settings/DashboardSettingsContent';
 import SidebarSettingsContent from '@/components/admin/settings/SidebarSettingsContent';
@@ -159,6 +161,8 @@ const AdminDashboard = () => {
         return <SiteProjectsSettingsContent />;
       case 'settings-landing-page':
         return <LandingPageSettingsContent />;
+      case 'settings-site-editor':
+        return <SiteEditorContentFixed />;
       case 'settings-auth':
         return <AuthSettingsContent />;
       case 'settings-dashboard':

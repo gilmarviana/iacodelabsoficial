@@ -26,6 +26,7 @@ const allMenuItems = [
       { id: 'settings-slider', label: 'Slider', icon: ImageIcon },
       { id: 'settings-site-projects', label: 'Projetos do Site', icon: FolderOpen },
       { id: 'settings-landing-page', label: 'Landing Page', icon: FileImage },
+      { id: 'settings-site-editor', label: 'Editor de Site', icon: Brush },
       { id: 'settings-auth', label: 'Autenticação', icon: Lock },
       { id: 'settings-dashboard', label: 'Dashboard', icon: Brush },
       { id: 'settings-sidebar', label: 'Sidebar', icon: SlidersHorizontal },
