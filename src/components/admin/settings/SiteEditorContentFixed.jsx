@@ -33,7 +33,9 @@ const SiteEditorContentFixed = () => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [siteData, setSiteData] = useState(null);
-  const [activeSlide, setActiveSlide] = useState(0); // Mover para cá
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [activeCase, setActiveCase] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   // Inicializar dados apenas uma vez
   useEffect(() => {
@@ -1371,18 +1373,16 @@ const SiteEditorContentFixed = () => {
       const defaultCasesData = {
         title: 'Casos de Sucesso Comprovados',
         subtitle: 'Projetos que transformaram negócios e geraram resultados extraordinários.',
-        cases: [
+        items: [
           {
             id: 1,
             title: 'E-commerce Inteligente',
-            client: 'Fashion Store',
+            company: 'Fashion Store',
             description: 'Plataforma de e-commerce com recomendações por IA.',
             technologies: ['React', 'Node.js', 'Python', 'TensorFlow'],
             results: ['150% aumento nas vendas', '80% redução no tempo de busca'],
             image: '/api/placeholder/600/400',
-            category: 'E-commerce',
-            year: '2024',
-            featured: true
+            category: 'E-commerce'
           }
         ]
       };
@@ -1391,7 +1391,65 @@ const SiteEditorContentFixed = () => {
       return <div>Inicializando dados dos casos de sucesso...</div>;
     }
     
-    const [activeCase, setActiveCase] = useState(0);
+    return (
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Título da Seção</label>
+          <Input
+            value={siteData.cases.title || ''}
+            onChange={(e) => updateSiteData('cases', { 
+              ...siteData.cases, 
+              title: e.target.value 
+            })}
+            placeholder="Título da seção casos de sucesso"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium mb-2">Subtítulo</label>
+          <Textarea
+            value={siteData.cases.subtitle || ''}
+            onChange={(e) => updateSiteData('cases', { 
+              ...siteData.cases, 
+              subtitle: e.target.value 
+            })}
+            placeholder="Subtítulo da seção"
+            rows={2}
+          />
+        </div>
+
+        <div>
+          <p className="text-sm text-gray-600">
+            Editor de casos em desenvolvimento. Total de casos: {(siteData.cases.items || []).length}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTestimonialsEditor = () => {
+      // Inicializar dados dos casos se não existirem
+      const defaultCasesData = {
+        title: 'Casos de Sucesso Comprovados',
+        subtitle: 'Projetos que transformaram negócios e geraram resultados extraordinários.',
+        items: [
+          {
+            id: 1,
+            title: 'E-commerce Inteligente',
+            company: 'Fashion Store',
+            description: 'Plataforma de e-commerce com recomendações por IA.',
+            technologies: ['React', 'Node.js', 'Python', 'TensorFlow'],
+            results: ['150% aumento nas vendas', '80% redução no tempo de busca'],
+            image: '/api/placeholder/600/400',
+            category: 'E-commerce'
+          }
+        ]
+      };
+      
+      updateSiteData('cases', defaultCasesData);
+      return <div>Inicializando dados dos casos de sucesso...</div>;
+    }
+    
     const cases = siteData.cases.items || [];
     
     return (
@@ -1698,7 +1756,6 @@ const SiteEditorContentFixed = () => {
       return <div>Inicializando dados dos depoimentos...</div>;
     }
     
-    const [activeTestimonial, setActiveTestimonial] = useState(0);
     const testimonials = siteData.testimonials.items || [];
     
     return (

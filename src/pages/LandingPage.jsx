@@ -67,8 +67,23 @@ const LandingPage = () => {
   };
 
   // Função para obter componente de ícone
-  const getIconComponent = (iconName) => {
+  const getServiceIconComponent = (iconName) => {
     return iconMap[iconName] || Brain;
+  };
+
+  // Função para mapear ícones dos valores da seção About
+  const getValueIconComponent = (iconName) => {
+    const valueIconMap = {
+      'Code': Code,
+      'Rocket': Rocket,
+      'Zap': Zap,
+      'Users': Users,
+      'Shield': Shield,
+      'Target': Target,
+      'Trophy': Trophy,
+      'Brain': Brain
+    };
+    return valueIconMap[iconName] || Code;
   };
 
   const handleSubmit = (e) => {
@@ -296,7 +311,7 @@ const LandingPage = () => {
     subtitle: editorData.about.subtitle || 'Somos uma empresa especializada em desenvolvimento de software e inteligência artificial.',
     mission: editorData.about.mission || 'Capacitar empresas através da tecnologia.',
     vision: editorData.about.vision || 'Ser referência em soluções tecnológicas inovadoras.',
-    values: editorData.about.values || 'Inovação, excelência e foco no cliente.'
+    values: editorData.about.values || []
   } : null;
 
   // Dados de contato - usar dados do editor se disponíveis
@@ -461,7 +476,7 @@ const LandingPage = () => {
                     className="group bg-card rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-border/50"
                   >
                     <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                      {React.createElement(service.icon ? getIconComponent(service.icon) : Brain, { className: "w-8 h-8 text-white" })}
+                      {React.createElement(service.icon ? getServiceIconComponent(service.icon) : Brain, { className: "w-8 h-8 text-white" })}
                     </div>
                     
                     <h3 className="text-xl font-bold mb-4 group-hover:text-blue-600 transition-colors">
@@ -808,78 +823,50 @@ const LandingPage = () => {
                   </motion.div>
                 </div>
 
-                {/* Coluna Direita */}
+                {/* Coluna Direita - Valores Dinâmicos */}
                 <div className="grid grid-cols-1 gap-6">
-                  {/* Excelência Técnica */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
-                  >
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Code className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Excelência Técnica</h4>
-                    <p className="text-gray-600 dark:text-slate-300 text-sm">
-                      Utilizamos as melhores práticas e tecnologias mais modernas para 
-                      garantir qualidade excepcional em cada projeto.
-                    </p>
-                  </motion.div>
-
-                  {/* Inovação Constante */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.1 }}
-                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
-                  >
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Rocket className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Inovação Constante</h4>
-                    <p className="text-gray-600 dark:text-slate-300 text-sm">
-                      Mantemos-nos sempre na vanguarda tecnológica, 
-                      explorando novas possibilidades em IA e desenvolvimento.
-                    </p>
-                  </motion.div>
-
-                  {/* Agilidade na Entrega */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
-                  >
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Zap className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Agilidade na Entrega</h4>
-                    <p className="text-gray-600 dark:text-slate-300 text-sm">
-                      Metodologias ágeis garantem entregas rápidas sem 
-                      comprometer a qualidade e a satisfação do cliente.
-                    </p>
-                  </motion.div>
-
-                  {/* Parceria Verdadeira */}
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
-                  >
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Parceria Verdadeira</h4>
-                    <p className="text-gray-600 dark:text-slate-300 text-sm">
-                      Trabalhamos como uma extensão da sua equipe, entendendo 
-                      profundamente suas necessidades e objetivos.
-                    </p>
-                  </motion.div>
+                  {(aboutData?.values || [
+                    {
+                      title: 'Excelência Técnica',
+                      description: 'Utilizamos as melhores práticas e tecnologias mais modernas para garantir qualidade excepcional em cada projeto.',
+                      icon: 'Code'
+                    },
+                    {
+                      title: 'Inovação Constante',
+                      description: 'Mantemos-nos sempre na vanguarda tecnológica, explorando novas possibilidades em IA e desenvolvimento.',
+                      icon: 'Rocket'
+                    },
+                    {
+                      title: 'Agilidade na Entrega',
+                      description: 'Metodologias ágeis garantem entregas rápidas sem comprometer a qualidade e a satisfação do cliente.',
+                      icon: 'Zap'
+                    },
+                    {
+                      title: 'Parceria Verdadeira',
+                      description: 'Trabalhamos como uma extensão da sua equipe, entendendo profundamente suas necessidades e objetivos.',
+                      icon: 'Users'
+                    }
+                  ]).map((value, index) => {
+                    const IconComponent = getValueIconComponent(value.icon);
+                    return (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="bg-white/70 dark:bg-slate-800/50 rounded-xl p-6 border border-gray-200 dark:border-slate-700/50 shadow-lg"
+                      >
+                        <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                          <IconComponent className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">{value.title}</h4>
+                        <p className="text-gray-600 dark:text-slate-300 text-sm">
+                          {value.description}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
