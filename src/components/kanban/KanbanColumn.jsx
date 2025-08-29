@@ -21,7 +21,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 
-const KanbanColumn = ({ col, tasks, onRemoveColumn, onEditColumn, onTaskClick, onRemoveTask, onNewTask, canAddTask, userRole }) => {
+const KanbanColumn = ({ col, tasks, onRemoveColumn, onEditColumn, onTaskClick, onNewTask, canAddTask, userRole }) => {
   const { setNodeRef } = useSortable({ id: col.id, data: { type: 'column' } });
   const isCompletedColumn = col.status === 'Concluído';
 
@@ -61,7 +61,7 @@ const KanbanColumn = ({ col, tasks, onRemoveColumn, onEditColumn, onTaskClick, o
       </div>
       <SortableContext id={col.id} items={tasks}>
         <div ref={setNodeRef} className="min-h-[100px] flex-grow overflow-y-auto px-1 -mx-1 custom-scrollbar">
-          {tasks.map(task => <TaskCard key={task.id} task={task} onTaskClick={onTaskClick} onRemoveTask={onRemoveTask} />)}
+          {tasks.map(task => <TaskCard key={task.id} task={task} onTaskClick={onTaskClick} />)}
         </div>
       </SortableContext>
       {canAddTask && (

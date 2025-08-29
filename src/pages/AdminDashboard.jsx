@@ -25,7 +25,6 @@ import EditLandingPageContent from '@/components/admin/settings/EditLandingPageC
 import { Settings } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import useKanban from '@/hooks/useKanban';
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -36,7 +35,6 @@ const AdminDashboard = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { tasks, clients } = useKanban();
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -58,65 +56,20 @@ const AdminDashboard = () => {
     }
   }, [user, navigate]);
 
-  const handleSaveProject = async (projectData) => {
-    let processedProjectData = { ...projectData };
-
-    // Processar imagem se existir
-    if (projectData.image && projectData.image instanceof File) {
-      try {
-        const base64Image = await convertFileToBase64(projectData.image);
-        processedProjectData.image = base64Image;
-      } catch (error) {
-        console.error('Erro ao processar imagem:', error);
-        toast({ title: "Erro", description: "Erro ao processar a imagem.", variant: "destructive" });
-        return;
-      }
-    }
-
+  const handleSaveProject = (projectData) => {
     let updatedProjects;
-    let oldProjectName = null;
     if (editingProject) {
-      oldProjectName = projects.find(p => p.id === editingProject.id)?.title;
-      updatedProjects = projects.map(p => p.id === editingProject.id ? { ...processedProjectData, id: editingProject.id, createdAt: editingProject.createdAt } : p);
+      updatedProjects = projects.map(p => p.id === editingProject.id ? { ...projectData, id: editingProject.id, createdAt: editingProject.createdAt } : p);
       toast({ title: "Projeto atualizado!", description: "As alterações foram salvas." });
     } else {
-      const newProject = { ...processedProjectData, id: Date.now(), createdAt: new Date().toISOString() };
+      const newProject = { ...projectData, id: Date.now(), createdAt: new Date().toISOString() };
       updatedProjects = [...projects, newProject];
       toast({ title: "Projeto criado!", description: "Novo projeto adicionado." });
     }
     setProjects(updatedProjects);
     localStorage.setItem('projects', JSON.stringify(updatedProjects));
-
-    // Atualiza nome do projeto nas tarefas se necessário
-    if (editingProject && oldProjectName && oldProjectName !== processedProjectData.title) {
-      const kanbanTasks = JSON.parse(localStorage.getItem('kanbanTasks') || '{}');
-      let changed = false;
-      Object.keys(kanbanTasks).forEach(col => {
-        kanbanTasks[col] = kanbanTasks[col].map(task => {
-          if (task.project === oldProjectName) {
-            changed = true;
-            return { ...task, project: processedProjectData.title };
-          }
-          return task;
-        });
-      });
-      if (changed) {
-        localStorage.setItem('kanbanTasks', JSON.stringify(kanbanTasks));
-      }
-    }
-
     setIsProjectModalOpen(false);
     setEditingProject(null);
-  };
-
-  // Função auxiliar para converter File para base64
-  const convertFileToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
   };
 
   const handleEditProject = (project) => {
@@ -139,7 +92,7 @@ const AdminDashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} clients={clients} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} />;
       case 'projects':
         return <ProjectsContent projects={projects} onNewProject={handleNewProject} onEditProject={handleEditProject} onDeleteProject={handleDeleteProject} />;
       case 'tasks':
@@ -173,7 +126,7 @@ const AdminDashboard = () => {
       case 'settings':
         return <PlaceholderContent title="Configurações" description="Escolha uma opção no menu para começar." icon={Settings} />;
       default:
-        return <DashboardContent projects={projects} onEditProject={handleEditProject} tasks={tasks} clients={clients} />;
+        return <DashboardContent projects={projects} onEditProject={handleEditProject} />;
     }
   };
 
