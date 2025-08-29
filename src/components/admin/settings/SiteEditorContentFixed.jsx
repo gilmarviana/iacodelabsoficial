@@ -858,32 +858,30 @@ const SiteEditorContent = () => {
     );
   };
 
-  // (Removed duplicate/incorrect renderTestimonialsEditor definition)
-
   const renderTestimonialsEditor = () => {
-    if (!siteData?.testimonials) {
-      // Inicializar dados dos depoimentos se não existirem
-      const defaultTestimonialsData = {
-        title: 'O que Nossos Clientes Dizem',
-        subtitle: 'A satisfação dos nossos clientes é nossa maior conquista.',
-        testimonials: [
+      // Inicializar dados dos casos se não existirem
+      const defaultCasesData = {
+        title: 'Casos de Sucesso Comprovados',
+        subtitle: 'Projetos que transformaram negócios e geraram resultados extraordinários.',
+        items: [
           {
             id: 1,
-            name: 'Carlos Silva',
-            role: 'CEO',
-            company: 'TechStart',
-            text: 'A IA Code Labs transformou completamente nossa operação.',
-            rating: 5,
-            image: '/api/placeholder/80/80'
+            title: 'E-commerce Inteligente',
+            company: 'Fashion Store',
+            description: 'Plataforma de e-commerce com recomendações por IA.',
+            technologies: ['React', 'Node.js', 'Python', 'TensorFlow'],
+            results: ['150% aumento nas vendas', '80% redução no tempo de busca'],
+            image: '/api/placeholder/600/400',
+            category: 'E-commerce'
           }
         ]
       };
       
-      updateSiteData('testimonials', defaultTestimonialsData);
-      return <div>Inicializando dados dos depoimentos...</div>;
+      updateSiteData('cases', defaultCasesData);
+      return <div>Inicializando dados dos casos de sucesso...</div>;
     }
     
-    const testimonials = siteData.testimonials.items || [];
+    const cases = siteData.cases.items || [];
     
     return (
       <div className="space-y-6">
