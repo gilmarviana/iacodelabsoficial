@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+
+import { useState, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ChatWidget from '@/components/ChatWidget';
 import SchedulingModal from '@/components/SchedulingModal';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { useNavigate } from 'react-router-dom';
 
 // Import sections
 import {
@@ -16,10 +17,12 @@ import {
   TestimonialsSection,
   ContactSection
 } from '@/components/sections';
+import FooterSection from './FooterSection';
 
 const LandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSchedulingModalOpen, setIsSchedulingModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const scrollToSection = useCallback((sectionId) => {
     setIsMenuOpen(false);
@@ -35,6 +38,10 @@ const LandingPage = () => {
 
   const handlePortfolioClick = () => {
     scrollToSection('portfolio');
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
   };
 
   return (
@@ -73,14 +80,21 @@ const LandingPage = () => {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <ThemeToggle />
-              <Button 
+              <Button
+                onClick={handleLoginClick}
+                variant="outline"
+                className="hidden md:flex border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors duration-300"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+              <Button
                 onClick={handleScheduleClick}
                 className="hidden md:flex bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-600 hover:to-purple-700"
               >
                 Agendar Conversa
               </Button>
-              
+
               {/* Mobile Menu Button */}
               <button
                 className="md:hidden text-white"
@@ -93,7 +107,7 @@ const LandingPage = () => {
 
           {/* Mobile Navigation */}
           {isMenuOpen && (
-            <motion.nav 
+            <motion.nav
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               className="md:hidden mt-4 pb-4 space-y-4"
@@ -107,7 +121,15 @@ const LandingPage = () => {
                   {item}
                 </button>
               ))}
-              <Button 
+              <Button
+                onClick={handleLoginClick}
+                variant="outline"
+                className="w-full border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-colors duration-300 mb-2"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Login
+              </Button>
+              <Button
                 onClick={handleScheduleClick}
                 className="w-full bg-gradient-to-r from-cyan-500 to-purple-600"
               >
@@ -130,24 +152,10 @@ const LandingPage = () => {
       <ContactSection />
 
       {/* Footer */}
-      <footer className="py-12 border-t border-white/10 bg-black/50">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4">
-              DevStudio
-            </div>
-            <p className="text-gray-400 mb-6">
-              Transformando ideias em soluções digitais inovadoras
-            </p>
-            <p className="text-sm text-gray-500">
-              © 2024 DevStudio. Todos os direitos reservados.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <FooterSection />
 
       <ChatWidget />
-      
+
       <SchedulingModal
         isOpen={isSchedulingModalOpen}
         onClose={() => setIsSchedulingModalOpen(false)}

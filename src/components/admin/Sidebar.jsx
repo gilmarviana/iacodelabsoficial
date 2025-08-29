@@ -18,16 +18,17 @@ const allMenuItems = [
   { id: 'chat', label: 'Chat', icon: MessageSquare },
   { id: 'financial', label: 'Financeiro', icon: DollarSign },
   { id: 'schedule', label: 'Agenda', icon: Calendar },
-  { 
-    id: 'settings', 
-    label: 'Configurações', 
+  {
+    id: 'settings',
+    label: 'Configurações',
     icon: Settings,
     submenu: [
       { id: 'settings-slider', label: 'Slider', icon: ImageIcon },
       { id: 'settings-site-projects', label: 'Projetos do Site', icon: FolderOpen },
       { id: 'settings-landing-page', label: 'Landing Page', icon: FileImage },
+      { id: 'settings-edit-landing-page', label: 'Editar Landing Page', icon: Brush },
       { id: 'settings-auth', label: 'Autenticação', icon: Lock },
-      { id: 'settings-dashboard', label: 'Dashboard', icon: Brush },
+      { id: 'settings-dashboard', label: 'Dashboard', icon: SlidersHorizontal },
       { id: 'settings-sidebar', label: 'Sidebar', icon: SlidersHorizontal },
       { id: 'settings-colors', label: 'Cores', icon: Palette },
     ]

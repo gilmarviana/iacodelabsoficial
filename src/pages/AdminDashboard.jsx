@@ -21,6 +21,7 @@ import FinancialContent from '@/components/admin/FinancialContent';
 import ScheduleContent from '@/components/admin/ScheduleContent';
 import CollaboratorsContent from '@/components/admin/CollaboratorsContent';
 import PlaceholderContent from '@/components/admin/PlaceholderContent';
+import EditLandingPageContent from '@/components/admin/settings/EditLandingPageContent';
 import { Settings } from 'lucide-react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -159,6 +160,8 @@ const AdminDashboard = () => {
         return <SiteProjectsSettingsContent />;
       case 'settings-landing-page':
         return <LandingPageSettingsContent />;
+      case 'settings-edit-landing-page':
+        return <EditLandingPageContent />;
       case 'settings-auth':
         return <AuthSettingsContent />;
       case 'settings-dashboard':
