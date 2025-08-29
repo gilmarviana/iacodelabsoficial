@@ -316,12 +316,62 @@ const LandingPage = () => {
 
   // Dados de contato - usar dados do editor se disponíveis
   const contactData = editorData?.contact ? {
-    title: editorData.contact.title || 'Entre em Contato',
-    subtitle: editorData.contact.subtitle || 'Vamos conversar sobre seu projeto.',
+    title: editorData.contact.title || 'Vamos Criar Algo Incrível Juntos',
+    subtitle: editorData.contact.subtitle || 'Pronto para transformar sua ideia em realidade? Entre em contato conosco e vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.',
     email: editorData.contact.email || 'contato@iacodelabs.com',
     phone: editorData.contact.phone || '+55 (11) 99999-9999',
-    address: editorData.contact.address || 'São Paulo, SP - Brasil'
-  } : null;
+    address: editorData.contact.address || 'São Paulo, SP - Brasil',
+    hours: editorData.contact.hours || '24/7 Suporte',
+    whyChoose: editorData.contact.whyChoose || [
+      "Equipe especializada e experiente",
+      "Tecnologias de ponta",
+      "Suporte contínuo",
+      "Metodologia ágil",
+      "Resultados comprovados"
+    ],
+    form: editorData.contact.form || {
+      title: 'Envie sua Mensagem',
+      subtitle: 'Preencha o formulário abaixo e entraremos em contato em até 24 horas.',
+      buttonText: 'Enviar Mensagem',
+      services: [
+        { value: '', label: 'Selecione um serviço' },
+        { value: 'desenvolvimento-web', label: 'Desenvolvimento Web' },
+        { value: 'aplicativo-mobile', label: 'Aplicativo Mobile' },
+        { value: 'inteligencia-artificial', label: 'Inteligência Artificial' },
+        { value: 'analise-dados', label: 'Análise de Dados' },
+        { value: 'consultoria', label: 'Consultoria Técnica' },
+        { value: 'outros', label: 'Outros' }
+      ]
+    }
+  } : {
+    title: 'Vamos Criar Algo Incrível Juntos',
+    subtitle: 'Pronto para transformar sua ideia em realidade? Entre em contato conosco e vamos discutir como podemos ajudar seu negócio a crescer com tecnologia.',
+    email: 'contato@iacodelabs.com',
+    phone: '+55 (11) 99999-9999',
+    address: 'São Paulo, SP - Brasil',
+    hours: '24/7 Suporte',
+    whyChoose: [
+      "Equipe especializada e experiente",
+      "Tecnologias de ponta",
+      "Suporte contínuo",
+      "Metodologia ágil",
+      "Resultados comprovados"
+    ],
+    form: {
+      title: 'Envie sua Mensagem',
+      subtitle: 'Preencha o formulário abaixo e entraremos em contato em até 24 horas.',
+      buttonText: 'Enviar Mensagem',
+      services: [
+        { value: '', label: 'Selecione um serviço' },
+        { value: 'desenvolvimento-web', label: 'Desenvolvimento Web' },
+        { value: 'aplicativo-mobile', label: 'Aplicativo Mobile' },
+        { value: 'inteligencia-artificial', label: 'Inteligência Artificial' },
+        { value: 'analise-dados', label: 'Análise de Dados' },
+        { value: 'consultoria', label: 'Consultoria Técnica' },
+        { value: 'outros', label: 'Outros' }
+      ]
+    }
+  };
 
   return (
     <>
@@ -1064,7 +1114,7 @@ const LandingPage = () => {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-800 dark:text-white">Horário</h4>
-                        <p className="text-orange-600 dark:text-orange-400">24/7 Suporte</p>
+                        <p className="text-orange-600 dark:text-orange-400">{contactData?.hours || '24/7 Suporte'}</p>
                         <p className="text-sm text-gray-500 dark:text-slate-400">Para clientes ativos</p>
                       </div>
                     </motion.div>
@@ -1080,13 +1130,7 @@ const LandingPage = () => {
                   >
                     <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-4">Por que Escolher a IA Code Labs?</h4>
                     <div className="space-y-3">
-                      {[
-                        "Equipe especializada e experiente",
-                        "Tecnologias de ponta",
-                        "Suporte contínuo",
-                        "Metodologia ágil",
-                        "Resultados comprovados"
-                      ].map((item, idx) => (
+                      {(contactData?.whyChoose || []).map((item, idx) => (
                         <div key={idx} className="flex items-center gap-3">
                           <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                           <span className="text-gray-600 dark:text-slate-300">{item}</span>
@@ -1104,9 +1148,9 @@ const LandingPage = () => {
                   className="space-y-6"
                 >
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Envie sua Mensagem</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{contactData?.form?.title || 'Envie sua Mensagem'}</h3>
                     <p className="text-gray-600 dark:text-slate-300 mb-6">
-                      Preencha o formulário abaixo e entraremos em contato em até 24 horas.
+                      {contactData?.form?.subtitle || 'Preencha o formulário abaixo e entraremos em contato em até 24 horas.'}
                     </p>
                   </div>
 
@@ -1171,13 +1215,9 @@ const LandingPage = () => {
                     <div>
                       <label className="block text-gray-800 dark:text-white font-medium mb-2">Serviço de Interesse</label>
                       <select className="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
-                        <option value="">Selecione um serviço</option>
-                        <option value="desenvolvimento-web">Desenvolvimento Web</option>
-                        <option value="aplicativo-mobile">Aplicativo Mobile</option>
-                        <option value="inteligencia-artificial">Inteligência Artificial</option>
-                        <option value="analise-dados">Análise de Dados</option>
-                        <option value="consultoria">Consultoria Técnica</option>
-                        <option value="outros">Outros</option>
+                        {(contactData?.form?.services || []).map((service, idx) => (
+                          <option key={idx} value={service.value}>{service.label}</option>
+                        ))}
                       </select>
                     </div>
 
@@ -1202,7 +1242,7 @@ const LandingPage = () => {
                       type="submit"
                       className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg hover:shadow-xl"
                     >
-                      <span>Enviar Mensagem</span>
+                      <span>{contactData?.form?.buttonText || 'Enviar Mensagem'}</span>
                       <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </form>
